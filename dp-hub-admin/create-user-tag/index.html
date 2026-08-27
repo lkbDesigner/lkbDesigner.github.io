@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Tag</title>
+  <link rel="stylesheet" href="../vendor/antd-5.24.8-reset.css">
+  <style>
+    :root{font-family:Roboto,"PingFang SC",Arial,sans-serif;color:#262626;background:#f5f5f5}*{box-sizing:border-box}html,body,#root{height:100%;min-width:1180px;margin:0}.app{height:100vh;overflow:hidden}.sider.ant-layout-sider{background:#fff!important;border-right:1px solid #f0f0f0}.brand{height:64px;display:flex;align-items:center;padding:0 24px;gap:9px;color:#1677ff;font-size:16px;font-weight:600}.brand-mark{color:#1677ff;font-size:20px}.shell{min-width:0;background:#f5f5f5}.topbar{height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#fff;border-bottom:1px solid #f0f0f0}.top-left,.top-right,.identity{display:flex;align-items:center}.top-left{gap:24px}.top-right{gap:10px}.identity{gap:8px;font-size:14px;color:#262626}.environment{height:36px;padding:0 18px;display:flex;align-items:center;border-radius:5px;background:#52c41a;color:#fff;font-size:24px;line-height:36px}.page-header{height:102px;flex:none;padding:16px 24px;display:flex;flex-direction:column;gap:16px;background:#fff;border-bottom:1px solid #f0f0f0}.crumbs{height:22px;display:flex;align-items:center;gap:4px;color:#8c8c8c;font-size:14px;line-height:22px}.crumbs .current{color:#262626}.title-row{min-height:28px;display:flex;align-items:center}.back-button{margin-right:16px;padding:0;color:#262626}.page-title{margin:0;font-size:20px;line-height:28px;font-weight:600;color:#262626}.header-spacer{flex:1}.content{flex:1;min-height:0;padding:16px;overflow:auto}.user-card{min-height:100%;border-color:#f0f0f0!important}.user-card .ant-card-body{padding:24px}.editor-form{width:942px;max-width:100%}.editor-form .ant-form-item{margin-bottom:16px}.editor-form .ant-form-item-label{text-align:right}.editor-form .ant-form-item-label>label{height:32px;justify-content:flex-end;text-align:right;color:#262626;font-size:14px;line-height:22px;white-space:nowrap}.editor-form .ant-form-item-required::before{color:#ff4d4f!important}.editor-form .ant-input,.editor-form .ant-select{width:100%}.editor-form textarea.ant-input{min-height:120px;resize:vertical}.editor-form .ant-checkbox-group{display:flex;gap:18px}.editor-form .ant-checkbox-wrapper{margin-inline-start:0}.footer{height:64px;flex:none;z-index:2;padding:16px 24px;display:flex;align-items:center;justify-content:flex-end;background:#fff;border-top:1px solid #f0f0f0}.footer .ant-space{gap:8px!important}@media(max-width:1180px){.editor-form{width:100%}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="../vendor/react-18.3.1.min.js"></script>
+  <script src="../vendor/dayjs-1.11.23.min.js"></script>
+  <script src="../vendor/antd-5.24.8.min.js"></script>
+  <script src="../vendor/ant-design-icons-5.6.1.min.js"></script>
+  <script>
+  (()=>{
+    const h=React.createElement;
+    const {Layout,Menu,ConfigProvider,Card,Form,Input,Select,Radio,Button,Space,message}=antd;
+    const I=icons;
+    const menuItems=[
+      {key:'homepage',icon:h(I.HomeOutlined),label:'Homepage'},
+      {key:'dp-orders',icon:h(I.FileTextOutlined),label:'DP Orders'},
+      {key:'dp-products',icon:h(I.AppstoreOutlined),label:'DP Products'},
+      {key:'marketing-promotion',icon:h(I.LineChartOutlined),label:'Marketing Promotion'},
+      {key:'marketing-asset',icon:h(I.NotificationOutlined),label:'Marketing Asset'},
+      {key:'user-management',icon:h(I.UserOutlined),label:'User Management'},
+      {key:'fe-configuration',icon:h(I.MobileOutlined),label:'FE Configuration'},
+      {key:'local-service',icon:h(I.CustomerServiceOutlined),label:'Local Service'},
+      {key:'operation',icon:h(I.SlidersOutlined),label:'Operation'},
+      {key:'approval-flow',icon:h(I.AuditOutlined),label:'Approval Flow'},
+      {key:'fraud-check',icon:h(I.DollarCircleOutlined),label:'Fraud Check'}
+    ];
+    const shopeeSegmentOptions=[
+      {value:'upp-new-user',label:'New User'},
+      {value:'upp-shopeepay-game-user',label:'ShopeePay New Game User'}
+    ];
+    const shopeepaySegmentOptions=[
+      {value:'monee-new-user',label:'New User'},
+      {value:'monee-active-user',label:'Active User'}
+    ];
+    function App(){
+      const [form]=Form.useForm();
+      const [messageApi,holder]=message.useMessage();
+      const [region,setRegion]=React.useState('ID');
+      const [platformEnabled,setPlatformEnabled]=React.useState({shopee:true,shopeepay:true});
+      const [canSubmit,setCanSubmit]=React.useState(false);
+      const shopeepayPlatformName=region==='BR'?'Maree':'ShopeePay';
+      const updateSubmitState=(values)=>{
+        const validName=/^[0-9a-zA-Z_.]+$/.test((values.name||'').trim());
+        const shopeeComplete=values.shopeeEnabled===false||Boolean(values.shopeeSegment);
+        const shopeepayComplete=values.shopeepayEnabled===false||Boolean(values.shopeepaySegment);
+        setCanSubmit(validName&&(values.shopeeEnabled||values.shopeepayEnabled)&&shopeeComplete&&shopeepayComplete);
+      };
+      const updatePlatform=(platform)=>({target:{value}})=>{
+        setPlatformEnabled((current)=>Object.assign({},current,{[platform]:value}));
+        if(!value) form.setFieldValue(platform+'Segment',undefined);
+      };
+      const submit=()=>form.validateFields().then((values)=>{
+        if(!values.shopeeEnabled&&!values.shopeepayEnabled){
+          messageApi.error('Select Yes for at least one user platform');
+          return;
+        }
+        messageApi.success('User group created');
+        window.setTimeout(()=>{window.location.href='../index.html';},400);
+      }).catch(()=>{});
+      return h(ConfigProvider,{theme:{token:{colorPrimary:'#1677ff',colorSuccess:'#52c41a',colorWarning:'#faad14',colorError:'#ff4d4f',colorBgLayout:'#f5f5f5',colorText:'#262626',colorTextSecondary:'#8c8c8c',colorBorder:'#f0f0f0',borderRadius:4,controlHeight:32,fontSize:14},components:{Menu:{itemHeight:46,itemColor:'#262626',itemSelectedColor:'#1677ff',itemSelectedBg:'#e6f4ff',iconSize:16}}}},holder,
+        h(Layout,{className:'app'},
+          h(Layout.Sider,{className:'sider',width:240},h('div',{className:'brand'},h(I.ApiOutlined,{className:'brand-mark'}),'Digital Product Admin'),h(Menu,{mode:'inline',inlineIndent:24,items:menuItems,selectedKeys:['user-management'],style:{borderInlineEnd:0}})),
+          h(Layout,{className:'shell'},
+            h('header',{className:'topbar'},h('div',{className:'top-left'},h(I.MenuUnfoldOutlined,{style:{fontSize:20,color:'#262626'}}),h('span',{className:'environment'},'Non-Live Environment')),h('div',{className:'top-right'},h(Select,{value:region,onChange:setRegion,options:[{value:'ID',label:'ID'},{value:'BR',label:'BR'}],style:{width:100}}),h(Select,{defaultValue:'UAT',options:[{value:'UAT',label:'UAT'}],style:{width:100}}),h('span',{className:'identity'},h(I.UserOutlined,{style:{fontSize:18}}),'kaibin.liu'))),
+            h('section',{className:'page-header'},h('div',{className:'crumbs'},h('span',null,'User Management'),h(I.RightOutlined,{style:{fontSize:10,color:'#8c8c8c'}}),h('span',{className:'current'},'User Tag')),h('div',{className:'title-row'},h(Button,{className:'back-button',type:'text',icon:h(I.LeftOutlined),'aria-label':'Back',onClick:()=>{window.location.href='../index.html';}}),h('h1',{className:'page-title'},'User Tag'),h('span',{className:'header-spacer'}))),
+            h('main',{className:'content'},h(Card,{className:'user-card'},h(Form,{className:'editor-form',form,layout:'horizontal',labelCol:{flex:'236px'},wrapperCol:{flex:'0 0 706px'},colon:true,requiredMark:true,initialValues:{shopeeEnabled:true,shopeepayEnabled:true},onValuesChange:(_,values)=>updateSubmitState(values)},
+              h(Form.Item,{label:'User Group Name',name:'name',required:true,rules:[{required:true,message:'Please input User Group Name'},{pattern:/^[0-9a-zA-Z_.]+$/,message:'Only 0-9, a-z, A-Z, _ and . are allowed'}]},h(Input,{placeholder:'Name format will be: [0-9a-zA-Z_.]'})),
+              h(Form.Item,{label:'Description',name:'description'},h(Input.TextArea,{placeholder:'Please input',rows:5})),
+              h(Form.Item,{label:'Use User Tag on Shopee?',name:'shopeeEnabled',required:true,rules:[{required:true,message:'Please select Yes or No'}]},h(Radio.Group,{onChange:updatePlatform('shopee'),options:[{label:'Yes',value:true},{label:'No',value:false}]})),
+              platformEnabled.shopee&&h(Form.Item,{label:'Shopee User Segment',name:'shopeeSegment',required:true,rules:[{required:true,message:'Please select a Shopee user segment'}]},h(Select,{placeholder:'Please select user group',options:shopeeSegmentOptions})),
+              h(Form.Item,{label:'Use User Tag on '+shopeepayPlatformName+'?',name:'shopeepayEnabled',required:true,rules:[{required:true,message:'Please select Yes or No'}]},h(Radio.Group,{onChange:updatePlatform('shopeepay'),options:[{label:'Yes',value:true},{label:'No',value:false}]})),
+              platformEnabled.shopeepay&&h(Form.Item,{label:shopeepayPlatformName+' User Segment',name:'shopeepaySegment',required:true,rules:[{required:true,message:'Please select a '+shopeepayPlatformName+' user segment'}]},h(Select,{placeholder:'Please select user group',options:shopeepaySegmentOptions}))
+            ))),
+            h('footer',{className:'footer'},h(Space,{size:8},h(Button,{type:'primary',disabled:!canSubmit,onClick:submit},'Submit'),h(Button,{onClick:()=>{window.location.href='../index.html';}},'Cancel')))
+          )
+        )
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+  })();
+  </script>
+</body>
+</html>
