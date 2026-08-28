@@ -81,7 +81,7 @@
               h(Form.Item,{label:'Use User Tag on '+shopeepayPlatformName+'?',name:'shopeepayEnabled',required:true,rules:[{required:true,message:'Please select Yes or No'}]},h(Radio.Group,{onChange:updatePlatform('shopeepay'),options:[{label:'Yes',value:true},{label:'No',value:false}]})),
               platformEnabled.shopeepay&&h(Form.Item,{label:shopeepayPlatformName+' User Segment',name:'shopeepaySegment',required:true,rules:[{required:true,message:'Please select a '+shopeepayPlatformName+' user segment'}]},h(Select,{placeholder:'Please select user group',options:shopeepaySegmentOptions}))
             ))),
-            h('footer',{className:'footer'},h(Space,{size:8},h(Button,{type:'primary',disabled:!canSubmit,onClick:submit},'Submit'),h(Button,{onClick:()=>{window.location.href='../index.html';}},'Cancel')))
+            h('footer',{className:'footer'},h(Space,{size:8},h(Button,{onClick:()=>{window.location.href='../index.html';}},'Cancel'),h(Button,{type:'primary',disabled:!canSubmit,onClick:submit},'Submit')))
           )
         )
       );
