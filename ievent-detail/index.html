@@ -97,7 +97,6 @@
         {title:'City',dataIndex:'city',key:'city',width:180},
         {title:'Updated Time',dataIndex:'updated',key:'updated',width:230}
       ];
-      const massMenu={items:[{key:'add-event',icon:h(I.PlusOutlined),label:'Add Event'},{key:'batch-edit',icon:h(I.EditOutlined),label:'Batch Edit'}],onClick:({key})=>messageApi.info(key==='add-event'?'Add Event selected':'Batch Edit selected')};
       return h(ConfigProvider,{theme:{token:{colorPrimary:'#1677ff',colorSuccess:'#52c41a',colorError:'#ff4d4f',colorBgLayout:'#f5f5f5',colorText:'#262626',colorTextSecondary:'#8c8c8c',colorBorder:'#f0f0f0',borderRadius:4,controlHeight:32,fontSize:14},components:{Menu:{itemHeight:46,itemColor:'#262626',itemSelectedColor:'#1677ff',itemSelectedBg:'#e6f4ff',iconSize:16},Table:{headerBg:'#fafafa'}}}},
         h(React.Fragment,null,
           holder,
@@ -123,7 +122,7 @@
                       h('div',{className:'filter-actions'},h(Button,{type:'primary',onClick:search},'Search'),h(Button,{onClick:reset},'Reset'))
                     )
                   ),
-                  h('div',{className:'table-toolbar'},h(Button,{icon:h(I.DownloadOutlined),onClick:()=>messageApi.success('Download started')},'Download'),h(Dropdown,{menu:massMenu},h(Button,null,'Mass Operation'))),
+                  h('div',{className:'table-toolbar'},h(Button,{icon:h(I.DownloadOutlined),onClick:()=>messageApi.success('Download started')},'Download'),h(Button,null,'Mass Operation')),
                   h('div',{className:'table-wrap'},h(Table,{className:'event-table',columns,dataSource:visibleEvents,rowKey:'key',size:'middle',bordered:false,scroll:{x:1230},pagination:{current:1,pageSize:10,total:927,showSizeChanger:false,showQuickJumper:true,showTotal:()=>h('span',{className:'total-events'},'Total Events: 927'),position:['bottomRight']}}))
                 )
               )
