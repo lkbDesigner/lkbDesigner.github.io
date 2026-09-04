@@ -18,7 +18,7 @@
     .filter-panel{padding:0 0 20px;border-bottom:1px solid #f0f0f0}.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 8px}
     .filter-control{display:flex;align-items:stretch;min-width:0;height:32px}.filter-label{display:flex;align-items:center;flex:none;padding:0 11px;border:1px solid #d9d9d9;border-right:0;border-radius:2px 0 0 2px;background:#fafafa;white-space:nowrap}.filter-value{display:flex;width:100%;min-width:0;height:32px;padding:0 8px 0 12px;border:1px solid #d9d9d9;border-radius:0 2px 2px 0;background:#fff}.filter-value .ant-input,.filter-value .ant-select{width:100%;min-width:0;border:0!important;box-shadow:none!important}.filter-value .ant-input{height:30px;padding:0}.filter-value .ant-select-selector{height:30px!important;padding:0 20px 0 0!important;border:0!important;box-shadow:none!important}.filter-value .ant-select-selection-placeholder,.filter-value .ant-select-selection-item{line-height:30px!important}
     .filter-actions{grid-column:4;display:flex;align-items:center;justify-content:flex-end;gap:8px}.filter-actions .ant-btn{min-width:72px}
-    .table-toolbar{display:flex;align-items:center;gap:8px;padding:16px 0}.table-toolbar .ant-btn{min-width:92px}.table-wrap{overflow:hidden}.event-table .ant-table-thead>tr>th{white-space:nowrap}.event-table .ant-table-tbody>tr>td{vertical-align:middle}.event-id-link,.event-name-link{color:#1677ff;text-decoration:none}.event-id-link:hover,.event-name-link:hover{text-decoration:underline}.status-tag{margin-inline-end:0}.total-events{margin-top:12px;color:#595959;font-size:14px}
+    .table-toolbar{display:flex;align-items:center;gap:8px;padding:16px 0}.table-toolbar .ant-btn{min-width:92px}.table-wrap{overflow:hidden}.event-table .ant-table-thead>tr>th{white-space:nowrap}.event-table .ant-table-tbody>tr>td{vertical-align:middle}.event-id-link,.event-name-link{color:#1677ff;text-decoration:none}.event-id-link:hover,.event-name-link:hover{text-decoration:underline}.status-tag{margin-inline-end:0}.total-events{margin-top:12px;color:#595959;font-size:14px}.design-note-list{margin:0;padding-left:24px;color:#262626}.design-note-list li{padding:0 0 14px;line-height:22px}.design-note-title{display:block;margin-bottom:4px;color:#262626;font-weight:600}.ant-drawer-body{padding-bottom:88px}
     @media(max-width:1280px){.content{padding:16px}.list-page{padding:20px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-actions{grid-column:2;justify-content:flex-end}}
   </style>
 </head>
@@ -32,7 +32,7 @@
   <script>
   (()=>{
     const h=React.createElement;
-    const {Layout,Menu,ConfigProvider,Input,Select,Button,Table,Dropdown,message,Tag}=antd;
+    const {Layout,Menu,ConfigProvider,Input,Select,Button,Table,Dropdown,message,Tag,Drawer}=antd;
     const I=icons;
     const menuItems=[
       {key:'homepage',icon:h(I.HomeOutlined),label:'Homepage'},
@@ -79,6 +79,7 @@
       const [filterValues,setFilterValues]=React.useState({id:'',name:'',country:'',city:''});
       const [appliedFilters,setAppliedFilters]=React.useState({id:'',name:'',country:'',city:''});
       const [messageApi,holder]=message.useMessage();
+      const [designDrawerOpen,setDesignDrawerOpen]=React.useState(false);
       const setFilter=(key,value)=>setFilterValues(previous=>({...previous,[key]:value}));
       const search=()=>{setAppliedFilters({...filterValues});messageApi.success('Search completed')};
       const reset=()=>{const empty={id:'',name:'',country:'',city:''};setFilterValues(empty);setAppliedFilters(empty);messageApi.info('Filters have been reset')};
@@ -107,7 +108,7 @@
             ),
             h(Layout,{className:'shell'},
               h('header',{className:'topbar'},
-                h('div',{className:'top-left'},h(I.MenuUnfoldOutlined,{style:{fontSize:20,color:'#262626'}}),h('span',{className:'environment'},'Non-Live Environment')),
+                h('div',{className:'top-left'},h(I.MenuUnfoldOutlined,{style:{fontSize:20,color:'#262626'}}),h('span',{className:'environment'},'Non-Live Environment'),h(Button,{type:'primary',icon:h(I.FileTextOutlined),onClick:()=>setDesignDrawerOpen(true)},'设计修改说明')),
                 h('div',{className:'top-right'},h(Select,{value:'MY',options:[{value:'MY',label:'MY'}],style:{width:100}}),h(Select,{value:'UAT',options:[{value:'UAT',label:'UAT'}],style:{width:100}}),h('span',{className:'identity'},h(I.UserOutlined,{style:{fontSize:18}}),'kaibin.liu'))
               ),
               h('section',{className:'page-header'},h('h1',{className:'page-title'},'IEvent List')),
@@ -126,6 +127,12 @@
                   h('div',{className:'table-wrap'},h(Table,{className:'event-table',columns,dataSource:visibleEvents,rowKey:'key',size:'middle',bordered:false,scroll:{x:1230},pagination:{current:1,pageSize:10,total:927,showSizeChanger:false,showQuickJumper:true,showTotal:()=>h('span',{className:'total-events'},'Total Events: 927'),position:['bottomRight']}}))
                 )
               )
+            )
+          ),
+          h(Drawer,{title:'设计修改说明',placement:'right',width:420,open:designDrawerOpen,onClose:()=>setDesignDrawerOpen(false),destroyOnClose:true},
+            h('ol',{className:'design-note-list'},
+              h('li',null,h('div',{className:'design-note-title'},'全局界面 / Global UI'),'界面按 Ant Design 5.0 规范重构。'),
+              h('li',null,h('div',{className:'design-note-title'},'IEvent List / 列表页面'),'列表页面按 Ant Design 5.0 规范进行改动；保留筛选、搜索、重置、下载、批量操作、表格筛选和分页功能。')
             )
           )
         )
