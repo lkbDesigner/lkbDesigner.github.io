@@ -88,7 +88,7 @@
         return idMatch&&nameMatch&&(!appliedFilters.country||item.country===appliedFilters.country)&&(!appliedFilters.city||item.city===appliedFilters.city);
       });
       const columns=[
-        {title:'Event ID',dataIndex:'id',key:'id',width:100,fixed:'left',render:value=>h('a',{href:'index.html',className:'event-id-link'},String(value))},
+        {title:'Event ID',dataIndex:'id',key:'id',width:100,fixed:'left',render:value=>h('a',{href:'event-detail.html',className:'event-id-link'},String(value))},
         {title:'Event Name',dataIndex:'name',key:'name',width:260},
         {title:'FE Status',dataIndex:'feStatus',key:'feStatus',width:150,filters:statusOptions.map(value=>({text:value,value})),onFilter:(value,record)=>record.feStatus===value,render:value=>h(StatusTag,{status:value})},
         {title:'FE Category',dataIndex:'category',key:'category',width:230,filters:categoryOptions.map(value=>({text:value,value})),onFilter:(value,record)=>record.category===value},
