@@ -105,10 +105,10 @@
               h('section',{className:'detail-section platform-config'},
                 h('div',{className:'section-heading-with-tooltip'},h('h2',{className:'section-heading'},'User Platform And Segment Configuration'),h(Tooltip,{title:'The user segment is determined by the platform where the promotion activity is executed: Shopee activities use the Shopee segment, while ShopeePay activities use the ShopeePay segment. The segments are not combined.'},h(I.InfoCircleOutlined,{className:'section-tooltip-icon'}))),
                 h(Descriptions,{column:3,size:'middle',items:[
-                  {key:'shopee',label:'Use user tag on Shopee?',children:detail.shopee?'Yes':'No'},
+                  {key:'shopee',label:'Use User Tag on Shopee?',children:detail.shopee?'Yes':'No'},
                   {key:'shopee-id',label:'Shopee User Segment ID',children:detail.shopee?detail.shopeeSegmentId:'-'},
                   {key:'shopee-name',label:'Shopee User Segment Name',children:detail.shopee?detail.shopeeSegmentName:'-'},
-                  {key:'shopeepay',label:'Use user tag on '+secondaryPlatform+'?',children:detail.shopeepay?'Yes':'No'},
+                  {key:'shopeepay',label:'Use User Tag on '+secondaryPlatform+'?',children:detail.shopeepay?'Yes':'No'},
                   {key:'shopeepay-id',label:secondaryPlatform+' User Segment ID',children:detail.shopeepay?detail.shopeepaySegmentId:'-'},
                   {key:'shopeepay-name',label:secondaryPlatform+' User Segment Name',children:detail.shopeepay?detail.shopeepaySegmentName:'-'}
                 ]})
