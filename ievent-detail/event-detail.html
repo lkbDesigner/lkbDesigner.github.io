@@ -27,7 +27,7 @@
     .image-thumb::before{position:absolute;right:-22px;bottom:-34px;width:110px;height:110px;border:18px solid rgba(255,255,255,.34);border-radius:50%;content:""}.image-thumb span{position:absolute;bottom:8px;left:10px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,.82);color:#262626;font-size:12px}.image-meta{margin-top:10px;color:#8c8c8c;font-size:12px}
     .hierarchy-table .ant-table-thead>tr>th,.log-table .ant-table-thead>tr>th{white-space:nowrap}.hierarchy-table .ant-table-tbody>tr>td{vertical-align:middle}.hierarchy-table .ant-table-tbody>tr>td[rowspan]{background:#fff}
     .matrix-table .ant-table-thead>tr>th{text-align:center}.matrix-table .ant-table-thead>tr>th:first-child{text-align:left}.matrix-table .ant-table-thead>tr>th.matrix-type-header,.matrix-table .ant-table-thead>tr>th.matrix-left-header{text-align:left}.matrix-table .ant-table-tbody>tr>td{vertical-align:middle}.matrix-table .ant-table-tbody>tr>td:first-child{text-align:left}.matrix-table .ant-table-tbody>tr>td:not(:first-child){min-width:132px}
-    .schedule-cell{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:nowrap}.schedule-slot{color:#595959;font-size:13px}.matrix-value{display:flex;flex-direction:column;justify-content:center}.matrix-value-row{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.matrix-value-label{color:#8c8c8c;font-size:12px}.matrix-value-number{font-variant-numeric:tabular-nums}.matrix-value-price{font-variant-numeric:tabular-nums;font-weight:500}.matrix-table .ant-table-thead>tr:first-child>th{height:42px}.matrix-table .ant-table-thead>tr:nth-child(2)>th{height:40px}.date-table-block+.date-table-block{margin-top:16px}.package-tabs .ant-tabs-tab{padding:10px 12px}.package-tabs .ant-tabs-nav{margin-bottom:16px}
+    .schedule-cell{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:nowrap}.schedule-slot{color:#595959;font-size:13px}.opening-hour{margin-top:4px;color:#595959;font-size:12px}.matrix-value{display:flex;flex-direction:column;justify-content:center}.matrix-value-row{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.matrix-value-label{color:#8c8c8c;font-size:12px}.matrix-value-number{font-variant-numeric:tabular-nums}.matrix-value-price{font-variant-numeric:tabular-nums;font-weight:500}.matrix-table .ant-table-thead>tr:first-child>th{height:42px}.matrix-table .ant-table-thead>tr:nth-child(2)>th{height:40px}.date-table-block+.date-table-block{margin-top:16px}.package-tabs .ant-tabs-tab{padding:10px 12px}.package-tabs .ant-tabs-nav{margin-bottom:16px}
     .package-cell{display:flex;align-items:flex-start;gap:8px}.package-cell .anticon{margin-top:3px;color:#1677ff}.package-cell strong{font-weight:500}.package-sub{display:block;margin-top:3px;color:#8c8c8c;font-size:12px}
     .date-cell,.slot-cell,.section-cell{font-weight:500}.slot-cell{color:#595959}.ticket-name{display:flex;align-items:flex-start;gap:7px}.ticket-name .anticon{margin-top:3px;color:#8c8c8c}.ticket-description{display:block;margin-top:3px;color:#8c8c8c;font-size:12px}
     .qty-cell{display:flex;flex-direction:column;gap:2px}.qty-number{font-variant-numeric:tabular-nums}.qty-caption{color:#8c8c8c;font-size:12px}.price-cell{font-variant-numeric:tabular-nums;font-weight:500}.table-note{margin-top:12px;color:#8c8c8c;font-size:12px}
@@ -76,18 +76,18 @@
     const sectionQuantities={General:[260,190,130],VIP:[300,220,160],Gold:[150,120,80]};
     const schedules={
       'date-select':[
-        {date:'Sep 4, Fri',timeslot:'6:00 PM–9:00 PM'},
-        {date:'Sep 5, Sat',timeslot:'6:00 PM–9:00 PM'},
-        {date:'Sep 6, Sun',timeslot:'6:00 PM–9:00 PM'}
+        {date:'Sep 4, Fri',timeslot:'6:00 PM–9:00 PM',openingHour:'Sep 3, 17:00'},
+        {date:'Sep 5, Sat',timeslot:'6:00 PM–9:00 PM',openingHour:'Sep 4, 17:00'},
+        {date:'Sep 6, Sun',timeslot:'6:00 PM–9:00 PM',openingHour:'Sep 5, 17:00'}
       ],
       'fixed-multi-day':[{date:'Sep 4–6, Fri–Sun',timeslot:'-'}]
     };
     const dateValueByLabel={'Sep 4, Fri':'2026-09-04','Sep 5, Sat':'2026-09-05','Sep 6, Sun':'2026-09-06'};
     const packages=[
-      {key:'single-full',id:'1',name:'Package 1',tab:'Package 1',type:'Single-date',mode:'date-select',hasSection:true,hasTicketType:true},
-      {key:'single-type',id:'3',name:'Package 3',tab:'Package 3',type:'Single-date',mode:'date-select',hasSection:false,hasTicketType:true},
-      {key:'fixed-full',id:'5',name:'Package 5',tab:'Package 5',type:'Fixed multi-day',mode:'fixed-multi-day',hasSection:true,hasTicketType:true},
-      {key:'fixed-type',id:'7',name:'Package 7',tab:'Package 7',type:'Fixed multi-day',mode:'fixed-multi-day',hasSection:false,hasTicketType:true}
+      {key:'single-full',id:'1',name:'Package 1',tab:'Package 1',type:'Single-day',mode:'date-select',hasSection:true,hasTicketType:true},
+      {key:'single-type',id:'3',name:'Package 3',tab:'Package 3',type:'Single-day',mode:'date-select',hasSection:false,hasTicketType:true},
+      {key:'fixed-full',id:'5',name:'Package 5',tab:'Package 5',type:'Cross-day',mode:'fixed-multi-day',hasSection:true,hasTicketType:true},
+      {key:'fixed-type',id:'7',name:'Package 7',tab:'Package 7',type:'Cross-day',mode:'fixed-multi-day',hasSection:false,hasTicketType:true}
     ];
     const getMatrixValue=(pkg,rowIndex,sectionIndex,typeIndex)=>{
       const sectionName=sections[Number.isInteger(sectionIndex)?sectionIndex:0];
@@ -97,8 +97,8 @@
       const price=Number.isInteger(sectionIndex)?(pkg.mode==='fixed-multi-day'?passportPrices:sectionPrices)[sectionName][typePosition]:Number.isInteger(typeIndex)?(pkg.mode==='fixed-multi-day'?passportPrices:sectionPrices).VIP[typePosition]:'R$ 199.00';
       return {qty:String(available),price};
     };
-    const buildMatrixRows=(pkg)=>schedules[pkg.mode].map((schedule,rowIndex)=>{
-      const row={key:pkg.key+'-'+rowIndex,date:schedule.date,timeslot:schedule.timeslot};
+      const buildMatrixRows=(pkg)=>schedules[pkg.mode].map((schedule,rowIndex)=>{
+      const row={key:pkg.key+'-'+rowIndex,date:schedule.date,timeslot:schedule.timeslot,openingHour:schedule.openingHour};
       if(pkg.hasSection&&pkg.hasTicketType){sections.forEach((section,sectionIndex)=>ticketTypes.forEach((ticket,typeIndex)=>{row['cell-'+section.replace(/\s/g,'-')+'-'+ticket.key]=getMatrixValue(pkg,rowIndex,sectionIndex,typeIndex)}));}
       else if(pkg.hasSection){sections.forEach((section,sectionIndex)=>{row['section-'+section.replace(/\s/g,'-')]=getMatrixValue(pkg,rowIndex,sectionIndex,null)});}
       else if(pkg.hasTicketType){ticketTypes.forEach((ticket,typeIndex)=>{row['type-'+ticket.key]=getMatrixValue(pkg,rowIndex,null,typeIndex)});}
@@ -106,7 +106,7 @@
       return row;
     });
     const packageTableConfigs=Object.fromEntries(packages.map(pkg=>[pkg.key,{rows:buildMatrixRows(pkg)}]));
-    const packageDetails=Object.fromEntries(packages.map(pkg=>[pkg.key,{fields:[['Package ID',pkg.id],['Package Name',pkg.name],['Package Description',pkg.type+' · '+(pkg.hasSection?'Section':'No Section')+' + '+(pkg.hasTicketType?'Ticket Type':'No Ticket Type')],['Package Status','Online']]}]));
+    const packageDetails=Object.fromEntries(packages.map(pkg=>[pkg.key,{fields:[['Package Type',pkg.type],...(pkg.mode==='fixed-multi-day'?[['Package ID',pkg.id]]:[]),['Package Name',pkg.name],['Package Status','Online']]}]));
     const logs=[
       {key:'l1',entity:'Event',operator:'batrisyia.sharom@shopee.com',time:'2024-03-20 11:32:07 +08:00',content:'"root" : { ... } 35 items'},
       {key:'l2',entity:'Event',operator:'batrisyia.sharom@shopee.com',time:'2024-03-19 11:02:12 +08:00',content:'"root" : { ... } 35 items'},
@@ -125,15 +125,15 @@
     const statusColor={Online:'success','On sale':'success','Sold out':'error',Offline:'default',Published:'processing'};
     const initialEventValues={
       eventName:'Test Events',
+      supplierEventCode:'otz3skdsjdi',
       remainingStocks:'4,830',
       shopeeStatus:'Online',
-      country:'Malaysia',
-      city:'Kuala Lumpur',
+      state:'São Paulo',
+      city:'São Paulo',
       highlights:'ada sd as das d',
       expect:'ada sd as das d',
       faq:'ada sd as das d',
       transport:'ada sd as das d',
-      hours:'27 Nov - 10 Dec',
       latitude:3.1165845,
       longitude:101.65277,
       terms:'ada sd as das d',
@@ -177,7 +177,7 @@
       const matrixLeaf=(title,dataIndex,key,width,isType)=>({title,dataIndex,key,width:width||142,onHeaderCell:()=>({className:isType?'matrix-type-header':'matrix-left-header'}),render:(value)=>renderMatrixValue(value)});
       const getMatrixColumns=(pkg,date,onSelectDay)=>{
         const dateTitle=onSelectDay?h('div',{className:'date-header'},h('span',{className:'date-header-value'},date),h(Button,{type:'link',className:'select-day-button',onClick:onSelectDay},'select day')):date;
-        const scheduleColumn={title:dateTitle,dataIndex:'timeslot',key:'timeslot',width:180,fixed:'left',render:(value)=>h('div',{className:'schedule-cell'},h('span',{className:'schedule-slot'},value))};
+        const scheduleColumn={title:dateTitle,dataIndex:'timeslot',key:'timeslot',width:180,fixed:'left',render:(value,record)=>h('div',{className:'schedule-cell'},h('span',{className:'schedule-slot'},value),pkg.mode==='date-select'&&record.openingHour?h('span',{className:'opening-hour'},'Opening Hour: '+record.openingHour):null)};
         let valueColumns=[];
         if(pkg.hasSection&&pkg.hasTicketType)valueColumns=sections.map(section=>({title:section,key:'group-'+section,children:ticketTypes.map(ticket=>matrixLeaf(ticket.label,'cell-'+section.replace(/\s/g,'-')+'-'+ticket.key,'cell-'+section+'-'+ticket.key,142,true))}));
         else if(pkg.hasSection)valueColumns=sections.map(section=>matrixLeaf(section,'section-'+section.replace(/\s/g,'-'),'section-'+section,160));
@@ -188,7 +188,8 @@
       const getMatrixWidth=(pkg)=>pkg.hasSection&&pkg.hasTicketType?180+(sections.length*ticketTypes.length*142):pkg.hasSection?180+(sections.length*160):pkg.hasTicketType?180+(ticketTypes.length*160):400;
       const logIdTitles={Event:'IEvent ID',Package:'Package ID','Ticket Type':'Ticket Type ID',Schedule:'Schedule ID'};
       const getLogColumns=(entity)=>[
-        {title:logIdTitles[entity]||'IEvent ID',dataIndex:'id',width:110,render:(value)=>value||1},{title:'Operate',dataIndex:'operator',width:250},{title:'Time',dataIndex:'time',width:210},{title:'Content',dataIndex:'content',render:(v)=>h('div',{className:'json-preview',title:v},v)}
+        ...(entity==='Event'?[]:[{title:logIdTitles[entity]||'IEvent ID',dataIndex:'id',width:110,render:(value)=>value||1}]),
+        {title:'Operate',dataIndex:'operator',width:250},{title:'Time',dataIndex:'time',width:210},{title:'Content',dataIndex:'content',render:(v)=>h('div',{className:'json-preview',title:v},v)}
       ];
       const logFilterOptions={'Ticket Type':[{value:'ticket-type-74',label:'Test Package / Test Full Price Tickettype'},{value:'ticket-type-75',label:'Test Package / Test Half Price Tickettype'}],Schedule:[{value:'schedule-1',label:'Test Package / Sep 4, Fri / 6:00 PM–9:00 PM'},{value:'schedule-2',label:'Test Package / Sep 5, Sat / 6:00 PM–9:00 PM'}]};
       const activeLogFilterOptions=logFilterOptions[activeLog]||[];
@@ -198,24 +199,24 @@
       const editEventImages=h('div',{className:'event-image-editor'},h('div',{className:'image-row'},eventImageDraft.map((label,index)=>h('div',{className:'event-image-item',key:'edit-'+index},h('div',{className:'image-thumb'},h('span',null,label)),h(Button,{type:'link',danger:true,size:'small',icon:h(I.DeleteOutlined),onClick:()=>removeEventImage(index)},'Delete')))),h(Space,{size:8},h(Upload,{accept:'image/png',showUploadList:false,beforeUpload:()=>false,onChange:handleEventImageUpload,disabled:eventImageDraft.length>=5},h(Button,{icon:h(I.PlusOutlined),disabled:eventImageDraft.length>=5},'Add image')),h('span',{className:'image-edit-hint'},'PNG · 640 × 360 · max 5 images')));
       const eventContent=h('div',null,h(Descriptions,{className:'basic-descriptions',column:3,size:'middle',items:[
         {key:'id',label:'Event ID',children:'1'},
+        {key:'supplier-code',label:'Supplier Event Code',children:eventValues.supplierEventCode},
         {key:'name',label:'Event Name',children:eventEditing?eventInput('eventName'):eventValues.eventName},
-        {key:'remaining-stocks',label:'Remaining Stocks',children:h(Text,{strong:true},eventValues.remainingStocks)},
         {key:'fe',label:'FE Status',children:h(StatusTag,{status:'Online'})},
         {key:'shopee',label:'Shopee Status',children:eventEditing?h(Select,{value:eventDraft.shopeeStatus,style:{width:'100%'},options:[{value:'Online',label:'Online'},{value:'Offline',label:'Offline'}],onChange:value=>updateEventDraft('shopeeStatus',value)}):h(StatusTag,{status:eventValues.shopeeStatus})},
         {key:'supplier',label:'Supplier Status',children:h(StatusTag,{status:'Online'})},
-        {key:'country',label:'Country / Region',children:eventEditing?eventInput('country'):eventValues.country},
-        {key:'category',label:'FE Category',children:'Theme Parks'},
+        {key:'state',label:'State',children:eventEditing?eventInput('state'):eventValues.state},
         {key:'city',label:'City',children:eventEditing?eventInput('city'):eventValues.city},
+        {key:'category',label:'FE Category',children:'Theme Parks'},
         {key:'highlights',label:'Activity Highlights',children:eventEditing?eventTextArea('highlights',3):h('div',{className:'long-value'},eventValues.highlights)},
         {key:'expect',label:'What To Expect',children:eventEditing?eventTextArea('expect',3):h('div',{className:'long-value'},eventValues.expect)},
         {key:'faq',label:'Help & FAQ',children:eventEditing?eventTextArea('faq',3):h('div',{className:'long-value'},eventValues.faq)},
         {key:'transport',label:'Transportation & Venue Info',children:eventEditing?eventTextArea('transport',3):h('div',{className:'long-value'},eventValues.transport)},
-        {key:'hours',label:'Opening Hours',children:eventEditing?eventTextArea('hours',2):eventValues.hours},
         {key:'lat',label:'Latitude',children:eventEditing?eventNumberInput('latitude'):String(eventValues.latitude)},
         {key:'lng',label:'Longitude',children:eventEditing?eventNumberInput('longitude'):String(eventValues.longitude)},
         {key:'terms',label:'Terms & Conditions',children:eventEditing?eventTextArea('terms',3):h('div',{className:'long-value'},eventValues.terms)},
         {key:'redeem',label:'How To Redeem',children:eventEditing?eventTextArea('redeem',3):h('div',{className:'long-value'},eventValues.redeem)},
         {key:'get',label:'What You Will Get',className:'what-you-will-get-item',children:eventEditing?eventTextArea('get',3):h('div',{className:'long-value'},eventValues.get)},
+        {key:'remaining-stocks',label:'Remaining Stocks',children:h('span',{className:'field-value'},h(Text,{strong:true},eventValues.remainingStocks),h(Tooltip,{title:'The stock here is refreshed hourly, not real-time.'},h(I.QuestionCircleOutlined,{style:{color:'#8c8c8c',fontSize:13,cursor:'help'},'aria-label':'Stock refresh information'})))},
         {key:'images',label:'Images',span:3,children:eventEditing?editEventImages:readOnlyEventImages}
       ]}));
       const renderPackageContent=(pkg)=>{
@@ -249,9 +250,9 @@
         h(Drawer,{title:'设计修改说明',placement:'right',width:420,open:designDrawerOpen,onClose:()=>setDesignDrawerOpen(false),destroyOnClose:true},
           h('ol',{className:'design-note-list'},
             h('li',null,h('div',{className:'design-note-title'},'全局界面 / Global UI'),'界面按 Ant Design 5.0 规范重构。'),
-            h('li',null,h('div',{className:'design-note-title'},'Event Detail / Event Info'),'Event Info 增加分区级 Edit；可编辑字段与线上 Event Detail 编辑态保持一致：Event Name、Shopee Status、Country / Region、City、Activity Highlights、What To Expect、Help & FAQ、Transportation & Venue Info、Opening Hours、Latitude、Longitude、Terms & Conditions、How To Redeem、What You Will Get 和 Images。Event ID、Remaining Stocks、FE Status、Supplier Status、FE Category 保持只读。'),
+            h('li',null,h('div',{className:'design-note-title'},'Event Detail / Event Info'),'新增 Supplier Event Code 和 State；移除 Opening Hours；State 与 City 同组展示。Remaining Stocks 放在基础信息最后，增加提示图标，说明库存每小时刷新而非实时刷新。可编辑字段为 Event Name、Shopee Status、State、City、Activity Highlights、What To Expect、Help & FAQ、Transportation & Venue Info、Latitude、Longitude、Terms & Conditions、How To Redeem、What You Will Get 和 Images。Event ID、Supplier Event Code、Remaining Stocks、FE Status、Supplier Status、FE Category 保持只读。'),
             h('li',null,h('div',{className:'design-note-title'},'Package Detail / 套餐切换'),'Package Detail 套餐切换改为卡片切换。'),
-            h('li',null,h('div',{className:'design-note-title'},'Package Detail / 基础信息'),'Package Detail 基础信息仅保留：Package ID、Package Name、Package Description、Package Status。'),
+            h('li',null,h('div',{className:'design-note-title'},'Package Detail / 基础信息'),'基础信息展示 Package Type、Package Name、Package Status；Cross-day 套餐额外展示 Package ID，Single-day 套餐不展示 Package ID；移除 Package Description。'),
             h('li',null,h('div',{className:'design-note-title'},'Package Detail / 卡片切换交互与表格展示'),h('ul',{className:'design-note-sublist'},
               h('li',null,'卡片宽度固定为 240px。'),
               h('li',null,'卡片超出容器时，超出部分隐藏；存在隐藏卡片时显示“更多”图标。'),
@@ -266,7 +267,8 @@
                 h('li',null,'Package 7：Date → - → Ticket Type')
               ))
             )),
-            h('li',null,h('div',{className:'design-note-title'},'Package Detail / 日期表格'),'不同 Date 拆分为独立表格，每个 Type 仅显示 Price，隐藏 Qty。')
+            h('li',null,h('div',{className:'design-note-title'},'Package Detail / 日期表格'),'Single-day 套餐按 Date 拆分为独立表格；每个具体 Time slot 下展示对应 Opening Hour。每个 Type 仅显示价格金额，隐藏 Qty 和 Price 文案标签。'),
+            h('li',null,h('div',{className:'design-note-title'},'Event Detail / Event Edit Log'),'Event tab 移除重复的 Event ID 列；其他日志 tab 保留各自的 Package ID、Ticket Type ID 或 Schedule ID。')
           )
         ),
         h(Drawer,{title:drawerTitle,placement:'right',width:520,open:drawer.open,onClose:closeDrawer,maskClosable:false,destroyOnClose:true,footer:null},h(Form,{form,layout:'vertical',onFinish:submit},drawer.kind==='event'?h(React.Fragment,null,h('div',{className:'drawer-section-title'},'Event Information'),h(Form.Item,{label:'Event Name',name:'eventName',rules:[{required:true,message:'Please input event name'}]},h(Input)),h(Form.Item,{label:'Short Description',name:'shortDescription'},h(Input.TextArea,{rows:3})),h(Form.Item,{label:'Age Rating',name:'ageRating'},h(InputNumber,{min:0,max:99,style:{width:'100%'}})),h(Form.Item,{label:'Attendee data required',name:'attendeeData',valuePropName:'checked'},h(Switch,{checkedChildren:'Yes',unCheckedChildren:'No'}))):drawer.kind==='package'?h(React.Fragment,null,h('div',{className:'drawer-section-title'},'Package Information'),h(Form.Item,{label:'Package Name',name:'packageName',rules:[{required:true,message:'Please input package name'}]},h(Input)),h(Form.Item,{label:'Package Type',name:'packageType'},h(Select,{options:[{value:'Single-Day',label:'Single-Day'},{value:'3-Day Passport',label:'3-Day Passport'}]})),h(Form.Item,{label:'Status',name:'status'},h(Select,{options:[{value:'Online',label:'Online'},{value:'Offline',label:'Offline'}]}))):drawer.kind==='schedule'?h(React.Fragment,null,h('div',{className:'drawer-section-title'},'Schedule Information'),h(Form.Item,{label:'Date / Date range',name:'date',rules:[{required:true}]},h(Input)),h(Form.Item,{label:'Time slot',name:'time'},h(Input,{placeholder:'6:00 PM–9:00 PM'})),h(Form.Item,{label:'Status',name:'status'},h(Select,{options:[{value:'On sale',label:'On sale'},{value:'Sold out',label:'Sold out'},{value:'Offline',label:'Offline'}]})),h(Form.Item,{label:'Capacity',name:'capacity'},h(InputNumber,{min:0,style:{width:'100%'}}))):h(React.Fragment,null,h('div',{className:'drawer-section-title'},'Ticket Type Information'),h(Form.Item,{label:'Ticket Type Name',name:'ticketName',rules:[{required:true}]},h(Input)),h(Form.Item,{label:'Description',name:'description'},h(Input)),h(Form.Item,{label:'Section',name:'section'},h(Select,{options:[{value:'General',label:'General'},{value:'VIP',label:'VIP'},{value:'Gold',label:'Gold'}]})),h(Form.Item,{label:'Ticket Qty',name:'ticketQty'},h(Input,{placeholder:'Available / total'})),h(Form.Item,{label:'Price',name:'price'},h(Input,{placeholder:'R$ 0.00'})),h(Form.Item,{label:'Maximum per purchase',name:'max'},h(InputNumber,{min:1,max:99,style:{width:'100%'}}))),h('div',{className:'drawer-action-bar'},h(Button,{onClick:closeDrawer},'Cancel'),h(Button,{type:'primary',htmlType:'submit'},'Save')))
