@@ -32,8 +32,13 @@
     .table-wrap { padding: 16px 24px 24px; }
     .type-cell strong { color: #262626; font-weight: 600; }
     .product-type { color: #262626; font-weight: 500; }
-    .subtype-list { color: #595959; line-height: 24px; }
+    .subtype-cell { display: flex; align-items: center; gap: 8px; }
+    .subtype-detail-trigger { flex: 0 0 auto; color: #1677ff; }
+    .subtype-list { min-width: 0; color: #595959; line-height: 24px; }
     .empty-value { color: #bfbfbf; }
+    .drawer-context { margin-bottom: 16px; padding: 12px 16px; border-radius: 6px; background: #fafafa; }
+    .drawer-context-label { margin-right: 8px; color: #8c8c8c; }
+    .drawer-context-value { color: #262626; font-weight: 500; }
     .type-table .ant-table-cell { vertical-align: middle; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
@@ -48,7 +53,7 @@
   <script src="./vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty, Drawer, Tag } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -135,17 +140,38 @@
       return rows;
     }
 
+    function buildL3Details(record) {
+      return record.l3.map(name => ({
+        key: record.l2 + '-' + name,
+        name,
+        code: name.toUpperCase().replace(/[^A-Z0-9]+/g, '_'),
+        status: 'Active',
+        description: name + ' under ' + record.l2
+      }));
+    }
+
     function App() {
       const [collapsed, setCollapsed] = React.useState(false);
       const [openKeys, setOpenKeys] = React.useState(['product-pool']);
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
+      const [detailRecord, setDetailRecord] = React.useState(null);
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
       const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
+      const detailRows = React.useMemo(() => detailRecord ? buildL3Details(detailRecord) : [], [detailRecord]);
+      const detailColumns = [
+        { title: 'Sub Product Type', dataIndex: 'name', width: 220, fixed: 'left' },
+        { title: 'Item2', dataIndex: 'code', width: 220 },
+        { title: 'Item3', dataIndex: 'status', width: 160, render: value => h(Tag, { color: 'success' }, value) },
+        { title: 'Item4', dataIndex: 'description', width: 300 }
+      ];
       const columns = [
         { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, h('strong', null, record.l1)) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '25%', render: value => h('span', { className: 'product-type' }, value) },
-        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: values => values.length ? h('div', { className: 'subtype-list' }, values.join(', ')) : h('span', { className: 'empty-value' }, '—') }
+        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-cell' }, [
+          h(Tooltip, { title: 'View details', key: 'tooltip' }, h(Button, { className: 'subtype-detail-trigger', type: 'text', size: 'small', icon: icon('ProfileOutlined'), onClick: () => setDetailRecord(record), 'aria-label': 'View all Sub Product Type details for ' + record.l2 })),
+          h('div', { className: 'subtype-list', key: 'list' }, values.join(', '))
+        ]) : h('span', { className: 'empty-value' }, '—') }
       ];
       const updateDraftFilter = (key, value) => setDraftFilters(current => ({ ...current, [key]: value }));
       const submitSearch = event => { event.preventDefault(); setFilters({ ...draftFilters }); };
@@ -211,7 +237,32 @@
               )
             ])
           ]))
-        ])
+        ]),
+        h(Drawer, {
+          key: 'l3-details',
+          title: 'Sub Product Type Details',
+          width: 960,
+          open: Boolean(detailRecord),
+          onClose: () => setDetailRecord(null),
+          destroyOnClose: true
+        }, detailRecord ? [
+          h('div', { className: 'drawer-context', key: 'context' }, [
+            h('span', { className: 'drawer-context-label', key: 'type-label' }, 'Type'),
+            h('span', { className: 'drawer-context-value', key: 'type-value' }, detailRecord.l1),
+            h('span', { className: 'drawer-context-label', key: 'product-label', style: { marginLeft: 24 } }, 'Product Type'),
+            h('span', { className: 'drawer-context-value', key: 'product-value' }, detailRecord.l2)
+          ]),
+          h(Table, {
+            key: 'detail-table',
+            size: 'middle',
+            bordered: true,
+            columns: detailColumns,
+            dataSource: detailRows,
+            pagination: false,
+            scroll: { x: 900 },
+            tableLayout: 'fixed'
+          })
+        ] : null)
       ]));
     }
     ReactDOM.createRoot(document.querySelector('#root')).render(h(App));
