@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Type Management · DP Hub Admin</title>
+  <link rel="stylesheet" href="./vendor/antd-5.24.8-reset.css" />
+  <style>
+    html, body, #root { min-height: 100%; margin: 0; }
+    body { min-width: 1180px; background: #f5f5f5; color: #262626; font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    .app-shell { min-height: 100vh; }
+    .app-sider { height: 100vh; overflow: hidden auto; position: sticky !important; top: 0; }
+    .sidebar-brand { height: 56px; display: flex; align-items: center; gap: 8px; padding: 14px 20px; color: #303133; font-size: 16px; font-weight: 600; white-space: nowrap; }
+    .sidebar-logo { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border-radius: 7px; background: #26aa99; color: #fff; }
+    .topbar { height: 56px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; background: #fff; border-bottom: 1px solid #f0f0f0; }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .topbar-right { display: flex; align-items: center; gap: 24px; }
+    .environment-badge { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #ff4d4f; color: #fff; font-size: 16px; line-height: 32px; }
+    .page-header { height: 60px; padding: 0 24px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #f0f0f0; }
+    .page-title { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; }
+    .page-content { padding: 16px; }
+    .content-card { min-height: 940px; background: #fff; }
+    .filter-panel { position: relative; width: 100%; padding: 24px; }
+    .filter-panel::after { position: absolute; right: 24px; bottom: 0; left: 24px; height: 1px; background: #f0f0f0; content: ''; }
+    .filter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 8px; }
+    .filter-control { display: flex; min-width: 0; height: 32px; }
+    .filter-label { display: flex; align-items: center; flex: 0 0 auto; padding: 0 11px; border: 1px solid #d9d9d9; border-right: 0; border-radius: 6px 0 0 6px; background: #fafafa; font-size: 14px; line-height: 22px; white-space: nowrap; }
+    .filter-value { flex: 1; min-width: 0; }
+    .filter-value .ant-input-affix-wrapper { height: 32px; border-radius: 0 6px 6px 0; }
+    .filter-actions { grid-column: 4; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .table-wrap { padding: 16px 24px 24px; }
+    .type-cell strong { color: #262626; font-weight: 600; }
+    .product-type { color: #262626; font-weight: 500; }
+    .subtype-list { color: #595959; line-height: 24px; }
+    .empty-value { color: #bfbfbf; }
+    .type-table .ant-table-cell { vertical-align: middle; }
+    .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
+    @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="./vendor/react-18.3.1.min.js"></script>
+  <script src="./vendor/react-dom-18.3.1.min.js"></script>
+  <script src="./vendor/ant-design-icons-5.6.1.min.js"></script>
+  <script src="./vendor/dayjs-1.11.23.min.js"></script>
+  <script src="./vendor/antd-5.24.8.min.js"></script>
+  <script>
+    const h = React.createElement;
+    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty } = antd;
+    const icon = name => h(icons[name]);
+
+    const hierarchy = [
+      { l1: 'Mobile Recharge', children: [
+        { l2: 'Prepaid', l3: ['Airtime', 'Data Package', 'Voice Package', 'Combo Package'] },
+        { l2: 'Postpaid', l3: ['Bill Payment', 'Auto Payment'] },
+        { l2: 'Voucher', l3: ['Physical Voucher', 'eVoucher', 'PIN Voucher'] }
+      ] },
+      { l1: 'Game', children: [
+        { l2: 'Game Credit', l3: ['Direct Top-up', 'Game Voucher', 'Gift Code'] },
+        { l2: 'Subscription', l3: ['Monthly Pass', 'Season Pass'] },
+        { l2: 'In-game Item', l3: ['Currency Pack', 'Item Pack', 'Starter Pack'] }
+      ] },
+      { l1: 'Entertainment', children: [
+        { l2: 'Video Streaming', l3: ['Monthly Subscription', 'Annual Subscription', 'Premium Plan'] },
+        { l2: 'Music Streaming', l3: ['Individual Plan', 'Family Plan'] }
+      ] },
+      { l1: 'Utility', children: [
+        { l2: 'Electricity', l3: ['Prepaid Token', 'Postpaid Bill'] },
+        { l2: 'Water', l3: ['Residential Bill', 'Commercial Bill'] },
+        { l2: 'Internet', l3: ['Broadband Bill', 'Fiber Package'] }
+      ] },
+      { l1: 'Financial Service', children: [
+        { l2: 'E-wallet', l3: ['Wallet Top-up', 'Wallet Voucher'] },
+        { l2: 'Insurance', l3: [] }
+      ] }
+    ];
+
+    const menuItems = [
+      { key: 'order', icon: icon('FolderOpenOutlined'), label: 'Order' },
+      { key: 'product-pool', icon: icon('ShoppingOutlined'), label: 'Product Pool', children: [
+        { key: 'item-management', label: 'Item Management', children: [
+          { key: 'published-item', label: 'Published Item' },
+          { key: 'manual-upload-item', label: 'Manual Upload Item' },
+          { key: 'staging-pool', label: 'Staging Pool' }
+        ] },
+        { key: 'product-management', label: 'Product Management' },
+        { key: 'type-management', label: 'Type Management' },
+        { key: 'mapping-management', label: 'Mapping Management' },
+        { key: 'mass-edit-margin', label: 'Mass Edit Margin' },
+        { key: 'mass-edit-product', label: 'Mass Edit Product' },
+        { key: 'virtual-product', label: 'Virtual Product' }
+      ] },
+      { key: 'routing', icon: icon('PartitionOutlined'), label: 'Routing' },
+      { key: 'provider', icon: icon('UserOutlined'), label: 'Provider' },
+      { key: 'partner', icon: icon('InboxOutlined'), label: 'Partner' },
+      { key: 'setting', icon: icon('SettingOutlined'), label: 'Setting' },
+      { key: 'event', icon: icon('CalendarOutlined'), label: 'Event' },
+      { key: 'stock', icon: icon('AppstoreOutlined'), label: 'Stock' },
+      { key: 'tools', icon: icon('ToolOutlined'), label: 'Tools' },
+      { key: 'file-download', icon: icon('DownloadOutlined'), label: 'File Download' },
+      { key: 'approval-flow-config', icon: icon('AuditOutlined'), label: 'Approval Flow Config' },
+      { key: 'clearing-settlement', icon: icon('FundOutlined'), label: 'Clearing & Settlement' },
+      { key: 'funding-management', icon: icon('DatabaseOutlined'), label: 'Funding Management' },
+      { key: 'reconciliation', icon: icon('ProfileOutlined'), label: 'Reconciliation' }
+    ];
+
+    function filterHierarchy(source, filters) {
+      const l1Query = filters.l1.trim().toLowerCase();
+      const l2Query = filters.l2.trim().toLowerCase();
+      const l3Query = filters.l3.trim().toLowerCase();
+      if (!l1Query && !l2Query && !l3Query) return source;
+      return source.reduce((result, group) => {
+        const l1Match = !l1Query || group.l1.toLowerCase().includes(l1Query);
+        if (!l1Match) return result;
+        const matchingChildren = group.children.filter(item => {
+          const l2Match = !l2Query || item.l2.toLowerCase().includes(l2Query);
+          const l3Match = !l3Query || item.l3.some(name => name.toLowerCase().includes(l3Query));
+          return l2Match && l3Match;
+        });
+        if (matchingChildren.length) result.push({ ...group, children: matchingChildren });
+        return result;
+      }, []);
+    }
+
+    function flattenHierarchy(groups) {
+      const rows = [];
+      groups.forEach(group => {
+        group.children.forEach((item, index) => rows.push({
+          key: group.l1 + '-' + item.l2, l1: group.l1, l2: item.l2, l3: item.l3,
+          rowSpan: index === 0 ? group.children.length : 0
+        }));
+      });
+      return rows;
+    }
+
+    function App() {
+      const [collapsed, setCollapsed] = React.useState(false);
+      const [openKeys, setOpenKeys] = React.useState(['product-pool']);
+      const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
+      const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
+      const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
+      const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
+      const columns = [
+        { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, h('strong', null, record.l1)) : null },
+        { title: 'Product Type', dataIndex: 'l2', width: '25%', render: value => h('span', { className: 'product-type' }, value) },
+        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: values => values.length ? h('div', { className: 'subtype-list' }, values.join(', ')) : h('span', { className: 'empty-value' }, '—') }
+      ];
+      const updateDraftFilter = (key, value) => setDraftFilters(current => ({ ...current, [key]: value }));
+      const submitSearch = event => { event.preventDefault(); setFilters({ ...draftFilters }); };
+      const resetSearch = () => { setDraftFilters({ l1: '', l2: '', l3: '' }); setFilters({ l1: '', l2: '', l3: '' }); };
+
+      return h(ConfigProvider, { theme: {
+        token: { colorPrimary: '#1677ff', colorSuccess: '#52c41a', colorWarning: '#faad14', colorError: '#ff4d4f', colorBgLayout: '#f5f5f5', colorBgContainer: '#ffffff', colorText: '#262626', colorTextSecondary: '#8c8c8c', colorBorderSecondary: '#f0f0f0', borderRadius: 6, fontSize: 14 },
+        components: {
+          Menu: { itemBg: '#f5f7fa', subMenuItemBg: '#fff', itemColor: '#303133', itemSelectedBg: '#e6f7ff', itemSelectedColor: '#409eff', subMenuItemSelectedColor: '#409eff', itemHoverBg: '#f0f9ff', itemHeight: 48, iconSize: 18 },
+          Table: { headerBg: '#fafafa', headerColor: '#262626', rowHoverBg: '#fafafa', cellPaddingBlock: 16 }
+        }
+      } }, h(Layout, { className: 'app-shell' }, [
+        h(Layout.Sider, { key: 'sider', className: 'app-sider', width: 240, collapsedWidth: 72, collapsed, theme: 'light', style: { background: '#f5f7fa' } }, [
+          h('div', { className: 'sidebar-brand', key: 'brand' }, [h('span', { className: 'sidebar-logo', key: 'logo' }, icon('AppstoreOutlined')), !collapsed && h('span', { key: 'name' }, 'DP Hub Admin')]),
+          h(Menu, { key: 'menu', mode: 'inline', inlineIndent: 16, items: menuItems, selectedKeys: ['type-management'], openKeys: collapsed ? [] : openKeys, onOpenChange: setOpenKeys, style: { background: '#f5f7fa', borderInlineEnd: 0 } })
+        ]),
+        h(Layout, { key: 'main' }, [
+          h('header', { className: 'topbar', key: 'topbar' }, [
+            h('div', { className: 'topbar-left', key: 'left' }, [
+              h(Tooltip, { title: collapsed ? 'Expand menu' : 'Collapse menu', key: 'tip' }, h(Button, { type: 'text', icon: icon(collapsed ? 'MenuUnfoldOutlined' : 'MenuFoldOutlined'), onClick: () => setCollapsed(!collapsed), 'aria-label': 'Toggle navigation' })),
+              h('div', { className: 'environment-badge', key: 'env' }, [icon('WarningFilled'), h('span', { key: 'label' }, 'Live Environment')])
+            ]),
+            h('div', { className: 'topbar-right', key: 'right' }, [
+              h(Space, { size: 4, key: 'country' }, [icon('EnvironmentOutlined'), h('span', { key: 'text' }, 'Indonesia'), icon('DownOutlined')]),
+              h(Space, { size: 4, key: 'user' }, [h('span', { key: 'text' }, 'Johnny'), icon('DownOutlined')])
+            ])
+          ]),
+          h('section', { className: 'page-header', key: 'pageHeader' },
+            h('h1', { className: 'page-title' }, 'Type Management')
+          ),
+          h(Layout.Content, { className: 'page-content', key: 'content' }, h('div', { className: 'content-card' }, [
+            h('section', { className: 'filter-panel', 'aria-label': 'Type filters', key: 'filters' }, h('form', { className: 'filter-grid', onSubmit: submitSearch }, [
+              h('label', { className: 'filter-control', key: 'l1' }, [
+                h('span', { className: 'filter-label', key: 'label' }, 'Type'),
+                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l1, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l1', event.target.value), 'aria-label': 'Type' }))
+              ]),
+              h('label', { className: 'filter-control', key: 'l2' }, [
+                h('span', { className: 'filter-label', key: 'label' }, 'Product Type'),
+                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l2, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l2', event.target.value), 'aria-label': 'Product Type' }))
+              ]),
+              h('label', { className: 'filter-control', key: 'l3' }, [
+                h('span', { className: 'filter-label', key: 'label' }, 'Sub Product Type'),
+                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l3, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l3', event.target.value), 'aria-label': 'Sub Product Type' }))
+              ]),
+              h('div', { className: 'filter-actions', key: 'actions' }, [
+                h(Button, { key: 'reset', icon: icon('ReloadOutlined'), onClick: resetSearch }, 'Reset'),
+                h(Button, { key: 'submit', type: 'primary', htmlType: 'submit', icon: icon('SearchOutlined') }, 'Search')
+              ])
+            ])),
+            h('section', { key: 'tableModule' }, [
+              h('div', { className: 'table-wrap', key: 'tableWrap' },
+                h(Table, {
+                  key: 'table', className: 'type-table', size: 'middle', columns, dataSource: rows,
+                  bordered: true, tableLayout: 'fixed',
+                  pagination: {
+                    current: 1, pageSize: 20, total: rows.length,
+                    showSizeChanger: true, showQuickJumper: true,
+                    showTotal: total => 'total ' + total + ' items',
+                    position: ['bottomRight']
+                  },
+                  locale: { emptyText: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: 'No matching Types found.' }) }
+                })
+              )
+            ])
+          ]))
+        ])
+      ]));
+    }
+    ReactDOM.createRoot(document.querySelector('#root')).render(h(App));
+  </script>
+</body>
+</html>
