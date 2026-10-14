@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Type Management · DP Hub Admin</title>
+  <title>Category Management · DP Hub Admin</title>
   <link rel="stylesheet" href="../vendor/antd-5.24.8-reset.css" />
   <style>
     html, body, #root { min-height: 100%; margin: 0; }
@@ -96,7 +96,7 @@
           { key: 'staging-pool', label: 'Staging Pool' }
         ] },
         { key: 'product-management', label: 'Product Management' },
-        { key: 'type-management', label: 'Type Management' },
+        { key: 'type-management', label: 'Category Management' },
         { key: 'mapping-management', label: 'Mapping Management' },
         { key: 'mass-edit-margin', label: 'Mass Edit Margin' },
         { key: 'mass-edit-product', label: 'Mass Edit Product' },
@@ -249,7 +249,7 @@
             ])
           ]),
           h('section', { className: 'page-header', key: 'pageHeader' }, [
-            h('h1', { className: 'page-title', key: 'title' }, 'Type Management'),
+            h('h1', { className: 'page-title', key: 'title' }, 'Category Management'),
             h(Segmented, {
               key: 'view-mode',
               value: viewMode,
