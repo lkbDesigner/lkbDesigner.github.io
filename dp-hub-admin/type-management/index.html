@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Type Management · DP Hub Admin</title>
-  <link rel="stylesheet" href="./vendor/antd-5.24.8-reset.css" />
+  <link rel="stylesheet" href="../vendor/antd-5.24.8-reset.css" />
   <style>
     html, body, #root { min-height: 100%; margin: 0; }
     body { min-width: 1180px; background: #f5f5f5; color: #262626; font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -17,7 +17,7 @@
     .topbar-left { display: flex; align-items: center; gap: 20px; }
     .topbar-right { display: flex; align-items: center; gap: 24px; }
     .environment-badge { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #ff4d4f; color: #fff; font-size: 16px; line-height: 32px; }
-    .page-header { height: 60px; padding: 0 24px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #f0f0f0; }
+    .page-header { height: 60px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; background: #fff; border-bottom: 1px solid #f0f0f0; }
     .page-title { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; }
     .page-content { padding: 16px; }
     .content-card { min-height: 940px; background: #fff; }
@@ -30,15 +30,13 @@
     .filter-value .ant-input-affix-wrapper { height: 32px; border-radius: 0 6px 6px 0; }
     .filter-actions { grid-column: 4; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
     .table-wrap { padding: 16px 24px 24px; }
-    .type-cell strong { color: #262626; font-weight: 600; }
-    .product-type { color: #262626; font-weight: 500; }
-    .subtype-cell { display: flex; align-items: center; gap: 8px; }
-    .subtype-detail-trigger { flex: 0 0 auto; color: #1677ff; }
-    .subtype-list { min-width: 0; color: #595959; line-height: 24px; }
+    .type-cell, .product-type, .subtype-list { color: #262626; font-size: 14px; line-height: 22px; font-weight: 400; }
+    .subtype-list { min-width: 0; }
+    .subtype-link-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+    .subtype-separator { margin-right: 4px; color: #262626; }
     .empty-value { color: #bfbfbf; }
-    .drawer-context { margin-bottom: 16px; padding: 12px 16px; border-radius: 6px; background: #fafafa; }
-    .drawer-context-label { margin-right: 8px; color: #8c8c8c; }
-    .drawer-context-value { color: #262626; font-weight: 500; }
+    .drawer-context { margin-bottom: 24px; }
+    .attribute-options { margin-top: 8px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fafafa; }
     .type-table .ant-table-cell { vertical-align: middle; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
@@ -46,14 +44,14 @@
 </head>
 <body>
   <div id="root"></div>
-  <script src="./vendor/react-18.3.1.min.js"></script>
-  <script src="./vendor/react-dom-18.3.1.min.js"></script>
-  <script src="./vendor/ant-design-icons-5.6.1.min.js"></script>
-  <script src="./vendor/dayjs-1.11.23.min.js"></script>
-  <script src="./vendor/antd-5.24.8.min.js"></script>
+  <script src="../vendor/react-18.3.1.min.js"></script>
+  <script src="../vendor/react-dom-18.3.1.min.js"></script>
+  <script src="../vendor/ant-design-icons-5.6.1.min.js"></script>
+  <script src="../vendor/dayjs-1.11.23.min.js"></script>
+  <script src="../vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty, Drawer, Tag } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -140,13 +138,35 @@
       return rows;
     }
 
-    function buildL3Details(record) {
-      return record.l3.map(name => ({
-        key: record.l2 + '-' + name,
-        name,
-        code: name.toUpperCase().replace(/[^A-Z0-9]+/g, '_'),
-        status: 'Active',
-        description: name + ' under ' + record.l2
+    function flattenHierarchyAsTree(groups) {
+      const rows = [];
+      groups.forEach(group => {
+        const l1RowSpan = group.children.reduce((sum, item) => sum + Math.max(item.l3.length, 1), 0);
+        let firstL1Row = true;
+        group.children.forEach(item => {
+          const subTypes = item.l3.length ? item.l3 : [null];
+          subTypes.forEach((subType, index) => {
+            rows.push({
+              key: group.l1 + '-' + item.l2 + '-' + (subType || 'empty'),
+              l1: group.l1,
+              l2: item.l2,
+              l3Name: subType,
+              l1RowSpan: firstL1Row ? l1RowSpan : 0,
+              l2RowSpan: index === 0 ? subTypes.length : 0
+            });
+            firstL1Row = false;
+          });
+        });
+      });
+      return rows;
+    }
+
+    function buildAttributeDetails(record) {
+      return Array.from({ length: 10 }, (_, index) => ({
+        key: 'attribute-' + (index + 1),
+        attribute: 'Attribute ' + (index + 1),
+        type: index === 1 ? 'Single select by Ops' : 'Input by Ops',
+        options: index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null
       }));
     }
 
@@ -156,23 +176,39 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
+      const [viewMode, setViewMode] = React.useState('grouped');
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
       const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
-      const detailRows = React.useMemo(() => detailRecord ? buildL3Details(detailRecord) : [], [detailRecord]);
+      const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
+      const detailRows = React.useMemo(() => detailRecord ? buildAttributeDetails(detailRecord) : [], [detailRecord]);
       const detailColumns = [
-        { title: 'Sub Product Type', dataIndex: 'name', width: 220, fixed: 'left' },
-        { title: 'Item2', dataIndex: 'code', width: 220 },
-        { title: 'Item3', dataIndex: 'status', width: 160, render: value => h(Tag, { color: 'success' }, value) },
-        { title: 'Item4', dataIndex: 'description', width: 300 }
+        { title: 'Attribute', dataIndex: 'attribute', width: 220 },
+        { title: 'Configuration', dataIndex: 'type', render: (value, record) => h('div', null, [
+          h('div', { key: 'type' }, value),
+          record.options && h('div', { className: 'attribute-options', key: 'options' }, h(Space, { size: [8, 8], wrap: true }, record.options.map(option => h(Tag, { key: option }, option))))
+        ]) }
       ];
       const columns = [
-        { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, h('strong', null, record.l1)) : null },
+        { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, record.l1) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '25%', render: value => h('span', { className: 'product-type' }, value) },
-        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-cell' }, [
-          h(Tooltip, { title: 'View details', key: 'tooltip' }, h(Button, { className: 'subtype-detail-trigger', type: 'text', size: 'small', icon: icon('ProfileOutlined'), onClick: () => setDetailRecord(record), 'aria-label': 'View all Sub Product Type details for ' + record.l2 })),
-          h('div', { className: 'subtype-list', key: 'list' }, values.join(', '))
-        ]) : h('span', { className: 'empty-value' }, '—') }
+        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-link-list' }, values.map((name, index) => h(React.Fragment, { key: name }, [
+          h(Typography.Link, { key: 'link', href: '#', onClick: event => { event.preventDefault(); setDetailRecord({ l1: record.l1, l2: record.l2, l3: name }); } }, name),
+          index < values.length - 1 && h('span', { className: 'subtype-separator', key: 'separator' }, ',\u00a0')
+        ]))) : h('span', { className: 'empty-value' }, '—') }
       ];
+      const treeColumns = [
+        { title: 'Type', dataIndex: 'l1', width: '24%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.l1RowSpan, style: { paddingLeft: 24 } }), render: (value, record) => record.l1RowSpan ? h('div', { className: 'type-cell' }, value) : null },
+        { title: 'Product Type', dataIndex: 'l2', width: '24%', onCell: record => ({ rowSpan: record.l2RowSpan }), render: (value, record) => record.l2RowSpan ? h('span', { className: 'product-type' }, value) : null },
+        { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '—') },
+        { title: 'Action', key: 'action', width: '10%', render: (_, record) => record.l3Name ? h(Button, {
+          type: 'link',
+          size: 'small',
+          onClick: () => setDetailRecord({ l1: record.l1, l2: record.l2, l3: record.l3Name }),
+          'aria-label': 'View details for ' + record.l3Name
+        }, 'View') : null }
+      ];
+      const activeRows = viewMode === 'grouped' ? rows : treeRows;
+      const activeColumns = viewMode === 'grouped' ? columns : treeColumns;
       const updateDraftFilter = (key, value) => setDraftFilters(current => ({ ...current, [key]: value }));
       const submitSearch = event => { event.preventDefault(); setFilters({ ...draftFilters }); };
       const resetSearch = () => { setDraftFilters({ l1: '', l2: '', l3: '' }); setFilters({ l1: '', l2: '', l3: '' }); };
@@ -199,9 +235,19 @@
               h(Space, { size: 4, key: 'user' }, [h('span', { key: 'text' }, 'Johnny'), icon('DownOutlined')])
             ])
           ]),
-          h('section', { className: 'page-header', key: 'pageHeader' },
-            h('h1', { className: 'page-title' }, 'Type Management')
-          ),
+          h('section', { className: 'page-header', key: 'pageHeader' }, [
+            h('h1', { className: 'page-title', key: 'title' }, 'Type Management'),
+            h(Segmented, {
+              key: 'view-mode',
+              value: viewMode,
+              options: [
+                { label: '方案 1', value: 'grouped' },
+                { label: '方案 2', value: 'tree' }
+              ],
+              onChange: value => { setViewMode(value); setDetailRecord(null); },
+              'aria-label': 'Display option'
+            })
+          ]),
           h(Layout.Content, { className: 'page-content', key: 'content' }, h('div', { className: 'content-card' }, [
             h('section', { className: 'filter-panel', 'aria-label': 'Type filters', key: 'filters' }, h('form', { className: 'filter-grid', onSubmit: submitSearch }, [
               h('label', { className: 'filter-control', key: 'l1' }, [
@@ -224,10 +270,10 @@
             h('section', { key: 'tableModule' }, [
               h('div', { className: 'table-wrap', key: 'tableWrap' },
                 h(Table, {
-                  key: 'table', className: 'type-table', size: 'middle', columns, dataSource: rows,
+                  key: viewMode, className: 'type-table', size: 'middle', columns: activeColumns, dataSource: activeRows,
                   bordered: true, tableLayout: 'fixed',
                   pagination: {
-                    current: 1, pageSize: 20, total: rows.length,
+                    current: 1, pageSize: viewMode === 'grouped' ? 20 : 50, total: activeRows.length,
                     showSizeChanger: true, showQuickJumper: true,
                     showTotal: total => 'total ' + total + ' items',
                     position: ['bottomRight']
@@ -246,12 +292,17 @@
           onClose: () => setDetailRecord(null),
           destroyOnClose: true
         }, detailRecord ? [
-          h('div', { className: 'drawer-context', key: 'context' }, [
-            h('span', { className: 'drawer-context-label', key: 'type-label' }, 'Type'),
-            h('span', { className: 'drawer-context-value', key: 'type-value' }, detailRecord.l1),
-            h('span', { className: 'drawer-context-label', key: 'product-label', style: { marginLeft: 24 } }, 'Product Type'),
-            h('span', { className: 'drawer-context-value', key: 'product-value' }, detailRecord.l2)
-          ]),
+          h(Descriptions, {
+            className: 'drawer-context',
+            key: 'context',
+            size: 'middle',
+            column: 3,
+            items: [
+              { key: 'type', label: 'Type', children: detailRecord.l1 },
+              { key: 'product-type', label: 'Product Type', children: detailRecord.l2 },
+              { key: 'sub-product-type', label: 'Sub Product Type', children: detailRecord.l3 }
+            ]
+          }),
           h(Table, {
             key: 'detail-table',
             size: 'middle',
