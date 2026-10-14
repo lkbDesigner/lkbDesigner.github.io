@@ -27,7 +27,8 @@
     .filter-control { display: flex; min-width: 0; height: 32px; }
     .filter-label { display: flex; align-items: center; flex: 0 0 auto; padding: 0 11px; border: 1px solid #d9d9d9; border-right: 0; border-radius: 6px 0 0 6px; background: #fafafa; font-size: 14px; line-height: 22px; white-space: nowrap; }
     .filter-value { flex: 1; min-width: 0; }
-    .filter-value .ant-input-affix-wrapper { height: 32px; border-radius: 0 6px 6px 0; }
+    .filter-value .ant-select { width: 100%; }
+    .filter-value .ant-select-selector { border-radius: 0 6px 6px 0 !important; }
     .filter-actions { grid-column: 4; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
     .table-wrap { padding: 16px 24px 24px; }
     .type-cell, .product-type, .subtype-list { color: #262626; font-size: 14px; line-height: 22px; font-weight: 400; }
@@ -52,7 +53,7 @@
   <script src="../vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Input, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -80,6 +81,11 @@
         { l2: 'Insurance', l3: [] }
       ] }
     ];
+
+    const typeOptions = hierarchy.map(group => ({ value: group.l1, label: group.l1 }));
+    const productTypeOptions = hierarchy.flatMap(group => group.children.map(item => ({ value: item.l2, label: item.l2 })));
+    const subProductTypeOptions = hierarchy.flatMap(group => group.children.flatMap(item => item.l3.map(name => ({ value: name, label: name }))));
+    const fuzzyFilterOption = (input, option) => String(option.label || '').toLowerCase().includes(input.trim().toLowerCase());
 
     const menuItems = [
       { key: 'order', icon: icon('FolderOpenOutlined'), label: 'Order' },
@@ -167,7 +173,12 @@
         key: 'attribute-' + (index + 1),
         attribute: 'Attribute ' + (index + 1),
         type: index === 1 ? 'Single select by Ops' : 'Input by Ops',
-        options: index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null
+        options: index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null,
+        description: index === 0
+          ? 'Text value entered by Ops for ' + record.l3 + '.'
+          : index === 1
+            ? 'A single value selected by Ops from the configured options for ' + record.l3 + '.'
+            : 'Explains the meaning and expected value of Attribute ' + (index + 1) + ' for ' + record.l3 + '.'
       }));
     }
 
@@ -183,11 +194,12 @@
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
       const detailRows = React.useMemo(() => detailRecord ? buildAttributeDetails(detailRecord) : [], [detailRecord]);
       const detailColumns = [
-        { title: 'Attribute', dataIndex: 'attribute', width: 220 },
-        { title: 'Configuration', dataIndex: 'type', render: (value, record) => h('div', null, [
+        { title: 'Attribute', dataIndex: 'attribute', width: 180 },
+        { title: 'Configuration', dataIndex: 'type', width: 360, render: (value, record) => h('div', null, [
           h('div', { key: 'type' }, value),
           record.options && h('div', { className: 'attribute-options', key: 'options' }, h(Space, { size: [8, 8], wrap: true }, record.options.map(option => h(Tag, { key: option }, option))))
-        ]) }
+        ]) },
+        { title: 'Description', dataIndex: 'description' }
       ];
       const columns = [
         { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, record.l1) : null },
@@ -253,15 +265,15 @@
             h('section', { className: 'filter-panel', 'aria-label': 'Type filters', key: 'filters' }, h('form', { className: 'filter-grid', onSubmit: submitSearch }, [
               h('label', { className: 'filter-control', key: 'l1' }, [
                 h('span', { className: 'filter-label', key: 'label' }, 'Type'),
-                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l1, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l1', event.target.value), 'aria-label': 'Type' }))
+                h('span', { className: 'filter-value', key: 'value' }, h(Select, { value: draftFilters.l1 || undefined, options: typeOptions, placeholder: 'Select', allowClear: true, showSearch: true, filterOption: fuzzyFilterOption, onChange: value => updateDraftFilter('l1', value || ''), 'aria-label': 'Type' }))
               ]),
               h('label', { className: 'filter-control', key: 'l2' }, [
                 h('span', { className: 'filter-label', key: 'label' }, 'Product Type'),
-                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l2, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l2', event.target.value), 'aria-label': 'Product Type' }))
+                h('span', { className: 'filter-value', key: 'value' }, h(Select, { value: draftFilters.l2 || undefined, options: productTypeOptions, placeholder: 'Select', allowClear: true, showSearch: true, filterOption: fuzzyFilterOption, onChange: value => updateDraftFilter('l2', value || ''), 'aria-label': 'Product Type' }))
               ]),
               h('label', { className: 'filter-control', key: 'l3' }, [
                 h('span', { className: 'filter-label', key: 'label' }, 'Sub Product Type'),
-                h('span', { className: 'filter-value', key: 'value' }, h(Input, { value: draftFilters.l3, placeholder: 'Input', allowClear: true, onChange: event => updateDraftFilter('l3', event.target.value), 'aria-label': 'Sub Product Type' }))
+                h('span', { className: 'filter-value', key: 'value' }, h(Select, { value: draftFilters.l3 || undefined, options: subProductTypeOptions, placeholder: 'Select', allowClear: true, showSearch: true, filterOption: fuzzyFilterOption, onChange: value => updateDraftFilter('l3', value || ''), 'aria-label': 'Sub Product Type' }))
               ]),
               h('div', { className: 'filter-actions', key: 'actions' }, [
                 h(Button, { key: 'reset', icon: icon('ReloadOutlined'), onClick: resetSearch }, 'Reset'),
