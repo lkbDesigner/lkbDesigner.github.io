@@ -34,7 +34,8 @@
     .subtype-list { min-width: 0; }
     .subtype-link-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
     .subtype-separator { margin-right: 4px; color: #262626; }
-    .empty-value { color: #bfbfbf; }
+    .empty-value { color: #262626; }
+    .empty-action { color: #1677ff; }
     .drawer-context { margin-bottom: 24px; }
     .attribute-options { margin-top: 8px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fafafa; }
     .type-table .ant-table-cell { vertical-align: middle; }
@@ -205,7 +206,7 @@
           size: 'small',
           onClick: () => setDetailRecord({ l1: record.l1, l2: record.l2, l3: record.l3Name }),
           'aria-label': 'View details for ' + record.l3Name
-        }, 'View') : null }
+        }, 'View') : h('span', { className: 'empty-action' }, '-') }
       ];
       const activeRows = viewMode === 'grouped' ? rows : treeRows;
       const activeColumns = viewMode === 'grouped' ? columns : treeColumns;

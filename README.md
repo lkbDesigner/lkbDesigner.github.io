@@ -15,3 +15,11 @@ Date: 2026-09-04
 Static website: [https://lkbdesigner.github.io/dp-hub-admin/type-management/](https://lkbdesigner.github.io/dp-hub-admin/type-management/)
 
 Date: 2026-10-08
+
+## [DP Hub Admin] Type Management Empty State Update
+
+Static website: [https://lkbdesigner.github.io/dp-hub-admin/type-management/](https://lkbdesigner.github.io/dp-hub-admin/type-management/)
+
+Update: Standardized empty Sub Product Type and Action display.
+
+Date: 2026-10-14
