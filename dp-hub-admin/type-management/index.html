@@ -46,6 +46,62 @@
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell { padding-top: 8px !important; padding-bottom: 8px !important; }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
+    .content-card.category-workspace-card { min-height: 480px; height: calc(100vh - 148px); display: flex; flex-direction: column; }
+    .category-workspace { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+    .category-toolbar { padding: 20px 24px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #f0f0f0; }
+    .category-global-search { width: min(560px, 62%); }
+    .category-summary { margin-left: auto; color: #8c8c8c; white-space: nowrap; font-size: 13px; }
+    .category-path { padding: 14px 24px; min-height: 50px; color: #595959; display: flex; align-items: center; gap: 12px; }
+    .category-path-label { color: #8c8c8c; flex: 0 0 auto; }
+    .category-path-text { overflow-wrap: anywhere; }
+    .category-panel-wrap { flex: 1; min-height: 0; padding: 0 24px 24px; }
+    .category-columns { display: grid; grid-template-columns: 22% 27% 51%; height: 100%; border: 1px solid #e8e8e8; border-radius: 6px; overflow: hidden; }
+    .category-column { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid #e8e8e8; }
+    .category-column:last-child { border-right: 0; }
+    .category-column-heading { flex: 0 0 52px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #f0f0f0; background: #fafafa; font-weight: 600; }
+    .category-count { color: #8c8c8c; font-weight: 400; font-size: 12px; }
+    .category-list { flex: 1; min-height: 0; overflow: auto; padding: 8px; scrollbar-gutter: stable; }
+    .category-row { width: 100%; min-height: 40px; display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin-bottom: 4px; border: 0; border-radius: 4px; background: transparent; font: inherit; color: #262626; text-align: left; cursor: pointer; }
+    .category-row:hover { background: #f5f9ff; }
+    .category-row[aria-pressed="true"] { background: #e6f4ff; color: #1677ff; }
+    .category-row:focus-visible { outline: 2px solid #1677ff; outline-offset: -2px; }
+    .category-row-name { min-width: 0; flex: 1; overflow-wrap: anywhere; line-height: 22px; }
+    .category-row-meta { color: #8c8c8c; font-size: 12px; flex: 0 0 auto; }
+    .category-row-arrow { color: #bfbfbf; font-size: 11px; }
+    .category-row[aria-pressed="true"] .category-row-arrow { color: #1677ff; }
+    .category-leaf-row { min-height: 48px; margin: 0; border-radius: 0; border-bottom: 1px solid #f0f0f0; }
+    .category-leaf-action { margin-left: 12px; color: #1677ff; white-space: nowrap; font-size: 13px; }
+    .category-list-filter { padding: 12px 12px 4px; }
+    .category-list-empty { padding: 36px 16px; }
+    .category-tree-layout { height: 100%; display: grid; grid-template-columns: minmax(248px, 29%) minmax(0, 1fr); border: 1px solid #e8e8e8; border-radius: 6px; overflow: hidden; }
+    .category-tree-panel { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid #e8e8e8; }
+    .category-tree-scroll { flex: 1; min-height: 0; overflow: auto; padding: 12px 8px; scrollbar-gutter: stable; }
+    .category-tree-scroll .ant-tree { background: transparent; }
+    .category-tree-scroll .ant-tree-treenode { padding: 3px 0; }
+    .category-tree-scroll .ant-tree-switcher { line-height: 34px; }
+    .category-tree-scroll .ant-tree-node-content-wrapper { min-height: 34px; line-height: 34px; padding: 0 8px; min-width: 0; }
+    .category-tree-scroll .ant-tree-node-selected { background: #e6f4ff !important; color: #1677ff; }
+    .category-tree-scroll .ant-tree-indent-unit { width: 16px; }
+    .category-tree-title { display: block; white-space: normal; line-height: 22px; padding: 6px 0; overflow-wrap: anywhere; }
+    .category-attributes { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+    .category-attribute-header { padding: 20px 24px 16px; border-bottom: 1px solid #f0f0f0; }
+    .category-attribute-header h2 { margin: 0 0 6px; font-size: 18px; line-height: 26px; font-weight: 600; }
+    .category-attribute-path { color: #8c8c8c; font-size: 12px; overflow-wrap: anywhere; }
+    .category-attribute-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 24px 24px; scrollbar-gutter: stable; }
+    .category-attribute-label { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; font-weight: 600; }
+    .category-attribute-table .ant-table-cell { overflow-wrap: anywhere; vertical-align: top; }
+    .category-attribute-table .attribute-options { padding: 8px; }
+    .category-search-option { padding: 2px 0; }
+    .category-search-title { display: flex; align-items: center; gap: 8px; }
+    .category-search-level { color: #8c8c8c; font-size: 11px; }
+    .category-search-path { font-size: 12px; color: #8c8c8c; white-space: normal; margin-top: 2px; }
+    .category-global-search-popup .ant-select-item-option-content { white-space: normal; }
+    @media (max-width: 1280px) {
+      .category-toolbar { gap: 16px; }
+      .category-summary { font-size: 12px; }
+      .category-tree-layout { grid-template-columns: 260px minmax(0, 1fr); }
+      .category-attribute-header, .category-attribute-body { padding-left: 16px; padding-right: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -57,7 +113,7 @@
   <script src="../vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions, Input, Tree } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -188,13 +244,172 @@
       }));
     }
 
+    function CategoryWorkspace({ mode, onOpenDetails }) {
+      const initialGroup = hierarchy[0];
+      const initialProduct = initialGroup.children[0];
+      const [selection, setSelection] = React.useState({ l1: initialGroup.l1, l2: initialProduct.l2, l3: null });
+      const [searchText, setSearchText] = React.useState('');
+      const [listQuery, setListQuery] = React.useState('');
+      const keyFor = path => JSON.stringify(path);
+      const [expandedKeys, setExpandedKeys] = React.useState([keyFor([initialGroup.l1]), keyFor([initialGroup.l1, initialProduct.l2])]);
+      const l2ListRef = React.useRef(null);
+      const l3ListRef = React.useRef(null);
+      const treeRef = React.useRef(null);
+      const treeScrollRef = React.useRef(null);
+      const group = hierarchy.find(item => item.l1 === selection.l1) || initialGroup;
+      const product = group.children.find(item => item.l2 === selection.l2) || group.children[0];
+      const currentLeaf = selection.l3 && product.l3.includes(selection.l3) ? selection.l3 : null;
+      const record = currentLeaf ? { l1: group.l1, l2: product.l2, l3: currentLeaf } : null;
+      const leafCount = hierarchy.reduce((total, entry) => total + entry.children.reduce((count, child) => count + child.l3.length, 0), 0);
+
+      React.useEffect(() => {
+        if (mode === 'explorer' && !currentLeaf && product.l3.length) {
+          setSelection({ l1: group.l1, l2: product.l2, l3: product.l3[0] });
+        }
+        if (mode === 'explorer') {
+          setExpandedKeys(keys => [...new Set([...keys, keyFor([group.l1]), keyFor([group.l1, product.l2])])]);
+        }
+      }, [mode]);
+      React.useEffect(() => { if (l2ListRef.current) l2ListRef.current.scrollTop = 0; }, [selection.l1]);
+      React.useEffect(() => { if (l3ListRef.current) l3ListRef.current.scrollTop = 0; }, [selection.l1, selection.l2, listQuery]);
+      React.useEffect(() => {
+        const frame = requestAnimationFrame(() => {
+          const container = mode === 'explorer' ? treeScrollRef.current : l3ListRef.current;
+          const selected = container && container.querySelector(mode === 'explorer' ? '.ant-tree-node-selected' : '[aria-pressed="true"]');
+          if (!selected) return;
+          const bounds = container.getBoundingClientRect();
+          const item = selected.getBoundingClientRect();
+          if (item.top < bounds.top) container.scrollTop -= bounds.top - item.top + 8;
+          else if (item.bottom > bounds.bottom) container.scrollTop += item.bottom - bounds.bottom + 8;
+        });
+        return () => cancelAnimationFrame(frame);
+      }, [mode, selection.l1, selection.l2, currentLeaf]);
+
+      const searchOptions = React.useMemo(() => hierarchy.flatMap(parent => [
+        { path: [parent.l1] },
+        ...parent.children.flatMap(child => [
+          { path: [parent.l1, child.l2] },
+          ...child.l3.map(name => ({ path: [parent.l1, child.l2, name] }))
+        ])
+      ]).map(({ path }) => ({
+        value: keyFor(path),
+        searchLabel: path.join(' / '),
+        label: h('div', { className: 'category-search-option' }, [
+          h('div', { className: 'category-search-title', key: 'title' }, [h('span', { key: 'name' }, path[path.length - 1]), h('span', { className: 'category-search-level', key: 'level' }, 'L' + path.length)]),
+          h('div', { className: 'category-search-path', key: 'path' }, path.join(' / '))
+        ])
+      })), []);
+
+      const treeData = React.useMemo(() => hierarchy.map(parent => ({
+        key: keyFor([parent.l1]), title: h('span', { className: 'category-tree-title' }, parent.l1), categoryPath: [parent.l1],
+        children: parent.children.map(child => ({
+          key: keyFor([parent.l1, child.l2]), title: h('span', { className: 'category-tree-title' }, child.l2), categoryPath: [parent.l1, child.l2],
+          isLeaf: child.l3.length === 0,
+          children: child.l3.map(name => ({ key: keyFor([parent.l1, child.l2, name]), title: h('span', { className: 'category-tree-title' }, name), categoryPath: [parent.l1, child.l2, name], isLeaf: true }))
+        }))
+      })), []);
+
+      function selectPath(path, fromSearch = false) {
+        const parent = hierarchy.find(item => item.l1 === path[0]);
+        if (!parent) return;
+        const child = parent.children.find(item => item.l2 === path[1]) || parent.children[0];
+        const leaf = path[2] && child.l3.includes(path[2]) ? path[2] : mode === 'explorer' ? child.l3[0] || null : null;
+        const next = { l1: parent.l1, l2: child.l2, l3: leaf };
+        setSelection(next);
+        if (fromSearch || path.length < 3) setListQuery('');
+        setSearchText('');
+        setExpandedKeys(keys => [...new Set([...(fromSearch ? [] : keys), keyFor([parent.l1]), keyFor([parent.l1, child.l2])])]);
+        if (path.length === 3 && mode === 'cascading') onOpenDetails(next);
+        if (fromSearch && mode === 'explorer') requestAnimationFrame(() => { if (treeRef.current) treeRef.current.scrollTo({ key: keyFor(leaf ? [parent.l1, child.l2, leaf] : [parent.l1, child.l2]) }); });
+      }
+
+      function categoryButton(name, selected, onClick, extra, leaf = false) {
+        return h('button', {
+          key: name, type: 'button', className: 'category-row' + (leaf ? ' category-leaf-row' : ''),
+          'aria-pressed': selected, 'aria-label': leaf ? 'View attributes for ' + name : name, onClick
+        }, [
+          h('span', { className: 'category-row-name', key: 'name' }, name),
+          h('span', { className: 'category-row-meta', key: 'meta' }, extra),
+          leaf ? h('span', { className: 'category-leaf-action', key: 'action' }, 'View attributes') : h('span', { className: 'category-row-arrow', key: 'arrow', 'aria-hidden': true }, icon('RightOutlined'))
+        ]);
+      }
+
+      const filteredLeaves = product.l3.filter(name => name.toLowerCase().includes(listQuery.trim().toLowerCase()));
+      const attributeColumns = [
+        { title: 'Attribute', dataIndex: 'attribute', width: '22%' },
+        { title: 'Configuration', dataIndex: 'type', width: '33%', render: (value, row) => h('div', null, [
+          h('div', { key: 'type' }, value),
+          row.options && h('div', { className: 'attribute-options', key: 'options' }, h(Space, { size: [4, 6], wrap: true }, row.options.map(option => h(Tag, { key: option, style: { marginInlineEnd: 0 } }, option))))
+        ]) },
+        { title: 'Description', dataIndex: 'description' }
+      ];
+
+      return h('div', { className: 'category-workspace' }, [
+        h('div', { className: 'category-toolbar', key: 'toolbar' }, [
+          h(Select, {
+            className: 'category-global-search', popupClassName: 'category-global-search-popup',
+            key: 'search', showSearch: true, allowClear: true, value: null, searchValue: searchText,
+            options: searchOptions, placeholder: 'Search category name or path', suffixIcon: icon('SearchOutlined'),
+            onSearch: setSearchText, onClear: () => setSearchText(''), onSelect: value => selectPath(JSON.parse(value), true),
+            filterOption: (input, option) => option.searchLabel.toLowerCase().includes(input.trim().toLowerCase()),
+            notFoundContent: h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: 'No matching categories found.' }),
+            'aria-label': 'Search all categories'
+          }),
+          h('span', { className: 'category-summary', key: 'summary' }, hierarchy.length + ' Types · ' + leafCount + ' Sub Product Types')
+        ]),
+        h('div', { className: 'category-path', key: 'path', 'aria-live': 'polite' }, [
+          h('span', { className: 'category-path-label', key: 'label' }, 'Current path'),
+          h('span', { className: 'category-path-text', key: 'value' }, [group.l1, product.l2, currentLeaf].filter(Boolean).join(' / '))
+        ]),
+        h('div', { className: 'category-panel-wrap', key: 'panel' }, mode === 'cascading' ? h('div', { className: 'category-columns' }, [
+          h('section', { className: 'category-column', key: 'l1', 'aria-label': 'Type categories' }, [
+            h('div', { className: 'category-column-heading', key: 'heading' }, [h('span', { key: 'label' }, 'Type'), h('span', { className: 'category-count', key: 'count' }, hierarchy.length)]),
+            h('div', { className: 'category-list', key: 'list' }, hierarchy.map(parent => categoryButton(parent.l1, parent.l1 === group.l1, () => selectPath([parent.l1]), parent.children.length)))
+          ]),
+          h('section', { className: 'category-column', key: 'l2', 'aria-label': 'Product Type categories' }, [
+            h('div', { className: 'category-column-heading', key: 'heading' }, [h('span', { key: 'label' }, 'Product Type'), h('span', { className: 'category-count', key: 'count' }, group.children.length)]),
+            h('div', { className: 'category-list', key: 'list', ref: l2ListRef }, group.children.map(child => categoryButton(child.l2, child.l2 === product.l2, () => selectPath([group.l1, child.l2]), child.l3.length)))
+          ]),
+          h('section', { className: 'category-column', key: 'l3', 'aria-label': 'Sub Product Type categories' }, [
+            h('div', { className: 'category-column-heading', key: 'heading' }, [h('span', { key: 'label' }, 'Sub Product Type'), h('span', { className: 'category-count', key: 'count' }, listQuery ? filteredLeaves.length + ' / ' + product.l3.length : product.l3.length)]),
+            h('div', { className: 'category-list-filter', key: 'filter' }, h(Input, { value: listQuery, onChange: event => setListQuery(event.target.value), allowClear: true, prefix: icon('SearchOutlined'), placeholder: 'Filter Sub Product Types', 'aria-label': 'Filter Sub Product Types', disabled: !product.l3.length })),
+            h('div', { className: 'category-list', key: 'list', ref: l3ListRef }, filteredLeaves.length ? filteredLeaves.map(name => categoryButton(name, name === currentLeaf, () => selectPath([group.l1, product.l2, name]), buildAttributeDetails({ l3: name }).length + ' attributes', true)) : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'No matching Sub Product Types.' : 'No Sub Product Types in this category.' })))
+          ])
+        ]) : h('div', { className: 'category-tree-layout' }, [
+          h('section', { className: 'category-tree-panel', key: 'tree', 'aria-label': 'Category tree' }, [
+            h('div', { className: 'category-column-heading', key: 'heading' }, [h('span', { key: 'label' }, 'Categories'), h('span', { className: 'category-count', key: 'count' }, '3 levels')]),
+            h('div', { className: 'category-tree-scroll', key: 'scroll', ref: treeScrollRef }, h(Tree, {
+              ref: treeRef, treeData, blockNode: true, showIcon: false,
+              expandedKeys, autoExpandParent: false, onExpand: setExpandedKeys,
+              selectedKeys: [keyFor(currentLeaf ? [group.l1, product.l2, currentLeaf] : [group.l1, product.l2])],
+              onSelect: (_, info) => {
+                const path = info.node.categoryPath;
+                if (path.length === 3) selectPath(path);
+                else if (path.length === 2 && !info.node.children.length) selectPath(path);
+                else setExpandedKeys(keys => keys.includes(info.node.key) ? keys.filter(key => key !== info.node.key) : [...keys, info.node.key]);
+              },
+              'aria-label': 'Category hierarchy'
+            }))
+          ]),
+          h('section', { className: 'category-attributes', key: 'attributes', 'aria-label': 'Category attributes' }, record ? [
+            h('div', { className: 'category-attribute-header', key: 'header', 'aria-live': 'polite' }, [h('h2', { key: 'name' }, record.l3), h('div', { className: 'category-attribute-path', key: 'path' }, [record.l1, record.l2, record.l3].join(' / '))]),
+            h('div', { className: 'category-attribute-body', key: keyFor([record.l1, record.l2, record.l3]) }, [
+              h('div', { className: 'category-attribute-label', key: 'label' }, [h('span', { key: 'title' }, 'Attributes'), h('span', { className: 'category-count', key: 'count' }, buildAttributeDetails(record).length)]),
+              h(Table, { className: 'category-attribute-table', key: 'table', size: 'small', bordered: true, columns: attributeColumns, dataSource: buildAttributeDetails(record), pagination: false, tableLayout: 'fixed' })
+            ])
+          ] : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'Select a Sub Product Type to view its attributes.' : 'No Sub Product Types in this category.' })))
+        ]))
+      ]);
+    }
+
     function App() {
       const [collapsed, setCollapsed] = React.useState(false);
       const [openKeys, setOpenKeys] = React.useState(['product-pool']);
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
-      const [viewMode, setViewMode] = React.useState('grouped');
+      const [viewMode, setViewMode] = React.useState(() => ({ '1': 'grouped', '2': 'tree', '3': 'cascading', '4': 'explorer' }[new URLSearchParams(window.location.search).get('view')] || 'grouped'));
+      const isWorkspace = viewMode === 'cascading' || viewMode === 'explorer';
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
       const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
@@ -261,13 +476,20 @@
               value: viewMode,
               options: [
                 { label: '方案 1', value: 'grouped' },
-                { label: '方案 2', value: 'tree' }
+                { label: '方案 2', value: 'tree' },
+                { label: '方案 3', value: 'cascading' },
+                { label: '方案 4', value: 'explorer' }
               ],
-              onChange: value => { setViewMode(value); setDetailRecord(null); },
+              onChange: value => {
+                setViewMode(value); setDetailRecord(null);
+                const url = new URL(window.location.href);
+                url.searchParams.set('view', { grouped: '1', tree: '2', cascading: '3', explorer: '4' }[value]);
+                try { window.history.replaceState(null, '', url); } catch (_) {}
+              },
               'aria-label': 'Display option'
             })
           ]),
-          h(Layout.Content, { className: 'page-content', key: 'content' }, h('div', { className: 'content-card' }, [
+          h(Layout.Content, { className: 'page-content', key: 'content' }, h('div', { className: 'content-card' + (isWorkspace ? ' category-workspace-card' : '') }, isWorkspace ? h(CategoryWorkspace, { mode: viewMode, onOpenDetails: setDetailRecord }) : [
             h('section', { className: 'filter-panel', 'aria-label': 'Type filters', key: 'filters' }, h('form', { className: 'filter-grid', onSubmit: submitSearch }, [
               h('label', { className: 'filter-control', key: 'l1' }, [
                 h('span', { className: 'filter-label', key: 'label' }, 'Type'),
