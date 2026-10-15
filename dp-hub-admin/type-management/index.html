@@ -40,6 +40,8 @@
     .drawer-context { margin-bottom: 24px; }
     .attribute-options { margin-top: 8px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fafafa; }
     .type-table .ant-table-cell { vertical-align: middle; }
+    .type-table .ant-table-tbody > tr.type-group-alt > td { background: #fafafa; }
+    .type-table .ant-table-tbody > tr.type-group-alt:hover > td { background: #f5f5f5; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
   </style>
@@ -136,10 +138,11 @@
 
     function flattenHierarchy(groups) {
       const rows = [];
-      groups.forEach(group => {
+      groups.forEach((group, groupIndex) => {
         group.children.forEach((item, index) => rows.push({
           key: group.l1 + '-' + item.l2, l1: group.l1, l2: item.l2, l3: item.l3,
-          rowSpan: index === 0 ? group.children.length : 0
+          rowSpan: index === 0 ? group.children.length : 0,
+          isAltGroup: groupIndex % 2 === 1
         }));
       });
       return rows;
@@ -284,6 +287,7 @@
               h('div', { className: 'table-wrap', key: 'tableWrap' },
                 h(Table, {
                   key: viewMode, className: 'type-table', size: 'middle', columns: activeColumns, dataSource: activeRows,
+                  rowClassName: record => viewMode === 'grouped' && record.isAltGroup ? 'type-group-alt' : '',
                   bordered: true, tableLayout: 'fixed',
                   pagination: {
                     current: 1, pageSize: viewMode === 'grouped' ? 20 : 50, total: activeRows.length,
