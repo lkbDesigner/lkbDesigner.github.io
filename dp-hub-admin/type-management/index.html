@@ -150,7 +150,7 @@
 
     function flattenHierarchyAsTree(groups) {
       const rows = [];
-      groups.forEach(group => {
+      groups.forEach((group, groupIndex) => {
         const l1RowSpan = group.children.reduce((sum, item) => sum + Math.max(item.l3.length, 1), 0);
         let firstL1Row = true;
         group.children.forEach(item => {
@@ -162,7 +162,8 @@
               l2: item.l2,
               l3Name: subType,
               l1RowSpan: firstL1Row ? l1RowSpan : 0,
-              l2RowSpan: index === 0 ? subTypes.length : 0
+              l2RowSpan: index === 0 ? subTypes.length : 0,
+              isAltGroup: groupIndex % 2 === 1
             });
             firstL1Row = false;
           });
@@ -287,7 +288,7 @@
               h('div', { className: 'table-wrap', key: 'tableWrap' },
                 h(Table, {
                   key: viewMode, className: 'type-table', size: 'middle', columns: activeColumns, dataSource: activeRows,
-                  rowClassName: record => viewMode === 'grouped' && record.isAltGroup ? 'type-group-alt' : '',
+                  rowClassName: record => record.isAltGroup ? 'type-group-alt' : '',
                   bordered: true, tableLayout: 'fixed',
                   pagination: {
                     current: 1, pageSize: viewMode === 'grouped' ? 20 : 50, total: activeRows.length,
