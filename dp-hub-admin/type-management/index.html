@@ -34,7 +34,8 @@
     .type-cell, .product-type, .subtype-list { color: #262626; font-size: 14px; line-height: 22px; font-weight: 400; }
     .subtype-list { min-width: 0; }
     .subtype-link-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
-    .subtype-separator { margin-right: 4px; color: #262626; }
+    .subtype-link-item { display: inline-flex; align-items: center; }
+    .subtype-separator { width: 1px; height: 12px; margin: 0 8px; background: #d9d9d9; }
     .empty-value { color: #262626; }
     .empty-action { color: #1677ff; }
     .drawer-context { margin-bottom: 24px; }
@@ -61,7 +62,7 @@
 
     const hierarchy = [
       { l1: 'Mobile Recharge', children: [
-        { l2: 'Prepaid', l3: ['Airtime', 'Data Package', 'Voice Package', 'Combo Package'] },
+        { l2: 'Prepaid', l3: ['Airtime', 'Data Package', 'Voice Package', 'Combo Package', 'SMS Package', 'Roaming Package', 'Social Media Package', 'Night Package', 'Weekend Package', 'International Package', 'Emergency Credit'] },
         { l2: 'Postpaid', l3: ['Bill Payment', 'Auto Payment'] },
         { l2: 'Voucher', l3: ['Physical Voucher', 'eVoucher', 'PIN Voucher'] }
       ] },
@@ -71,7 +72,7 @@
         { l2: 'In-game Item', l3: ['Currency Pack', 'Item Pack', 'Starter Pack'] }
       ] },
       { l1: 'Entertainment', children: [
-        { l2: 'Video Streaming', l3: ['Monthly Subscription', 'Annual Subscription', 'Premium Plan'] },
+        { l2: 'Video Streaming', l3: ['Monthly Subscription', 'Annual Subscription', 'Premium Plan', 'Sports Pass', 'Kids Package', 'Movie Package', 'TV Package', 'Mobile Plan', 'Family Plan', 'Student Plan', 'Pay-per-view'] },
         { l2: 'Music Streaming', l3: ['Individual Plan', 'Family Plan'] }
       ] },
       { l1: 'Utility', children: [
@@ -209,9 +210,9 @@
       const columns = [
         { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, record.l1) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '25%', render: value => h('span', { className: 'product-type' }, value) },
-        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-link-list' }, values.map((name, index) => h(React.Fragment, { key: name }, [
+        { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-link-list' }, values.map((name, index) => h('span', { className: 'subtype-link-item', key: name }, [
           h(Typography.Link, { key: 'link', href: '#', onClick: event => { event.preventDefault(); setDetailRecord({ l1: record.l1, l2: record.l2, l3: name }); } }, name),
-          index < values.length - 1 && h('span', { className: 'subtype-separator', key: 'separator' }, ',\u00a0')
+          index < values.length - 1 && h('span', { className: 'subtype-separator', key: 'separator', 'aria-hidden': 'true' })
         ]))) : h('span', { className: 'empty-value' }, '—') }
       ];
       const treeColumns = [
