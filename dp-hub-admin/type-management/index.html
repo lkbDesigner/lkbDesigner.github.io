@@ -45,8 +45,14 @@
     .type-table .ant-table-tbody > tr.type-group-alt:hover > td { background: #fafafa; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell { padding-top: 8px !important; padding-bottom: 8px !important; }
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell {
-      background: #f7f7f7 !important;
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover,
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover:hover {
+      background-color: #f7f7f7 !important;
+    }
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover:hover > td.ant-table-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell-row-hover {
+      background-color: #f7f7f7 !important;
       border-bottom-color: #e8e8e8 !important;
       border-inline-end-color: #e8e8e8 !important;
     }
