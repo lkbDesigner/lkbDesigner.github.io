@@ -45,6 +45,7 @@
     .type-table .ant-table-tbody > tr.type-group-alt:hover > td { background: #fafafa; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell { padding-top: 8px !important; padding-bottom: 8px !important; }
+    .type-table.type-table-tree .ant-table-tbody > tr:hover > td.ant-table-cell { background: #f0f0f0 !important; }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
     .content-card.category-workspace-card { min-height: 480px; height: calc(100vh - 148px); display: flex; flex-direction: column; }
     .category-workspace { display: flex; flex-direction: column; height: 100%; min-height: 0; }
@@ -113,7 +114,7 @@
   <script src="../vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Segmented, Typography, Descriptions, Input, Tree } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Typography, Descriptions, Input, Tree } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -408,8 +409,8 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
-      const [viewMode, setViewMode] = React.useState(() => ({ '1': 'grouped', '2': 'tree', '3': 'cascading', '4': 'explorer' }[new URLSearchParams(window.location.search).get('view')] || 'grouped'));
-      const isWorkspace = viewMode === 'cascading' || viewMode === 'explorer';
+      const viewMode = 'tree';
+      const isWorkspace = false;
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
       const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
@@ -470,24 +471,7 @@
             ])
           ]),
           h('section', { className: 'page-header', key: 'pageHeader' }, [
-            h('h1', { className: 'page-title', key: 'title' }, 'Category Management'),
-            h(Segmented, {
-              key: 'view-mode',
-              value: viewMode,
-              options: [
-                { label: '方案 1', value: 'grouped' },
-                { label: '方案 2', value: 'tree' },
-                { label: '方案 3', value: 'cascading' },
-                { label: '方案 4', value: 'explorer' }
-              ],
-              onChange: value => {
-                setViewMode(value); setDetailRecord(null);
-                const url = new URL(window.location.href);
-                url.searchParams.set('view', { grouped: '1', tree: '2', cascading: '3', explorer: '4' }[value]);
-                try { window.history.replaceState(null, '', url); } catch (_) {}
-              },
-              'aria-label': 'Display option'
-            })
+            h('h1', { className: 'page-title', key: 'title' }, 'Category Management')
           ]),
           h(Layout.Content, { className: 'page-content', key: 'content' }, h('div', { className: 'content-card' + (isWorkspace ? ' category-workspace-card' : '') }, isWorkspace ? h(CategoryWorkspace, { mode: viewMode, onOpenDetails: setDetailRecord }) : [
             h('section', { className: 'filter-panel', 'aria-label': 'Type filters', key: 'filters' }, h('form', { className: 'filter-grid', onSubmit: submitSearch }, [
