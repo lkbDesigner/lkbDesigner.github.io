@@ -45,13 +45,17 @@
     .type-table .ant-table-tbody > tr.type-group-alt:hover > td { background: #fafafa; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell { padding-top: 8px !important; padding-bottom: 8px !important; }
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover,
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover:hover {
-      background-color: #f7f7f7 !important;
+    .type-table.type-table-tree .ant-table-tbody > tr:not(.type-group-alt):hover > td.ant-table-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr:not(.type-group-alt) > td.ant-table-cell-row-hover {
+      background-color: #ffffff !important;
     }
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell,
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover:hover > td.ant-table-cell,
-    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell-row-hover {
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-alt:hover > td.ant-table-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-alt > td.ant-table-cell-row-hover {
+      background-color: #fcfcfc !important;
+    }
+    .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell.hierarchy-hover-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr:hover > td.ant-table-cell.hierarchy-hover-cell,
+    .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell-row-hover.hierarchy-hover-cell {
       background-color: #f7f7f7 !important;
       border-bottom-color: #e8e8e8 !important;
       border-inline-end-color: #e8e8e8 !important;
@@ -419,7 +423,7 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
-      const [hoveredType, setHoveredType] = React.useState(null);
+      const [hoverPath, setHoverPath] = React.useState(null);
       const viewMode = 'tree';
       const isWorkspace = false;
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
@@ -442,11 +446,23 @@
           index < values.length - 1 && h('span', { className: 'subtype-separator', key: 'separator', 'aria-hidden': 'true' })
         ]))) : h('span', { className: 'empty-value' }, '—') }
       ];
+      const shouldHighlightTreeCell = (cellLevel, record) => {
+        if (!hoverPath || hoverPath.l1 !== record.l1) return false;
+        if (cellLevel === 'l1' || hoverPath.level === 'l1') return true;
+        if (hoverPath.l2 !== record.l2) return false;
+        if (cellLevel === 'l2' || hoverPath.level === 'l2') return true;
+        return hoverPath.l3 === record.l3Name;
+      };
+      const treeCellProps = (cellLevel, record, extra = {}) => ({
+        ...extra,
+        className: [extra.className, shouldHighlightTreeCell(cellLevel, record) ? 'hierarchy-hover-cell' : ''].filter(Boolean).join(' '),
+        onMouseEnter: () => setHoverPath({ level: cellLevel, l1: record.l1, l2: record.l2, l3: record.l3Name })
+      });
       const treeColumns = [
-        { title: 'Type', dataIndex: 'l1', width: '24%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.l1RowSpan, style: { paddingLeft: 24 } }), render: (value, record) => record.l1RowSpan ? h('div', { className: 'type-cell' }, value) : null },
-        { title: 'Product Type', dataIndex: 'l2', width: '24%', onCell: record => ({ rowSpan: record.l2RowSpan }), render: (value, record) => record.l2RowSpan ? h('span', { className: 'product-type' }, value) : null },
-        { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '—') },
-        { title: 'Action', key: 'action', width: '10%', render: (_, record) => record.l3Name ? h(Button, {
+        { title: 'Type', dataIndex: 'l1', width: '24%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => treeCellProps('l1', record, { rowSpan: record.l1RowSpan, style: { paddingLeft: 24 } }), render: (value, record) => record.l1RowSpan ? h('div', { className: 'type-cell' }, value) : null },
+        { title: 'Product Type', dataIndex: 'l2', width: '24%', onCell: record => treeCellProps('l2', record, { rowSpan: record.l2RowSpan }), render: (value, record) => record.l2RowSpan ? h('span', { className: 'product-type' }, value) : null },
+        { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', onCell: record => treeCellProps('l3', record), render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '—') },
+        { title: 'Action', key: 'action', width: '10%', onCell: record => treeCellProps('l3', record), render: (_, record) => record.l3Name ? h(Button, {
           type: 'link',
           size: 'small',
           onClick: () => setDetailRecord({ l1: record.l1, l2: record.l2, l3: record.l3Name }),
@@ -504,11 +520,10 @@
               ])
             ])),
             h('section', { key: 'tableModule' }, [
-              h('div', { className: 'table-wrap', key: 'tableWrap', onMouseLeave: () => setHoveredType(null) },
+              h('div', { className: 'table-wrap', key: 'tableWrap', onMouseLeave: () => setHoverPath(null) },
                 h(Table, {
                   key: viewMode, className: viewMode === 'tree' ? 'type-table type-table-tree' : 'type-table', size: 'middle', columns: activeColumns, dataSource: activeRows,
-                  rowClassName: record => [record.isAltGroup ? 'type-group-alt' : '', hoveredType === record.l1 ? 'type-group-hover' : ''].filter(Boolean).join(' '),
-                  onRow: record => ({ onMouseEnter: () => setHoveredType(record.l1) }),
+                  rowClassName: record => record.isAltGroup ? 'type-group-alt' : '',
                   bordered: true, tableLayout: 'fixed',
                   pagination: {
                     current: 1, pageSize: viewMode === 'grouped' ? 20 : 50, total: activeRows.length,
