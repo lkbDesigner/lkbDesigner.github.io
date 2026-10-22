@@ -45,7 +45,11 @@
     .type-table .ant-table-tbody > tr.type-group-alt:hover > td { background: #fafafa; }
     .type-table .ant-table-tbody > tr:hover > td { background: #fafafa; }
     .type-table.type-table-tree .ant-table-tbody > tr > td.ant-table-cell { padding-top: 8px !important; padding-bottom: 8px !important; }
-    .type-table.type-table-tree .ant-table-tbody > tr:hover > td.ant-table-cell { background: #f0f0f0 !important; }
+    .type-table.type-table-tree .ant-table-tbody > tr.type-group-hover > td.ant-table-cell {
+      background: #f7f7f7 !important;
+      border-bottom-color: #e8e8e8 !important;
+      border-inline-end-color: #e8e8e8 !important;
+    }
     @media (max-width: 1280px) { .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filter-actions { grid-column: 2; } }
     .content-card.category-workspace-card { min-height: 480px; height: calc(100vh - 148px); display: flex; flex-direction: column; }
     .category-workspace { display: flex; flex-direction: column; height: 100%; min-height: 0; }
@@ -409,6 +413,7 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
+      const [hoveredType, setHoveredType] = React.useState(null);
       const viewMode = 'tree';
       const isWorkspace = false;
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
@@ -493,10 +498,11 @@
               ])
             ])),
             h('section', { key: 'tableModule' }, [
-              h('div', { className: 'table-wrap', key: 'tableWrap' },
+              h('div', { className: 'table-wrap', key: 'tableWrap', onMouseLeave: () => setHoveredType(null) },
                 h(Table, {
                   key: viewMode, className: viewMode === 'tree' ? 'type-table type-table-tree' : 'type-table', size: 'middle', columns: activeColumns, dataSource: activeRows,
-                  rowClassName: record => record.isAltGroup ? 'type-group-alt' : '',
+                  rowClassName: record => [record.isAltGroup ? 'type-group-alt' : '', hoveredType === record.l1 ? 'type-group-hover' : ''].filter(Boolean).join(' '),
+                  onRow: record => ({ onMouseEnter: () => setHoveredType(record.l1) }),
                   bordered: true, tableLayout: 'fixed',
                   pagination: {
                     current: 1, pageSize: viewMode === 'grouped' ? 20 : 50, total: activeRows.length,
