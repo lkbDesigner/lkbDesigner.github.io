@@ -40,6 +40,7 @@
     .empty-action { color: #1677ff; }
     .action-link.ant-btn-link { height: auto; padding-inline: 0; }
     .drawer-context { margin-bottom: 24px; }
+    .drawer-dev-note { margin: -8px 0 16px; color: #ff4d4f; font-size: 14px; line-height: 22px; }
     .property-tab-filter { width: 320px; margin-bottom: 16px; }
     .property-tab-filter .ant-select { width: 100%; }
     .attribute-options { margin-top: 8px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fafafa; }
@@ -568,7 +569,7 @@
         ]),
         h(Drawer, {
           key: 'l3-details',
-          title: 'Sub Product Type Details',
+          title: detailRecord && detailRecord.l3 === '-' ? 'Product Type Details' : 'Sub Product Type Details',
           width: 960,
           open: Boolean(detailRecord),
           onClose: () => setDetailRecord(null),
@@ -585,6 +586,10 @@
               { key: 'sub-product-type', label: 'Sub Product Type', children: detailRecord.l3 }
             ]
           }),
+          detailRecord.l3 === '-' && h('div', {
+            className: 'drawer-dev-note',
+            key: 'dev-note'
+          }, '开发注意: L2标题显示product type details'),
           h(Tabs, {
             key: 'property-tabs',
             defaultActiveKey: 'static',
