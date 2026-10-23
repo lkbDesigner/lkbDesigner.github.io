@@ -39,6 +39,8 @@
     .empty-value { color: #262626; }
     .empty-action { color: #1677ff; }
     .drawer-context { margin-bottom: 24px; }
+    .property-tab-filter { width: 320px; margin-bottom: 16px; }
+    .property-tab-filter .ant-select { width: 100%; }
     .attribute-options { margin-top: 8px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fafafa; }
     .type-table .ant-table-cell { vertical-align: middle; }
     .type-table .ant-table-tbody > tr.type-group-alt > td { background: #fcfcfc; }
@@ -425,6 +427,7 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
+      const [propertyTypeFilters, setPropertyTypeFilters] = React.useState({ static: '', dynamic: '' });
       const [hoverPath, setHoverPath] = React.useState(null);
       const viewMode = 'tree';
       const isWorkspace = false;
@@ -433,6 +436,10 @@
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
       const staticPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'static') : [], [detailRecord]);
       const dynamicPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'dynamic') : [], [detailRecord]);
+      const propertyTypeOptions = React.useMemo(() => staticPropertyRows.map(row => ({ value: row.property, label: row.property })), [staticPropertyRows]);
+      const filteredStaticPropertyRows = React.useMemo(() => propertyTypeFilters.static ? staticPropertyRows.filter(row => row.property === propertyTypeFilters.static) : staticPropertyRows, [staticPropertyRows, propertyTypeFilters.static]);
+      const filteredDynamicPropertyRows = React.useMemo(() => propertyTypeFilters.dynamic ? dynamicPropertyRows.filter(row => row.property === propertyTypeFilters.dynamic) : dynamicPropertyRows, [dynamicPropertyRows, propertyTypeFilters.dynamic]);
+      React.useEffect(() => setPropertyTypeFilters({ static: '', dynamic: '' }), [detailRecord]);
       const detailColumns = [
         { title: 'Property', dataIndex: 'property', width: 180 },
         { title: 'Data Source', dataIndex: 'dataSource', width: 360, render: (value, record) => h('div', null, [
@@ -441,6 +448,19 @@
         ]) },
         { title: 'Description', dataIndex: 'description' }
       ];
+      const propertyTabContent = (propertyType, rows) => h('div', { className: 'property-tab-panel' }, [
+        h('div', { className: 'property-tab-filter', key: 'filter' }, h(Select, {
+          value: propertyTypeFilters[propertyType] || undefined,
+          options: propertyTypeOptions,
+          placeholder: 'Property Type',
+          allowClear: true,
+          showSearch: true,
+          filterOption: fuzzyFilterOption,
+          onChange: value => setPropertyTypeFilters(current => ({ ...current, [propertyType]: value || '' })),
+          'aria-label': (propertyType === 'static' ? 'Static' : 'Dynamic') + ' Property Type'
+        })),
+        h(Table, { key: 'table', size: 'middle', bordered: true, columns: detailColumns, dataSource: rows, pagination: false, scroll: { x: 900 }, tableLayout: 'fixed' })
+      ]);
       const columns = [
         { title: 'Type', dataIndex: 'l1', className: 'type-column', width: '25%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => ({ rowSpan: record.rowSpan, style: { paddingLeft: 24 } }), render: (_, record) => record.rowSpan ? h('div', { className: 'type-cell' }, record.l1) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '25%', render: value => h('span', { className: 'product-type' }, value) },
@@ -563,8 +583,8 @@
             key: 'property-tabs',
             defaultActiveKey: 'static',
             items: [
-              { key: 'static', label: 'Static Property', children: h(Table, { key: 'static-property-table', size: 'middle', bordered: true, columns: detailColumns, dataSource: staticPropertyRows, pagination: false, scroll: { x: 900 }, tableLayout: 'fixed' }) },
-              { key: 'dynamic', label: 'Dynamic Property', children: h(Table, { key: 'dynamic-property-table', size: 'middle', bordered: true, columns: detailColumns, dataSource: dynamicPropertyRows, pagination: false, scroll: { x: 900 }, tableLayout: 'fixed' }) }
+              { key: 'static', label: 'Static Property', children: propertyTabContent('static', filteredStaticPropertyRows) },
+              { key: 'dynamic', label: 'Dynamic Property', children: propertyTabContent('dynamic', filteredDynamicPropertyRows) }
             ]
           })
         ] : null)
