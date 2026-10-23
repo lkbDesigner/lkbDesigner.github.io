@@ -38,6 +38,7 @@
     .subtype-separator { width: 1px; height: 12px; margin: 0 8px; background: #d9d9d9; }
     .empty-value { color: #262626; }
     .empty-action { color: #1677ff; }
+    .action-link.ant-btn-link { height: auto; padding-inline: 0; }
     .drawer-context { margin-bottom: 24px; }
     .property-tab-filter { width: 320px; margin-bottom: 16px; }
     .property-tab-filter .ant-select { width: 100%; }
@@ -485,12 +486,17 @@
         { title: 'Type', dataIndex: 'l1', width: '24%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => treeCellProps('l1', record, { rowSpan: record.l1RowSpan, style: { paddingLeft: 24 } }), render: (value, record) => record.l1RowSpan ? h('div', { className: 'type-cell' }, value) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '24%', onCell: record => treeCellProps('l2', record, { rowSpan: record.l2RowSpan }), render: (value, record) => record.l2RowSpan ? h('span', { className: 'product-type' }, value) : null },
         { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', onCell: record => treeCellProps('l3', record), render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '-') },
-        { title: 'Action', key: 'action', width: '10%', onCell: record => treeCellProps('l3', record), render: (_, record) => record.l3Name ? h(Button, {
-          type: 'link',
-          size: 'small',
-          onClick: () => setDetailRecord({ l1: record.l1, l2: record.l2, l3: record.l3Name }),
-          'aria-label': 'View details for ' + record.l3Name
-        }, 'View') : h('span', { className: 'empty-action' }, '-') }
+        { title: 'Action', key: 'action', width: '10%', onCell: record => treeCellProps('l3', record), render: (_, record) => {
+          const isViewable = Boolean(record.l3Name) || record.l2 === 'Postpaid';
+          const detailName = record.l3Name || '-';
+          return isViewable ? h(Button, {
+            type: 'link',
+            size: 'small',
+            className: 'action-link',
+            onClick: () => setDetailRecord({ l1: record.l1, l2: record.l2, l3: detailName }),
+            'aria-label': 'View details for ' + (record.l3Name || record.l2)
+          }, 'View') : h('span', { className: 'empty-action' }, '-');
+        } }
       ];
       const activeRows = viewMode === 'grouped' ? rows : treeRows;
       const activeColumns = viewMode === 'grouped' ? columns : treeColumns;
