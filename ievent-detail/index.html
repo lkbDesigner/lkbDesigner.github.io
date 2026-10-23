@@ -119,7 +119,7 @@
                       h(Field,{label:'Name',value:filterValues.name,onChange:value=>setFilter('name',value)}),
                       h(Field,{label:'Country/Region',value:filterValues.country,onChange:value=>setFilter('country',value),options:countryOptions}),
                       h(Field,{label:'City',value:filterValues.city,onChange:value=>setFilter('city',value),options:cityOptions}),
-                      h('div',{className:'filter-actions'},h(Button,{icon:h(I.ReloadOutlined),onClick:reset},'reset'),h(Button,{color:'primary',variant:'outlined',icon:h(I.SearchOutlined),onClick:search},'Search'))
+                      h('div',{className:'filter-actions'},h(Button,{icon:h(I.ReloadOutlined),onClick:reset},'reset'),h(Button,{color:'primary',variant:'solid',icon:h(I.SearchOutlined),onClick:search},'Search'))
                     )
                   ),
                   h('div',{className:'table-toolbar'},h(Button,{icon:h(I.DownloadOutlined),onClick:()=>messageApi.success('Download started')},'Download'),h(Button,null,'Mass Operation')),
