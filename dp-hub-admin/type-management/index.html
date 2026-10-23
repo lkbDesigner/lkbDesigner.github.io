@@ -128,7 +128,7 @@
   <script src="../vendor/antd-5.24.8.min.js"></script>
   <script>
     const h = React.createElement;
-    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Typography, Descriptions, Input, Tree } = antd;
+    const { Layout, Menu, ConfigProvider, Button, Select, Table, Space, Tooltip, Empty, Drawer, Tag, Typography, Descriptions, Input, Tree, Tabs } = antd;
     const icon = name => h(icons[name]);
 
     const hierarchy = [
@@ -245,17 +245,19 @@
       return rows;
     }
 
-    function buildAttributeDetails(record) {
+    function buildPropertyDetails(record, propertyType = 'static') {
       return Array.from({ length: 10 }, (_, index) => ({
-        key: 'attribute-' + (index + 1),
-        attribute: 'Attribute ' + (index + 1),
-        type: index === 1 ? 'Single select by Ops' : 'Input by Ops',
-        options: index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null,
-        description: index === 0
-          ? 'Text value entered by Ops for ' + record.l3 + '.'
-          : index === 1
-            ? 'A single value selected by Ops from the configured options for ' + record.l3 + '.'
-            : 'Explains the meaning and expected value of Attribute ' + (index + 1) + ' for ' + record.l3 + '.'
+        key: propertyType + '-property-' + (index + 1),
+        property: 'Property ' + (index + 1),
+        dataSource: propertyType === 'dynamic' ? 'Provider API' : index === 1 ? 'Single select by Ops' : 'Input by Ops',
+        options: propertyType === 'static' && index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null,
+        description: propertyType === 'dynamic'
+          ? 'Dynamic value returned by the configured data source for ' + record.l3 + '.'
+          : index === 0
+            ? 'Text value entered by Ops for ' + record.l3 + '.'
+            : index === 1
+              ? 'A single value selected by Ops from the configured options for ' + record.l3 + '.'
+              : 'Explains the meaning and expected value of Property ' + (index + 1) + ' for ' + record.l3 + '.'
       }));
     }
 
@@ -341,18 +343,18 @@
       function categoryButton(name, selected, onClick, extra, leaf = false) {
         return h('button', {
           key: name, type: 'button', className: 'category-row' + (leaf ? ' category-leaf-row' : ''),
-          'aria-pressed': selected, 'aria-label': leaf ? 'View attributes for ' + name : name, onClick
+          'aria-pressed': selected, 'aria-label': leaf ? 'View properties for ' + name : name, onClick
         }, [
           h('span', { className: 'category-row-name', key: 'name' }, name),
           h('span', { className: 'category-row-meta', key: 'meta' }, extra),
-          leaf ? h('span', { className: 'category-leaf-action', key: 'action' }, 'View attributes') : h('span', { className: 'category-row-arrow', key: 'arrow', 'aria-hidden': true }, icon('RightOutlined'))
+          leaf ? h('span', { className: 'category-leaf-action', key: 'action' }, 'View properties') : h('span', { className: 'category-row-arrow', key: 'arrow', 'aria-hidden': true }, icon('RightOutlined'))
         ]);
       }
 
       const filteredLeaves = product.l3.filter(name => name.toLowerCase().includes(listQuery.trim().toLowerCase()));
-      const attributeColumns = [
-        { title: 'Attribute', dataIndex: 'attribute', width: '22%' },
-        { title: 'Configuration', dataIndex: 'type', width: '33%', render: (value, row) => h('div', null, [
+      const propertyColumns = [
+        { title: 'Property', dataIndex: 'property', width: '22%' },
+        { title: 'Data Source', dataIndex: 'dataSource', width: '33%', render: (value, row) => h('div', null, [
           h('div', { key: 'type' }, value),
           row.options && h('div', { className: 'attribute-options', key: 'options' }, h(Space, { size: [4, 6], wrap: true }, row.options.map(option => h(Tag, { key: option, style: { marginInlineEnd: 0 } }, option))))
         ]) },
@@ -388,7 +390,7 @@
           h('section', { className: 'category-column', key: 'l3', 'aria-label': 'Sub Product Type categories' }, [
             h('div', { className: 'category-column-heading', key: 'heading' }, [h('span', { key: 'label' }, 'Sub Product Type'), h('span', { className: 'category-count', key: 'count' }, listQuery ? filteredLeaves.length + ' / ' + product.l3.length : product.l3.length)]),
             h('div', { className: 'category-list-filter', key: 'filter' }, h(Input, { value: listQuery, onChange: event => setListQuery(event.target.value), allowClear: true, prefix: icon('SearchOutlined'), placeholder: 'Filter Sub Product Types', 'aria-label': 'Filter Sub Product Types', disabled: !product.l3.length })),
-            h('div', { className: 'category-list', key: 'list', ref: l3ListRef }, filteredLeaves.length ? filteredLeaves.map(name => categoryButton(name, name === currentLeaf, () => selectPath([group.l1, product.l2, name]), buildAttributeDetails({ l3: name }).length + ' attributes', true)) : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'No matching Sub Product Types.' : 'No Sub Product Types in this category.' })))
+            h('div', { className: 'category-list', key: 'list', ref: l3ListRef }, filteredLeaves.length ? filteredLeaves.map(name => categoryButton(name, name === currentLeaf, () => selectPath([group.l1, product.l2, name]), buildPropertyDetails({ l3: name }).length + ' properties', true)) : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'No matching Sub Product Types.' : 'No Sub Product Types in this category.' })))
           ])
         ]) : h('div', { className: 'category-tree-layout' }, [
           h('section', { className: 'category-tree-panel', key: 'tree', 'aria-label': 'Category tree' }, [
@@ -406,13 +408,13 @@
               'aria-label': 'Category hierarchy'
             }))
           ]),
-          h('section', { className: 'category-attributes', key: 'attributes', 'aria-label': 'Category attributes' }, record ? [
+          h('section', { className: 'category-attributes', key: 'properties', 'aria-label': 'Category properties' }, record ? [
             h('div', { className: 'category-attribute-header', key: 'header', 'aria-live': 'polite' }, [h('h2', { key: 'name' }, record.l3), h('div', { className: 'category-attribute-path', key: 'path' }, [record.l1, record.l2, record.l3].join(' / '))]),
             h('div', { className: 'category-attribute-body', key: keyFor([record.l1, record.l2, record.l3]) }, [
-              h('div', { className: 'category-attribute-label', key: 'label' }, [h('span', { key: 'title' }, 'Attributes'), h('span', { className: 'category-count', key: 'count' }, buildAttributeDetails(record).length)]),
-              h(Table, { className: 'category-attribute-table', key: 'table', size: 'small', bordered: true, columns: attributeColumns, dataSource: buildAttributeDetails(record), pagination: false, tableLayout: 'fixed' })
+              h('div', { className: 'category-attribute-label', key: 'label' }, [h('span', { key: 'title' }, 'Properties'), h('span', { className: 'category-count', key: 'count' }, buildPropertyDetails(record).length)]),
+              h(Table, { className: 'category-attribute-table', key: 'table', size: 'small', bordered: true, columns: propertyColumns, dataSource: buildPropertyDetails(record), pagination: false, tableLayout: 'fixed' })
             ])
-          ] : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'Select a Sub Product Type to view its attributes.' : 'No Sub Product Types in this category.' })))
+          ] : h('div', { className: 'category-list-empty' }, h(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: product.l3.length ? 'Select a Sub Product Type to view its properties.' : 'No Sub Product Types in this category.' })))
         ]))
       ]);
     }
@@ -429,10 +431,11 @@
       const groups = React.useMemo(() => filterHierarchy(hierarchy, filters), [filters]);
       const rows = React.useMemo(() => flattenHierarchy(groups), [groups]);
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
-      const detailRows = React.useMemo(() => detailRecord ? buildAttributeDetails(detailRecord) : [], [detailRecord]);
+      const staticPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'static') : [], [detailRecord]);
+      const dynamicPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'dynamic') : [], [detailRecord]);
       const detailColumns = [
-        { title: 'Attribute', dataIndex: 'attribute', width: 180 },
-        { title: 'Configuration', dataIndex: 'type', width: 360, render: (value, record) => h('div', null, [
+        { title: 'Property', dataIndex: 'property', width: 180 },
+        { title: 'Data Source', dataIndex: 'dataSource', width: 360, render: (value, record) => h('div', null, [
           h('div', { key: 'type' }, value),
           record.options && h('div', { className: 'attribute-options', key: 'options' }, h(Space, { size: [8, 8], wrap: true }, record.options.map(option => h(Tag, { key: option }, option))))
         ]) },
@@ -556,15 +559,13 @@
               { key: 'sub-product-type', label: 'Sub Product Type', children: detailRecord.l3 }
             ]
           }),
-          h(Table, {
-            key: 'detail-table',
-            size: 'middle',
-            bordered: true,
-            columns: detailColumns,
-            dataSource: detailRows,
-            pagination: false,
-            scroll: { x: 900 },
-            tableLayout: 'fixed'
+          h(Tabs, {
+            key: 'property-tabs',
+            defaultActiveKey: 'static',
+            items: [
+              { key: 'static', label: 'Static Property', children: h(Table, { key: 'static-property-table', size: 'middle', bordered: true, columns: detailColumns, dataSource: staticPropertyRows, pagination: false, scroll: { x: 900 }, tableLayout: 'fixed' }) },
+              { key: 'dynamic', label: 'Dynamic Property', children: h(Table, { key: 'dynamic-property-table', size: 'middle', bordered: true, columns: detailColumns, dataSource: dynamicPropertyRows, pagination: false, scroll: { x: 900 }, tableLayout: 'fixed' }) }
+            ]
           })
         ] : null)
       ]));
