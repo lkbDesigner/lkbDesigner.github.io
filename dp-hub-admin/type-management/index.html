@@ -135,8 +135,8 @@
 
     const hierarchy = [
       { l1: 'Mobile Recharge', children: [
-        { l2: 'Prepaid', l3: ['Airtime', 'Data Package', 'Voice Package', 'Combo Package', 'SMS Package', 'Roaming Package', 'Social Media Package', 'Night Package', 'Weekend Package', 'International Package', 'Emergency Credit'] },
-        { l2: 'Postpaid', l3: ['Bill Payment', 'Auto Payment'] },
+        { l2: 'Prepaid', l3: ['Airtime', 'Data Package', 'Voice Package', 'Combo Package', 'SMS Package', 'Roaming Package'] },
+        { l2: 'Postpaid', l3: [] },
         { l2: 'Voucher', l3: ['Physical Voucher', 'eVoucher', 'PIN Voucher'] }
       ] },
       { l1: 'Game', children: [
@@ -467,7 +467,7 @@
         { title: 'Sub Product Type', dataIndex: 'l3', width: '50%', render: (values, record) => values.length ? h('div', { className: 'subtype-link-list' }, values.map((name, index) => h('span', { className: 'subtype-link-item', key: name }, [
           h(Typography.Link, { key: 'link', href: '#', onClick: event => { event.preventDefault(); setDetailRecord({ l1: record.l1, l2: record.l2, l3: name }); } }, name),
           index < values.length - 1 && h('span', { className: 'subtype-separator', key: 'separator', 'aria-hidden': 'true' })
-        ]))) : h('span', { className: 'empty-value' }, '—') }
+        ]))) : h('span', { className: 'empty-value' }, '-') }
       ];
       const shouldHighlightTreeCell = (cellLevel, record) => {
         if (!hoverPath || hoverPath.l1 !== record.l1) return false;
@@ -484,7 +484,7 @@
       const treeColumns = [
         { title: 'Type', dataIndex: 'l1', width: '24%', onHeaderCell: () => ({ style: { paddingLeft: 24 } }), onCell: record => treeCellProps('l1', record, { rowSpan: record.l1RowSpan, style: { paddingLeft: 24 } }), render: (value, record) => record.l1RowSpan ? h('div', { className: 'type-cell' }, value) : null },
         { title: 'Product Type', dataIndex: 'l2', width: '24%', onCell: record => treeCellProps('l2', record, { rowSpan: record.l2RowSpan }), render: (value, record) => record.l2RowSpan ? h('span', { className: 'product-type' }, value) : null },
-        { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', onCell: record => treeCellProps('l3', record), render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '—') },
+        { title: 'Sub Product Type', dataIndex: 'l3Name', width: '42%', onCell: record => treeCellProps('l3', record), render: value => value ? h('span', { className: 'subtype-list' }, value) : h('span', { className: 'empty-value' }, '-') },
         { title: 'Action', key: 'action', width: '10%', onCell: record => treeCellProps('l3', record), render: (_, record) => record.l3Name ? h(Button, {
           type: 'link',
           size: 'small',
