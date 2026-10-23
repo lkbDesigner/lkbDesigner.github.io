@@ -15,11 +15,11 @@
     .environment{height:36px;display:flex;align-items:center;padding:0 18px;border-radius:5px;background:#52c41a;color:#fff;font-size:20px}
     .page-header{min-height:62px;display:flex;align-items:center;padding:10px 32px;background:#fff;border-bottom:1px solid #f0f0f0}.page-title{margin:0;color:#262626;font-size:20px;line-height:28px;font-weight:600}
     .content{flex:1;min-height:0;overflow:auto;padding:16px 24px 24px}.list-page{min-height:100%;padding:24px;background:#fff}
-    .filter-panel{padding:0 0 20px;border-bottom:1px solid #f0f0f0}.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 8px}
-    .filter-control{display:flex;align-items:stretch;min-width:0;height:32px}.filter-label{display:flex;align-items:center;flex:none;padding:0 11px;border:1px solid #d9d9d9;border-right:0;border-radius:2px 0 0 2px;background:#fafafa;white-space:nowrap}.filter-value{display:flex;width:100%;min-width:0;height:32px;padding:0 8px 0 12px;border:1px solid #d9d9d9;border-radius:0 2px 2px 0;background:#fff}.filter-value .ant-input,.filter-value .ant-select{width:100%;min-width:0;border:0!important;box-shadow:none!important}.filter-value .ant-input{height:30px;padding:0}.filter-value .ant-select-selector{height:30px!important;padding:0 20px 0 0!important;border:0!important;box-shadow:none!important}.filter-value .ant-select-selection-placeholder,.filter-value .ant-select-selection-item{line-height:30px!important}
-    .filter-actions{grid-column:4;display:flex;align-items:center;justify-content:flex-end;gap:8px}.filter-actions .ant-btn{min-width:72px}
+    .filter-panel{width:100%;min-width:920px;padding:0 0 24px}.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 8px}
+    .filter-control{display:flex;align-items:stretch;min-width:0;height:32px}.filter-label{display:flex;align-items:center;flex:none;padding:0 11px;border:1px solid #d9d9d9;border-right:0;border-radius:6px 0 0 6px;background:#fafafa;font-size:14px;line-height:22px;white-space:nowrap}.filter-value{display:flex;width:100%;min-width:0;height:32px;padding:0 8px 0 12px;border:1px solid #d9d9d9;border-radius:0 6px 6px 0;background:#fff;transition:border-color .2s,box-shadow .2s}.filter-control:focus-within .filter-value{position:relative;z-index:1;border-color:#1677ff;box-shadow:0 0 0 2px rgba(22,119,255,.1)}.filter-value .ant-input,.filter-value .ant-select{width:100%;min-width:0;border:0!important;box-shadow:none!important}.filter-value .ant-input{height:30px;padding:0;font-size:14px}.filter-value .ant-input::placeholder{color:#bfbfbf;opacity:1}.filter-value .ant-select-selector{height:30px!important;padding:0 20px 0 0!important;border:0!important;box-shadow:none!important}.filter-value .ant-select-selection-placeholder,.filter-value .ant-select-selection-item{line-height:30px!important}.filter-value .ant-select-arrow{inset-inline-end:0;color:#bfbfbf}
+    .filter-actions{grid-column:4;display:flex;align-items:center;justify-content:flex-end;gap:8px}
     .table-toolbar{display:flex;align-items:center;gap:8px;padding:16px 0}.table-toolbar .ant-btn{min-width:92px}.table-wrap{overflow:hidden}.event-table .ant-table-thead>tr>th{white-space:nowrap}.event-table .ant-table-tbody>tr>td{vertical-align:middle}.event-id-link,.event-name-link{color:#1677ff;text-decoration:none}.event-id-link:hover,.event-name-link:hover{text-decoration:underline}.status-tag{margin-inline-end:0}.total-events{margin-top:12px;color:#595959;font-size:14px}.design-note-list{margin:0;padding-left:24px;color:#262626}.design-note-list li{padding:0 0 14px;line-height:22px}.design-note-title{display:block;margin-bottom:4px;color:#262626;font-weight:600}.ant-drawer-body{padding-bottom:88px}
-    @media(max-width:1280px){.content{padding:16px}.list-page{padding:20px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-actions{grid-column:2;justify-content:flex-end}}
+    @media(max-width:1199px){.content{padding:16px}.list-page{padding:20px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-actions{grid-column:2;justify-content:flex-end}}
   </style>
 </head>
 <body>
@@ -115,11 +115,11 @@
                 h('div',{className:'list-page'},
                   h('section',{className:'filter-panel'},
                     h('div',{className:'filter-grid'},
-                      h(Field,{label:'ID:',value:filterValues.id,onChange:value=>setFilter('id',value)}),
-                      h(Field,{label:'Name:',value:filterValues.name,onChange:value=>setFilter('name',value)}),
-                      h(Field,{label:'Country/Region:',value:filterValues.country,onChange:value=>setFilter('country',value),options:countryOptions}),
-                      h(Field,{label:'City:',value:filterValues.city,onChange:value=>setFilter('city',value),options:cityOptions}),
-                      h('div',{className:'filter-actions'},h(Button,{type:'primary',onClick:search},'Search'),h(Button,{onClick:reset},'Reset'))
+                      h(Field,{label:'ID',value:filterValues.id,onChange:value=>setFilter('id',value)}),
+                      h(Field,{label:'Name',value:filterValues.name,onChange:value=>setFilter('name',value)}),
+                      h(Field,{label:'Country/Region',value:filterValues.country,onChange:value=>setFilter('country',value),options:countryOptions}),
+                      h(Field,{label:'City',value:filterValues.city,onChange:value=>setFilter('city',value),options:cityOptions}),
+                      h('div',{className:'filter-actions'},h(Button,{icon:h(I.ReloadOutlined),onClick:reset},'reset'),h(Button,{color:'primary',variant:'outlined',icon:h(I.SearchOutlined),onClick:search},'Search'))
                     )
                   ),
                   h('div',{className:'table-toolbar'},h(Button,{icon:h(I.DownloadOutlined),onClick:()=>messageApi.success('Download started')},'Download'),h(Button,null,'Mass Operation')),
@@ -131,7 +131,8 @@
           h(Drawer,{title:'设计修改说明',placement:'right',width:420,open:designDrawerOpen,onClose:()=>setDesignDrawerOpen(false),destroyOnClose:true},
             h('ol',{className:'design-note-list'},
               h('li',null,h('div',{className:'design-note-title'},'全局界面 / Global UI'),'界面按 Ant Design 5.0 规范重构。'),
-              h('li',null,h('div',{className:'design-note-title'},'IEvent List / 列表页面'),'列表页面按 Ant Design 5.0 规范进行改动；保留筛选、搜索、重置、下载、批量操作、表格筛选和分页功能。')
+              h('li',null,h('div',{className:'design-note-title'},'IEvent List / 列表页面'),'列表页面按 Ant Design 5.0 规范进行改动；保留筛选、搜索、重置、下载、批量操作、表格筛选和分页功能。'),
+              h('li',null,h('div',{className:'design-note-title'},'Filter / 筛选模块'),'筛选区复用 Filter Demo：四列组合控件、右侧 Reset / Search 操作组及原生输入、选择交互。')
             )
           )
         )
