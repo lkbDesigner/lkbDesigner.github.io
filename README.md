@@ -26,7 +26,7 @@ Date: 2026-10-14
 
 ## [DP Hub Admin] Product Management Prototype
 
-Static website: [https://lkbdesigner.github.io/dp-hub-admin/combined-product-management/](https://lkbdesigner.github.io/dp-hub-admin/combined-product-management/)
+Static website: [https://lkbdesigner.github.io/dp-hub-admin/listing-management/](https://lkbdesigner.github.io/dp-hub-admin/listing-management/)
 
 Date: 2026-10-26
 
