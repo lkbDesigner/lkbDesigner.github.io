@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Edit Item</title>
+  <link rel="stylesheet" href="vendor/antd-5.24.8-reset.css">
+  <style>
+    :root{font-family:Roboto,"PingFang SC",Arial,sans-serif;color:#303133;background:#f0f2f5}*{box-sizing:border-box}html,body,#root{min-width:1180px;min-height:100%;height:100%;margin:0}.app{height:100vh;overflow:hidden}.sider.ant-layout-sider{background:#f5f7fa!important;border-right:1px solid #edf0f5}.brand{height:56px;padding:14px 20px;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:#303133}.brand-logo{width:28px;height:28px;display:grid;place-items:center;border-radius:7px;background:#26aa99;color:#fff}.shell{min-width:0;background:#f0f2f5}.topbar{height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #f0f0f0}.top-left,.top-right{display:flex;align-items:center;gap:20px}.environment{height:32px;padding:0 18px;display:flex;align-items:center;gap:8px;background:#ff5b5b;color:#fff;font-size:22px}.identity{display:flex;align-items:center;gap:5px;font-size:14px}.page-header{height:102px;padding:16px 24px;display:flex;flex-direction:column;gap:16px;background:#fff;border-bottom:1px solid #f0f0f0}.crumbs{display:flex;align-items:center;gap:4px;height:22px;color:#909399;font-size:14px;line-height:22px}.crumbs .current{color:#303133}.title-row{display:flex;align-items:center;min-height:28px}.back-button{margin-right:16px;padding:0;color:#606266}.page-title{margin:0;font-size:20px;line-height:28px;font-weight:600}.header-spacer{flex:1}.content{flex:1;min-height:0;padding:16px;overflow:auto}.form-card{min-height:100%;padding:28px 24px;background:#fff;border-radius:8px}.section-title{margin:0 0 24px;font-size:14px;line-height:22px;font-weight:600}.form-grid{display:grid;grid-template-columns:617px 617px;column-gap:0;margin-left:24px}.form-column{min-width:0}.form-column .ant-form-item{width:651px}.form-card .ant-form-item{margin-bottom:16px}.form-card .ant-form-item-label{text-align:right}.form-card .ant-form-item-label>label{height:32px;justify-content:flex-end;text-align:right;color:#303133;font-size:14px;line-height:22px}.form-card .ant-form-item-required::before{color:#f56c6c!important}.form-card .ant-input,.form-card .ant-select{width:480px}.readonly{height:32px;display:flex;align-items:center;padding:0 11px;font-size:14px;line-height:22px}.partner-section{margin-top:16px}.partner-row{display:flex;align-items:center;gap:12px;min-height:32px;margin-left:24px}.partner-label{width:159px;flex:none;text-align:right;font-size:14px}.partner-row .ant-checkbox-wrapper{margin-inline-start:0}.recon-field{display:flex;align-items:flex-start;margin:16px 0 0}.recon-label{display:flex;justify-content:flex-end;gap:4px;width:193px;flex:none;padding:5px 12px 0 0;color:#303133;font-size:14px;line-height:22px}.required-mark{color:#f56c6c}.recon-table{width:761px;border:1px solid #e4e7ed;border-radius:4px;overflow:hidden}.recon-table .ant-table{font-size:12px}.recon-table .ant-table-thead>tr>th{height:53px;padding:0 14px;background:rgba(245,245,245,.4);color:#1c1c1e;font-weight:500;line-height:17px;border-bottom:1px solid #e4e7ed}.recon-table .ant-table-tbody>tr>td{height:48px;padding:9px 14px;border-bottom-color:rgba(228,231,237,.6)}.recon-table .ant-table-tbody>tr:last-child>td{border-bottom:0}.recon-table .ant-select{width:126px}.recon-table .ant-input{width:241px}.relationship{display:flex;align-items:center;gap:10px;white-space:nowrap}.relationship .ant-btn{padding:0;font-size:11px}.delete-button{color:#b8b8b8}.footer{height:64px;flex:none;z-index:2;padding:16px 24px;display:flex;align-items:center;justify-content:flex-end;background:#fff;border-top:1px solid #dcdfe6}.footer .ant-space{gap:10px!important}@media(max-width:1280px){.form-grid{grid-template-columns:1fr;margin-left:0}.form-column .ant-form-item{width:auto}.form-card .ant-input,.form-card .ant-select{width:100%}.partner-row{flex-wrap:wrap;margin-left:0}.partner-label{text-align:left}.recon-field{margin-left:0}.recon-label{width:171px}.recon-table{width:761px}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="vendor/react-18.3.1.min.js"></script>
+  <script src="vendor/react-dom-18.3.1.min.js"></script>
+  <script src="vendor/dayjs-1.11.23.min.js"></script>
+  <script src="vendor/antd-5.24.8.min.js"></script>
+  <script src="vendor/ant-design-icons-5.6.1.min.js"></script>
+  <script>
+  (()=>{
+    const h=React.createElement;
+    const {Layout,Menu,ConfigProvider,Form,Input,Select,Checkbox,Button,Space,Table,Tooltip,message}=antd;
+    const I=icons;
+    const options=['Option 1','Option 2','Option 3'].map(value=>({value,label:value}));
+    const menu=[
+      {key:'order',icon:h(I.FileTextOutlined),label:'Order'},
+      {key:'product-pool',icon:h(I.ShoppingOutlined),label:'Product Pool',children:[
+        {key:'item-management',label:'Item Management',children:[{key:'published-item',label:'Published Item'},{key:'manual-upload-item',label:'Manual Upload Item'},{key:'staging-pool',label:'Staging Pool'}]},
+        {key:'product-management',label:'Product Management'},{key:'mapping-management',label:'Mapping Management'},{key:'mass-edit-margin',label:'Mass Edit Margin'},{key:'mass-edit-product',label:'Mass Edit Product'},{key:'virtual-product',label:'Virtual Product'}
+      ]},
+      {key:'routing',icon:h(I.PartitionOutlined),label:'Routing'},{key:'provider',icon:h(I.UserOutlined),label:'Provider'},{key:'partner',icon:h(I.InboxOutlined),label:'Partner'},{key:'setting',icon:h(I.SettingOutlined),label:'Setting'},{key:'event',icon:h(I.CalendarOutlined),label:'Event'},{key:'stock',icon:h(I.AppstoreOutlined),label:'Stock'},{key:'tools',icon:h(I.ToolOutlined),label:'Tools'},{key:'file-download',icon:h(I.DownloadOutlined),label:'File Download'},{key:'approval',icon:h(I.AuditOutlined),label:'Approval Flow Config'},{key:'clearing',icon:h(I.FundOutlined),label:'Clearing & Settlement'},{key:'funding',icon:h(I.DatabaseOutlined),label:'Funding Management'}
+    ];
+    function StaticField({label,children}){return h(Form.Item,{label},h('div',{className:'readonly'},children))}
+    function SelectField({label,required}){return h(Form.Item,{label,required},h(Select,{placeholder:'Select',options}))}
+    function App(){
+      const [form]=Form.useForm();
+      const [messageApi,contextHolder]=message.useMessage();
+      const [reconRows,setReconRows]=React.useState([{key:'1',field:'Field 1'},{key:'2',field:'Field 2'},{key:'3',field:'Field 3'}]);
+      const save=()=>form.validateFields().then(()=>messageApi.success('Saved successfully')).catch(()=>{});
+      const removeReconRow=(key)=>setReconRows(rows=>rows.filter(row=>row.key!==key));
+      const reconColumns=[
+        {title:'Field',dataIndex:'field',width:70,render:value=>h('span',{style:{color:'#8c8c8c'}},value)},
+        {title:'Hub',width:218,render:(_,row)=>h(Select,{size:'small',placeholder:'Select',options,onChange:()=>messageApi.info(row.field+' Hub updated')})},
+        {title:'Supplier',width:269,render:(_,row)=>h(Input,{size:'small',placeholder:'Input','aria-label':row.field+' Supplier'})},
+        {title:h('span',null,'Field Relationship',h('span',{style:{color:'#8c8c8c',fontWeight:400}},'(Optional)')),width:168,render:(_,row)=>h('div',{className:'relationship'},h('span',{style:{color:'#8c8c8c'}},'–'),h(Button,{type:'link',size:'small',onClick:()=>messageApi.info('Add value mapping for '+row.field)},'Add Value Mapping'))},
+        {title:'',width:35,render:(_,row)=>h(Tooltip,{title:'Delete'},h(Button,{type:'text',size:'small',className:'delete-button',icon:h(I.DeleteOutlined),onClick:()=>removeReconRow(row.key),'aria-label':'Delete '+row.field}))}
+      ];
+      return h(ConfigProvider,{theme:{token:{colorPrimary:'#1677ff',borderRadius:4,controlHeight:32,fontSize:14},components:{Menu:{itemBg:'#f5f7fa',subMenuItemBg:'#fff',itemColor:'#303133',itemSelectedBg:'#e6f7ff',itemSelectedColor:'#409eff',subMenuItemSelectedColor:'#303133',itemHoverBg:'#f0f9ff',itemHeight:48,iconSize:18},Form:{labelColor:'#303133'}}}},
+        contextHolder,
+        h(Layout,{className:'app'},
+          h(Layout.Sider,{className:'sider',width:240},h('div',{className:'brand'},h('span',{className:'brand-logo'},h(I.AppstoreOutlined)),'DP Hub Admin'),h(Menu,{mode:'inline',inlineIndent:16,items:menu,selectedKeys:['manual-upload-item'],defaultOpenKeys:['product-pool','item-management'],style:{background:'#f5f7fa',borderInlineEnd:0}})),
+          h(Layout,{className:'shell'},
+            h('header',{className:'topbar'},h('div',{className:'top-left'},h(I.MenuUnfoldOutlined,{style:{fontSize:20,color:'#606266'}}),h('span',{className:'environment'},h(I.WarningFilled),'Live Environment')),h('div',{className:'top-right'},h('span',{className:'identity'},h(I.EnvironmentOutlined),' Indonesia ',h(I.DownOutlined,{style:{fontSize:10}})),h('span',{className:'identity'},'Johnny ',h(I.DownOutlined,{style:{fontSize:10}})))),
+            h('section',{className:'page-header'},h('div',{className:'crumbs'},h('span',null,'Manual Upload Item'),h(I.RightOutlined,{style:{fontSize:10,color:'#909399'}}),h('span',{className:'current'},'Edit Item')),h('div',{className:'title-row'},h(Button,{className:'back-button',type:'text',icon:h(I.LeftOutlined),onClick:()=>messageApi.info('Back') }),h('h1',{className:'page-title'},'Edit Item'),h('span',{className:'header-spacer'}),h(Button,{onClick:()=>messageApi.info('Action log')},'Action Log'))),
+            h('main',{className:'content'},h('section',{className:'form-card'},
+              h('h2',{className:'section-title'},'Item Basic Module'),
+              h(Form,{form,layout:'horizontal',labelCol:{flex:'171px'},wrapperCol:{flex:'0 0 480px'},colon:false,initialValues:{itemName:'Item 1',partners:['digital']},requiredMark:true},
+                h('div',{className:'form-grid'},
+                  h('div',{className:'form-column'},
+                    h(StaticField,{label:'Item ID'},'112358'),
+                    h(Form.Item,{label:'Item Name',name:'itemName'},h(Input,null)),
+                    h(StaticField,{label:'Provider Name'},'Jakarta DC'),
+                    h(StaticField,{label:'Provider ID'},h('a',null,'221234')),
+                    h(Form.Item,{label:'Provider Product Code',name:'providerProductCode',required:true,rules:[{required:true,message:'Please input Provider Product Code'}]},h(Input,{placeholder:'Input'})),
+                    h(SelectField,{label:'Type',required:true}),h(SelectField,{label:'Product Type',required:true}),h(SelectField,{label:'Sub Product Type',required:true})
+                  ),
+                  h('div',{className:'form-column'},h(SelectField,{label:'Attributes 1'}),h(SelectField,{label:'Attributes 2'}),h(SelectField,{label:'Attributes 3'}),h(SelectField,{label:'Attributes 4'}),h(SelectField,{label:'Attributes 5'}),h(SelectField,{label:'Attributes 6'}))
+                ),
+                h('div',{className:'partner-section'},h('h2',{className:'section-title'},'Bind Partner'),h('div',{className:'partner-row'},h('span',{className:'partner-label'},h('span',{style:{color:'#f56c6c',marginRight:4}},'*'),'Binding Partner'),h(Form.Item,{name:'partners',valuePropName:'value',noStyle:true},h(Checkbox.Group,{options:[{label:'Digital-Purchase',value:'digital'},{label:'Intra',value:'intra'},{label:'ShopeePay',value:'shopeepay'},{label:'SeaBank',value:'seabank'},{label:'Invest',value:'invest'},{label:'FoodDriver',value:'fooddriver'},{label:'Checkbox',value:'checkbox'}]})))),h('div',{className:'recon-field'},h('div',{className:'recon-label'},h('span',{className:'required-mark'},'*'),h('span',null,'Recon field')),h('div',{className:'recon-table'},h(Table,{columns:reconColumns,dataSource:reconRows,pagination:false,size:'small',tableLayout:'fixed'})))
+              )
+            )),
+            h('footer',{className:'footer'},h(Space,{size:10},h(Button,{onClick:()=>form.resetFields()},'Cancel'),h(Button,{type:'primary',ghost:true,onClick:save},'Save'),h(Button,{type:'primary',disabled:true},'Publish')))
+          )
+        )
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+  })();
+  </script>
+</body>
+</html>

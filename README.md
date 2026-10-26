@@ -23,3 +23,11 @@ Static website: [https://lkbdesigner.github.io/dp-hub-admin/type-management/](ht
 Update: Standardized empty Sub Product Type and Action display.
 
 Date: 2026-10-14
+
+## [DP Hub Admin] Product Management Prototype
+
+Static website: [https://lkbdesigner.github.io/dp-hub-admin/combined-product-management/](https://lkbdesigner.github.io/dp-hub-admin/combined-product-management/)
+
+Date: 2026-10-26
+
+包含 Item Pool、Edit Item、Linked Hub Product、Bind Partner、Clearing Rule、核心字段影响提醒等静态交互。

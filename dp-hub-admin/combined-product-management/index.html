@@ -1,0 +1,1635 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product Pool · DP Hub Admin</title>
+  <link rel="stylesheet" href="vendor/antd-5.24.8-reset.css">
+  <style>
+    :root {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", Arial, sans-serif;
+      color: #262626;
+      background: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    html, body, #root { min-width: 1120px; min-height: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { background: #f5f5f5; }
+    .app { height: 100vh; min-height: 0; overflow: hidden; }
+    .sider { height: 100vh; flex: none; overflow: hidden; }
+    .sider .ant-layout-sider-children { height: 100%; overflow-x: hidden; overflow-y: auto; }
+    .brand {
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .brand-logo {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      flex: none;
+      border-radius: 7px;
+      background: #1677ff;
+      color: #fff;
+    }
+    .shell { min-width: 0; height: 100vh; min-height: 0; overflow: hidden; }
+    .topbar {
+      height: 56px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: none;
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .top-left, .top-right, .identity { display: flex; align-items: center; }
+    .top-left { gap: 16px; }
+    .top-right { gap: 24px; margin-left: auto; }
+    .hamburger { font-size: 20px; color: #595959; cursor: pointer; }
+    .identity { gap: 5px; white-space: nowrap; color: #262626; }
+    .page-head {
+      min-height: 60px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      flex: none;
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .list-head { height: 60px; min-height: 60px; }
+    .list-head .page-head-inner { display: flex; align-items: center; }
+    .page-head-inner { width: 100%; min-width: 0; }
+    .context-head { min-height: 102px; padding: 16px 24px; }
+    .title-row { height: 28px; min-height: 28px; display: flex; align-items: center; gap: 8px; }
+    .page-title { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; }
+    .header-spacer { flex: 1; }
+    .design-note-button { color: #1677ff; }
+    .design-note h3 { margin: 0 0 8px; font-size: 15px; line-height: 22px; }
+    .design-note p { margin: 0 0 16px; color: #595959; line-height: 22px; }
+    .design-note ul { margin: 0 0 16px; padding-left: 20px; color: #595959; line-height: 24px; }
+    .page-tabs {
+      height: 52px;
+      padding: 0 24px;
+      flex: none;
+      background: #fff;
+    }
+    .main {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+    }
+    .panel { min-height: 100%; background: #fff; }
+    .filter-panel { padding: 24px; }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px 8px;
+    }
+    .filter-control {
+      min-width: 0;
+      height: 32px;
+      display: flex;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+    }
+    .filter-label {
+      min-width: max-content;
+      display: flex;
+      align-items: center;
+      padding: 0 11px;
+      border: 1px solid #d9d9d9;
+      border-right: 0;
+      border-radius: 6px 0 0 6px;
+      background: #fafafa;
+      white-space: nowrap;
+    }
+    .filter-value {
+      min-width: 0;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 0 6px 6px 0;
+      background: #fff;
+    }
+    .filter-value:focus-within { position: relative; z-index: 1; border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.1); }
+    .filter-value .ant-input { padding: 0; }
+    .filter-value .ant-select-selector { padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+    .filter-value .ant-select-arrow { right: 0; }
+    .filter-actions {
+      grid-column: 4;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .filter-actions .ant-btn { border-radius: 6px; }
+    .actionbar {
+      min-height: 64px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .actionbar .action-spacer { flex: 1; }
+    .actionbar .ant-btn { height: 32px; border-radius: 4px; }
+    .selection-summary {
+      height: 66px;
+      padding: 0 24px 16px;
+      background: #fff;
+    }
+    .selection-summary-inner {
+      height: 50px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: 8px;
+    }
+    .selection-summary-text { flex: 1; color: #303844; font-weight: 500; }
+    .table-wrap { padding: 0 24px 24px; }
+    .product-list-table, .product-list-table .ant-table { font-family: Roboto, Arial, sans-serif; font-size: 14px; color: #272d37; }
+    .product-list-table .ant-table-thead > tr > th { font-family: Roboto, Arial, sans-serif; font-size: 14px; font-weight: 500; color: #272d37; }
+    .product-list-table .ant-table-tbody > tr > td { font-family: Roboto, Arial, sans-serif; font-size: 14px; color: #272d37; }
+    .field-stack { display: grid; gap: 6px; line-height: 20px; color: #272d37; }
+    .action-cell { justify-items: start; align-items: start; text-align: left; }
+    .inline-label { color: rgba(0,0,0,0.6); }
+    .inline-value { color: #262626; }
+    .item-name-text { color: #272d37; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 20px; }
+    .item-name-trigger { display: inline-flex; align-items: center; gap: 4px; color: #272d37; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 20px; cursor: pointer; }
+    .item-name-trigger .anticon { color: #8c8c8c; font-size: 16px; }
+    .item-name-editor { width: 424px; padding: 8px; }
+    .item-name-editor-title { margin-bottom: 12px; color: #272d37; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 22px; }
+    .item-name-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .partner-edit-button { color: #272d37 !important; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 20px; }
+    .partner-edit-button .anticon { color: #272d37; font-size: 16px; }
+    .partner-cell { display: flex; align-items: center; gap: 4px; width: 100%; }
+    .partner-cell-text { flex: 1 1 auto; min-width: 0; color: #272d37; line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+    .partner-cell-edit { flex: none; padding: 0; height: 20px; color: #8c8c8c !important; }
+    .partner-cell-edit .anticon { font-size: 16px; }
+    .partner-editor { width: 424px; padding: 8px; }
+    .partner-editor-title { margin-bottom: 12px; color: #272d37; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 22px; }
+    .partner-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .action-cell .ant-btn { color: #2673dd; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 20px; }
+    .status-tag { margin-inline-end: 0; padding-inline: 8px; border-radius: 4px; font-family: Inter, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 500; }
+    .status-tag.ant-tag-success { color: #52c41a; background: #f6ffed; border-color: #b7eb8f; }
+    .status-tag.ant-tag-error { color: #ff4d4f; background: #fff2f0; border-color: #ffccc7; }
+    .link-button { padding: 0; height: auto; }
+    .rule-trigger { display: inline-flex; align-items: center; gap: 8px; }
+    .rule-trigger > .ant-btn:first-child { width: 24px; height: 24px; min-width: 24px; padding: 0; color: #b7c0cc; border: 1px solid #d9dfe8; border-radius: 3px; }
+    .rule-trigger > .ant-btn:first-child:hover { color: #1677ff; border-color: #1677ff; }
+    .product-list-table .ant-table-row-expand-icon-cell { display: none !important; }
+    .product-list-table .ant-table-selection-column { text-align: left !important; padding-left: 16px !important; padding-right: 8px !important; }
+    .selection-header { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; }
+    .selection-dropdown-trigger { width: 16px; height: 20px; min-width: 16px; padding: 0; color: #595959; }
+    .selection-dropdown-trigger .anticon { font-size: 12px; }
+    .status-line { display: flex; align-items: center; gap: 6px; }
+    .rule-table { margin: 16px 24px; }
+    .rule-table-wrap { padding: 8px 24px 16px; background: #fafafa; }
+    .workflow-main { display: flex; flex-direction: column; }
+    .content {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+    }
+    .flow-card { min-height: 100%; }
+    .mass-steps { width: 100%; }
+    .step-detail { max-width: 600px; }
+    .filter-form { width: min(540px, 100%); display: flex; flex-direction: column; gap: 20px; }
+    .filter-row { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .filter-form-item { min-width: 0; }
+    .download-row { width: 100%; display: flex; justify-content: flex-end; }
+    .upload-step { position: relative; width: min(700px, 100%); }
+    .upload-label { height: 32px; display: flex; align-items: center; }
+    .required-mark { margin-right: 4px; color: #ff4d4f; }
+    .upload-summary { width: min(840px, 100%); margin-top: 16px; }
+    .uploaded-file-row { width: 100%; min-height: 32px; margin-top: 8px; padding: 8px; display: flex; align-items: center; gap: 8px; border-radius: 4px; color: #272d37; font-size: 14px; line-height: 16px; }
+    .uploaded-file-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .uploaded-file-actions { display: inline-flex; align-items: center; gap: 16px; }
+    .uploaded-file-actions .ant-btn { width: 16px; height: 16px; min-width: 16px; padding: 0; color: #595959; }
+    .validation-switch { position: absolute; left: 472px; top: 58px; width: 220px; min-height: 94px; padding: 12px 16px; display: inline-flex; flex-direction: column; align-items: stretch; gap: 8px; border: 1px solid #f0f0f0; border-radius: 4px; background: #fff; }
+    .validation-options-label { color: #595959; font-size: 14px; }
+    .validation-switch-buttons { display: flex; gap: 8px; }
+    .validation-switch-buttons .ant-btn { flex: 1; }
+    .validation-error-info { width: min(680px, 100%); margin-top: 16px; }
+    .validation-error-info .ant-alert { margin-bottom: 12px; }
+    .validation-error-title { color: #ff4d4f; }
+    .validation-file-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; color: #1677ff; cursor: pointer; }
+    .validation-file-link .ant-btn { padding: 0; height: 20px; color: #1677ff; }
+    .edit-card { padding: 24px; background: #fff; }
+    .section-heading {
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .section-heading h2 { margin: 0; font-size: 16px; line-height: 24px; }
+    .edit-form-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+      margin: 0 16px;
+    }
+    .form-column { min-width: 0; }
+    .edit-subtitle {
+      margin: 0 0 16px;
+      color: #262626;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 22px;
+    }
+    .edit-subtitle:not(:first-child) { margin-top: 24px; }
+    .edit-field-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; }
+    .edit-field-row .edit-form-item { width: 100%; min-width: 0; }
+    .edit-field-row .ant-form-item-label { flex: 0 0 160px !important; justify-content: flex-end; padding-inline-end: 0; text-align: right !important; }
+    .edit-field-row .ant-form-item-label > label { width: 100%; justify-content: flex-end; text-align: right; }
+    .edit-field-row .ant-form-item-control { flex: 1 1 auto !important; min-width: 0; }
+    .edit-field-row .ant-form-item-control-input { min-width: 0; }
+    .edit-field-row .ant-input,
+    .edit-field-row .ant-select { max-width: 240px !important; }
+    .dynamic-property-action { min-height: 32px; display: flex; align-items: center; }
+    .readonly { min-height: 32px; display: flex; align-items: center; }
+    .module-section { margin-top: 24px; }
+    .module-panel { margin: 0 16px; padding: 16px 24px; background: #f5f5f5; border-radius: 2px; }
+    .module-panel .module-callout { margin: 0 0 12px; padding: 0; border: 0; background: transparent; color: #8c8c8c; }
+    .module-panel .module-callout .ant-alert-icon { color: #8c8c8c; }
+    .module-panel.linked-panel { background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px; }
+    .module-panel.linked-panel .module-callout { color: #52c41a; }
+    .module-panel.linked-panel .module-callout .ant-alert-icon { color: #52c41a; }
+    .linked-product-row { display: flex; align-items: center; gap: 12px; min-height: 40px; }
+    .linked-product-label { color: #272d37; white-space: nowrap; }
+    .linked-product-value { color: #595959; min-width: 12px; }
+    .linked-panel .linked-product-value { color: #1677ff; min-width: 0 !important; width: auto !important; padding: 0; margin-left: 0; height: auto; line-height: 22px; }
+    .unlink-product-button { color: #8c8c8c !important; margin-left: 8px; padding: 0 4px; }
+    .unlink-product-button .anticon { font-size: 20px; }
+    .linked-product-row .ant-btn { height: 32px; border-radius: 6px; }
+    .linked-product-row .ant-btn-primary { min-width: 288px; }
+    .linked-product-row .ant-btn:not(.ant-btn-primary) { min-width: 235px; }
+    .linked-panel .linked-product-row .ant-btn-primary { min-width: 188px; }
+    .linked-panel .linked-product-row .ant-btn:not(.ant-btn-primary) { min-width: 180px; }
+    .linked-panel .linked-product-row .unlink-product-button { min-width: 24px !important; width: 24px; }
+    .linked-panel .linked-product-row .unlink-product-button { margin-left: 0; }
+    .linked-panel .linked-product-row .ant-btn-primary { margin-left: 0; }
+    .linked-panel .linked-product-row .ant-btn:not(.ant-btn-primary):not(.unlink-product-button) { margin-left: 0; }
+    .edit-card .section-heading .ant-tag { height: 26px; padding: 0 8px; line-height: 24px; }
+    .edit-form .ant-form-item-label { padding-inline-end: 0; }
+    .partner-form-item .ant-form-item-control { flex: 1 1 auto !important; min-width: 0; }
+    .partner-form-item .ant-checkbox-group { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; width: min(1120px, 100%); max-width: 1120px; }
+    .partner-form-item .ant-checkbox-wrapper { margin-inline-start: 0 !important; white-space: nowrap; }
+    .partner-options { display: flex; flex-wrap: wrap; gap: 16px; }
+    .module-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 0 16px 16px; }
+    .edit-rule-actions .ant-btn { color: #1677ff; border-color: #1677ff; }
+    .edit-rule-actions .ant-btn:disabled,
+    .edit-rule-actions .ant-btn.ant-btn-disabled {
+      color: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.04);
+      border-color: #d9d9d9;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .clearing-rule-section { position: relative; }
+    .clearing-rule-section > .module-actions { position: absolute; top: -8px; right: 16px; margin: 0; }
+    .module-table { margin: 0 16px; }
+    .module-callout { margin: 0 16px 16px; }
+    .module-footer {
+      height: 64px;
+      flex: none;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #fff;
+      border-top: 1px solid #f0f0f0;
+    }
+    .core-impact-control { display: flex; align-items: center; gap: 8px; color: #262626; font-size: 14px; line-height: 22px; }
+    .module-footer-actions { display: flex; align-items: center; gap: 8px; }
+    .core-property-field { min-width: 0; }
+    .core-field-warning { width: 240px; max-width: 240px; margin: -8px 0 8px 160px; color: #faad14; font-size: 12px; font-weight: 400; line-height: 20px; letter-spacing: -0.01px; white-space: normal; overflow-wrap: break-word; }
+    .modal-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+    .link-product-modal { padding-top: 4px; }
+    .link-product-select { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .link-product-select-label { flex: 0 0 160px; color: #272d37; white-space: nowrap; }
+    .link-product-select .ant-select { flex: 1; }
+    .link-product-select-control.mismatch .ant-select-selector { border-color: #ff4d4f !important; }
+    .link-product-status { margin: -4px 0 12px 152px; font-size: 14px; line-height: 22px; }
+    .link-product-status.success { color: #52c41a; }
+    .link-product-status.error { color: #ff4d4f; }
+    .link-product-info-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .link-product-info-table th, .link-product-info-table td { height: 58px; padding: 12px 16px; border: 1px solid #f0f0f0; text-align: left; vertical-align: middle; }
+    .link-product-info-table th { background: #fafafa; font-weight: 600; }
+    .link-product-info-table th:first-child, .link-product-info-table td:first-child { width: 33%; }
+    .link-product-info-table .link-product-muted { color: #1677ff; }
+    .link-product-create-note { display: flex; align-items: center; gap: 4px; margin-top: 12px; color: #8c8c8c; font-size: 14px; }
+    .link-product-create-note .ant-btn { padding: 0; height: 22px; }
+    .modal-actions.link-modal-footer { width: 100%; justify-content: flex-end !important; margin-left: auto; }
+    .create-hub-product-copy { margin: 0; color: #272d37; font-size: 14px; line-height: 22px; }
+    .unlink-copy { margin: 0; color: #272d37; font-size: 14px; line-height: 22px; }
+    .modal-title-with-note { display: flex; align-items: center; gap: 24px; }
+    .modal-title-with-note .dev-note { color: #262626; font-size: 14px; font-weight: 400; }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .result-card { max-width: 960px; margin: 0 auto; }
+    .result-extra { display: flex; gap: 8px; justify-content: center; }
+    @media (max-width: 1440px) {
+      .edit-field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1240px) {
+      html, body, #root { min-width: 0; }
+      .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-actions { grid-column: 2; }
+      .edit-form-grid { margin-left: 0; }
+      .edit-card { padding: 24px 16px; }
+      .module-panel, .module-actions, .module-table, .module-callout { margin-left: 0; margin-right: 0; }
+    }
+    @media (max-width: 760px) {
+      .edit-field-row { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="vendor/react-18.3.1.min.js"></script>
+  <script src="vendor/react-dom-18.3.1.min.js"></script>
+  <script src="vendor/dayjs-1.11.23.min.js"></script>
+  <script src="vendor/antd-5.24.8.min.js"></script>
+  <script src="vendor/ant-design-icons-5.6.1.min.js"></script>
+  <script>
+    (() => {
+      const h = React.createElement;
+      const {
+        Layout, Menu, ConfigProvider, Input, Select, Button, Dropdown, Tabs, Table, Tag, Space,
+        Tooltip, Popover, Steps, Upload, Card, Form, Checkbox, Switch, Alert, Modal, Drawer, Result,
+        Empty, Breadcrumb, Descriptions, message, Typography
+      } = antd;
+      const I = icons;
+      const { Dragger } = Upload;
+      const downloadTextFile = (filename, content, type = "text/plain;charset=utf-8") => {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+
+      const menu = [
+        { key: "order", icon: h(I.FolderOpenOutlined), label: "Order" },
+        {
+          key: "product-pool",
+          icon: h(I.ShoppingOutlined),
+          label: "Product Pool",
+          children: [
+            {
+              key: "item-management",
+              label: "Item Management",
+              children: [
+                { key: "published-item", label: "Published Item" },
+                { key: "manual-upload-item", label: "Manual Upload Item" },
+                { key: "api-sync-item", label: "API Sync Item" }
+              ]
+            },
+            { key: "product-management", label: "Product Management" },
+            { key: "mapping-management", label: "Mapping Management" },
+            { key: "mass-edit-margin", label: "Mass Edit Margin" },
+            { key: "mass-edit-product", label: "Mass Edit Product" },
+            { key: "virtual-product", label: "Virtual Product" }
+          ]
+        },
+        { key: "routing", icon: h(I.PartitionOutlined), label: "Routing" },
+        { key: "provider", icon: h(I.UserOutlined), label: "Provider" },
+        { key: "partner", icon: h(I.InboxOutlined), label: "Partner" },
+        { key: "setting", icon: h(I.SettingOutlined), label: "Setting" },
+        { key: "event", icon: h(I.CalendarOutlined), label: "Event" },
+        { key: "stock", icon: h(I.AppstoreOutlined), label: "Stock" },
+        { key: "tools", icon: h(I.ToolOutlined), label: "Tools" },
+        { key: "file-download", icon: h(I.DownloadOutlined), label: "File Download" },
+        { key: "approval", icon: h(I.AuditOutlined), label: "Approval Flow Config" },
+        { key: "clearing", icon: h(I.FundOutlined), label: "Clearing & Settlement" },
+        { key: "funding", icon: h(I.DatabaseOutlined), label: "Funding Management" },
+        { key: "reconciliation", icon: h(I.ProfileOutlined), label: "Reconciliation" }
+      ];
+
+      const initialRows = [
+        {
+          key: "1", item: "112233", name: "Item1", provider: "Jarkarta DC", providerId: "221234",
+          code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
+          category3: "Category 3", bind: "Completed",
+          partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
+        },
+        {
+          key: "2", item: "112358", name: "Item 1", provider: "Jarkarta DC", providerId: "221234",
+          code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
+          category3: "Category 3", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
+        },
+        {
+          key: "3", item: "112359", name: "Item 2", provider: "Jarkarta DC", providerId: "221234",
+          code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
+          category3: "Category 3", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
+        },
+        {
+          key: "4", item: "112360", name: "Item 3", provider: "Jarkarta DC", providerId: "221234",
+          code: "-", rule: "Not Configuration", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "-", category2: "-",
+          category3: "-", bind: "Incompleted", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: false
+        }
+      ];
+
+      const ruleRows = [
+        { key: "r1", id: "212", name: "Rule 1", level: "ID: 1232324", type: "Settlement", partner: "Digital-purchase", clearingType: "COGS", supplyPrice: "Rp 10,050", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: true, updated: "2026/06/22 12:00" },
+        { key: "r2", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: true, updated: "2026/06/22 12:00" },
+        { key: "r3", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: false, updated: "2026/06/22 12:00" }
+      ];
+      const getModuleStatuses = row => row.key === "1"
+        ? { itemBasic: true, linkedHubProduct: true, bindPartner: true, clearingRule: true }
+        : row.key === "2"
+          ? { itemBasic: true, linkedHubProduct: true, bindPartner: false, clearingRule: false }
+          : { itemBasic: false, linkedHubProduct: false, bindPartner: true, clearingRule: false };
+
+      function FilterField(props) {
+        const control = props.select
+          ? h(Select, {
+              value: props.value || undefined,
+              placeholder: "Please select",
+              options: (props.options || []).map(value => ({ value, label: value })),
+              allowClear: true,
+              variant: "borderless",
+              style: { width: "100%", minWidth: 0 },
+              onChange: props.onChange,
+              "aria-label": props.label
+            })
+          : h(Input, {
+              value: props.value || "",
+              placeholder: "Input",
+              variant: "borderless",
+              style: { width: "100%", minWidth: 0 },
+              onChange: event => props.onChange(event.target.value),
+              "aria-label": props.label
+            });
+        return h("div", { className: "filter-control" },
+          h("span", { className: "filter-label" }, props.label),
+          h("span", { className: "filter-value" }, control)
+        );
+      }
+
+      function MassWorkflow(props) {
+        const { mode, onBack, notify, notifySuccess } = props;
+        const [form] = Form.useForm();
+        const [values, setValues] = React.useState({});
+        const [fileList, setFileList] = React.useState([]);
+        const [resultState, setResultState] = React.useState(null);
+        const [validationMode, setValidationMode] = React.useState("correct");
+        const [validationFileName, setValidationFileName] = React.useState("validation_result.csv");
+        const [recordAction, setRecordAction] = React.useState(null);
+        const isEdit = mode === "mass-edit";
+        const title = isEdit ? "Mass Edit Item" : "Mass Add Item";
+        const productTypes = ["Gift Card", "Mobile Top-up", "Game"];
+        const subProductTypes = ["Digital", "Prepaid", "Postpaid"];
+        const providers = ["Jakarta DC"];
+        const types = ["Evoucher", "Physical", "Service"];
+        const carriers = ["Carrier 1", "Carrier 2", "Carrier 3"];
+        const ready = Boolean(values.provider && values.type && values.productType && values.subProductType);
+        const invalidCount = recordAction === "fixed" ? 4 : 5;
+        const validCount = recordAction === "fixed" ? 36 : 35;
+        const currentStep = fileList.length ? 1 : 0;
+        const onUploadChange = change => { setFileList(change.fileList.slice(-1)); setValidationMode("correct"); setResultState(null); };
+        const downloadTemplate = () => {
+          downloadTextFile(
+            "mass-add-item-template.csv",
+            "Item ID,Item Name,Provider,Type,Product Type,Sub Product Type,Carrier\n112358,Item 1,Jakarta DC,Evoucher,Gift Card,Digital,Carrier 1\n",
+            "text/csv;charset=utf-8"
+          );
+          notify("Template downloaded");
+        };
+        const field = item => h(Form.Item, {
+          key: item.name,
+          className: "filter-form-item",
+          style: { marginBottom: 0 },
+          name: item.name,
+          label: item.label,
+          required: item.required,
+          rules: item.required ? [{ required: true, message: "Please select " + item.label }] : undefined
+        }, h(Select, {
+          placeholder: "Select",
+          allowClear: true,
+          style: { width: "100%" },
+          options: item.options.map(value => ({ value, label: value })),
+          disabled: item.disabled
+        }));
+        const previewRows = [
+          {
+            key: "1", item: "112358", name: "Item 1",
+            validation: recordAction === "fixed" ? "Valid" : recordAction === "excluded" ? "Excluded" : "Invalid",
+            error: recordAction === "fixed" ? "—" : "Type is required",
+            affected: isEdit
+          },
+          { key: "2", item: "112359", name: "Item 2", validation: "Valid", error: "—", affected: false },
+          { key: "3", item: "112360", name: "Item 3", validation: "Valid", error: "—", affected: isEdit }
+        ];
+        const previewColumns = [
+          { title: "Item ID", dataIndex: "item", width: 100 },
+          { title: "Item Name", dataIndex: "name", width: 140 },
+          { title: "Validation", dataIndex: "validation", width: 110, render: value => h(Tag, { color: value === "Valid" ? "success" : value === "Excluded" ? "default" : "error" }, value) },
+          { title: "Error Message", dataIndex: "error", width: 220 },
+          { title: "Hub Product Impact", dataIndex: "affected", width: 170, render: value => value ? h(Tag, { color: "warning" }, "Affected") : "—" },
+          { title: "Action", key: "action", width: 150, render: (_, row) => row.key !== "1" ? "—" : recordAction === "fixed" ? h(Tag, { color: "success" }, "Corrected") : recordAction === "excluded" ? h(Button, { type: "link", className: "link-button", onClick: () => setRecordAction(null) }, "Undo") : h(Space, { size: 8 }, h(Button, { type: "link", className: "link-button", onClick: () => { setRecordAction("fixed"); notify("Item 112358 corrected"); } }, "Correct"), h(Button, { type: "link", danger: true, className: "link-button", onClick: () => setRecordAction("excluded") }, "Exclude")) }
+        ];
+        const stepItems = [
+          {
+            title: "Filter Items that you want to upload",
+            description: h("div", { className: "step-detail" },
+              h(Form, {
+                form,
+                layout: "vertical",
+                className: "filter-form",
+                onValuesChange: (_, all) => setValues(all)
+              },
+                field({ name: "provider", label: "Provider", required: true, options: providers }),
+                h("div", { className: "filter-row" },
+                  field({ name: "type", label: "Type", required: true, options: types }),
+                  field({ name: "productType", label: "Product Type", required: true, options: productTypes, disabled: !values.type }),
+                  field({ name: "subProductType", label: "Sub Product Type", required: true, options: subProductTypes, disabled: !values.productType })
+                ),
+                field({ name: "carrier", label: "Carrier", required: false, options: carriers }),
+                h("div", { className: "download-row" },
+                  h(Button, { type: "primary", disabled: !ready, onClick: downloadTemplate }, "Download Template")
+                )
+              )
+            )
+          },
+          {
+            title: "Upload the Items list",
+            description: h("div", { className: "step-detail" },
+              h("div", { className: "upload-step" },
+                h("div", { className: "upload-label" },
+                  h("span", { className: "required-mark" }, "*"),
+                  h("span", null, "Upload File")
+                ),
+                  h(Dragger, {
+                  style: { width: "100%" },
+                  name: "file",
+                  accept: ".xlsx,.csv",
+                  maxCount: 1,
+                  fileList,
+                  beforeUpload: file => {
+                    if (!/\.(xlsx|csv)$/i.test(file.name)) {
+                      notify("Please upload an .xlsx or .csv file");
+                      return Upload.LIST_IGNORE;
+                    }
+                    setRecordAction(null);
+                    return false;
+                  },
+                  onChange: onUploadChange,
+                  onRemove: () => { setFileList([]); setValidationMode("correct"); return true; },
+                  showUploadList: false
+                },
+                  h(I.InboxOutlined, { style: { fontSize: 40, color: "#1677ff" } }),
+                  h("p", { className: "ant-upload-text" }, "Click or drag file to this area to upload"),
+                  h("p", { className: "ant-upload-hint" }, "Support for a single xlsx or csv file upload.")
+                ),
+                fileList.length ? h("div", { className: "uploaded-file-row" },
+                  h(I.PaperClipOutlined, { style: { color: "#595959", fontSize: 16 } }),
+                  h("span", { className: "uploaded-file-name" }, fileList[0].name),
+                  h("div", { className: "uploaded-file-actions" },
+                    h(Button, { type: "text", icon: h(I.DownloadOutlined), "aria-label": "Download uploaded file", onClick: () => {
+                      const file = fileList[0].originFileObj || fileList[0];
+                      const url = URL.createObjectURL(file);
+                      const link = document.createElement("a"); link.href = url; link.download = fileList[0].name; document.body.appendChild(link); link.click(); link.remove();
+                      setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    } }),
+                    h(Button, { type: "text", danger: true, icon: h(I.DeleteOutlined), "aria-label": "Remove uploaded file", onClick: () => { setFileList([]); setValidationMode("correct"); setRecordAction(null); } })
+                  )
+                ) : null,
+                fileList.length ? h("div", { className: "validation-switch" },
+                  h("div", { className: "validation-options-label" }, "Validation result"),
+                  h("div", { className: "validation-switch-buttons" },
+                    h(Button, { type: validationMode === "correct" ? "primary" : "default", onClick: () => setValidationMode("correct") }, "Correct"),
+                    h(Button, { danger: validationMode === "error", type: validationMode === "error" ? "primary" : "default", onClick: () => setValidationMode("error") }, "Error")
+                  )
+                ) : null,
+                resultState === "partial" ? h("div", { className: "validation-error-info" },
+                  h(Alert, {
+                    type: "error",
+                    showIcon: true,
+                    message: h("div", null,
+                      h("div", { className: "validation-error-title" }, invalidCount + " records contain errors"),
+                      h("div", { className: "validation-file-link", onClick: () => downloadTextFile(validationFileName, "Item ID,Item Name,Validation,Failed Reason\n112358,Item 1,Failed,Type is required\n", "text/csv;charset=utf-8") },
+                        validationFileName,
+                        h(Button, { type: "text", icon: h(I.DownloadOutlined), "aria-label": "Download validation file" })
+                      )
+                    ),
+                    description: "Download the validation file to review failed reasons."
+                  })
+                ) : null
+              )
+            )
+          }
+        ];
+        const submit = () => {
+          form.validateFields().then(async () => {
+            if (!fileList.length) {
+              notify("Please upload an .xlsx or .csv file");
+              return;
+            }
+            const uploaded = fileList[0];
+            if (validationMode === "error") {
+              const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
+              setValidationFileName(baseName + "_validation.csv");
+              setFileList([]);
+              setRecordAction(null);
+              setResultState("partial");
+              return;
+            }
+            notifySuccess("Submitted successfully");
+            onBack();
+          }).catch(() => {});
+        };
+        const reset = () => {
+          form.resetFields();
+          setValues({});
+          setFileList([]);
+          setResultState(null);
+          setValidationFileName("validation_result.csv");
+          setRecordAction(null);
+        };
+
+        return h(React.Fragment, null,
+          h("section", { className: "page-head context-head" },
+            h("div", { className: "page-head-inner" },
+              h(Breadcrumb, { style: { marginBottom: 4 }, items: [
+                { title: h("a", { href: "#item-pool", onClick: event => { event.preventDefault(); onBack(); } }, "Manual Upload Item") },
+                { title: title }
+              ] }),
+              h("div", { className: "title-row" },
+                h(Button, { type: "text", icon: h(I.LeftOutlined), onClick: onBack, "aria-label": "Back to Item Pool" }),
+                h("h1", { className: "page-title" }, title),
+                h("span", { className: "header-spacer" })
+              )
+            )
+          ),
+          h("main", { className: "content" },
+            h(Card, { className: "flow-card", styles: { body: { minHeight: "100%", padding: "40px 48px" } } },
+              h(Steps, {
+                className: "mass-steps",
+                direction: "vertical",
+                current: currentStep,
+                items: stepItems
+              })
+            )
+          ),
+          h("footer", { className: "module-footer" },
+            h(Button, { onClick: onBack }, "Cancel"),
+            h(Button, { type: "primary", onClick: submit }, "Submit")
+          )
+        );
+      }
+
+      function EditItem(props) {
+        const { item, onBack, notify, mode = "edit" } = props;
+        const isAdd = mode === "add";
+        const editBaseLinkedComplete = !isAdd && (item.key === "1" || item.key === "2");
+        const editHasPartner = !isAdd && item.key !== "2";
+        const pageTitle = isAdd ? "Add Item" : "Edit Item";
+        const [form] = Form.useForm();
+        const [ruleForm] = Form.useForm();
+        const [editValues, setEditValues] = React.useState({
+          itemName: isAdd ? "" : item.name,
+          providerProductCode: editBaseLinkedComplete ? item.code : "",
+          type: editBaseLinkedComplete ? "Evoucher" : undefined,
+          productType: editBaseLinkedComplete ? "Gift Card" : undefined,
+          subProductType: editBaseLinkedComplete ? "Digital" : undefined,
+          property1: editBaseLinkedComplete ? "Category1" : undefined,
+          property2: editBaseLinkedComplete ? "Category2" : undefined,
+          property3: editBaseLinkedComplete ? "Category3" : undefined,
+          property4: editBaseLinkedComplete ? "Category1" : undefined,
+          property5: editBaseLinkedComplete ? "Category2" : undefined,
+          property6: editBaseLinkedComplete ? "Category3" : undefined,
+          partners: editHasPartner ? ["digital"] : []
+        });
+        const [productInfoReady, setProductInfoReady] = React.useState(editBaseLinkedComplete);
+        const [providerName, setProviderName] = React.useState(isAdd ? undefined : item.provider);
+        const [providerId, setProviderId] = React.useState(isAdd ? "" : item.providerId);
+        const [linked, setLinked] = React.useState(editBaseLinkedComplete);
+        const [linkedId, setLinkedId] = React.useState(editBaseLinkedComplete ? item.hubId : "-");
+        const [selectedHub, setSelectedHub] = React.useState(item.hubId || "517895");
+        const [partnerValues, setPartnerValues] = React.useState(editHasPartner ? ["digital"] : []);
+        const [rules, setRules] = React.useState([]);
+        const [linkOpen, setLinkOpen] = React.useState(false);
+        const [createOpen, setCreateOpen] = React.useState(false);
+        const [unlinkOpen, setUnlinkOpen] = React.useState(false);
+        const [ruleOpen, setRuleOpen] = React.useState(false);
+        const [editingRule, setEditingRule] = React.useState(null);
+        const [logOpen, setLogOpen] = React.useState(false);
+        const [dynamicOpen, setDynamicOpen] = React.useState(false);
+        const [ruleDetail, setRuleDetail] = React.useState(null);
+        const [coreFieldImpact, setCoreFieldImpact] = React.useState(false);
+        const [coreFieldsModified, setCoreFieldsModified] = React.useState(false);
+        const [coreFieldSnapshot, setCoreFieldSnapshot] = React.useState({});
+        const [publishWarningOpen, setPublishWarningOpen] = React.useState(false);
+        const matching = selectedHub === "517895";
+        const baseReady = Boolean((!isAdd || providerId) && productInfoReady);
+        const clearingRuleReady = baseReady && linked && partnerValues.length > 0;
+        const publishReady = clearingRuleReady && rules.length > 0;
+        React.useEffect(() => {
+          if (clearingRuleReady) {
+            setRules(old => old.length ? old : ruleRows);
+          } else {
+            setRules([]);
+          }
+        }, [clearingRuleReady]);
+        const providerOptions = [
+          { value: "Jakarta DC", label: "Jakarta DC", providerId: "221234" },
+          { value: "Bangkok DC", label: "Bangkok DC", providerId: "221358" },
+          { value: "Manila DC", label: "Manila DC", providerId: "221987" },
+          { value: "Singapore DC", label: "Singapore DC", providerId: "221658" }
+        ];
+        const typeOptions = ["Evoucher", "Physical", "Service"];
+        const productOptions = ["Gift Card", "Mobile Top-up", "Game"];
+        const subProductOptions = ["Digital", "Prepaid", "Postpaid"];
+        const attrOptions = ["Category1", "Category2", "Category3"];
+        const dynamicPropertyRows = Array.from({ length: 10 }, (_, index) => ({
+          key: "dynamic-property-" + (index + 1),
+          property: "Property " + (index + 1),
+          source: "Provider API",
+          description: "Dynamic value returned by the configured data source for Airtime."
+        }));
+        const selectField = (label, required, options, disabled) => h(Form.Item, {
+          className: "edit-form-item",
+          style: { marginBottom: 16 },
+          label,
+          required: Boolean(required),
+          name: label === "Type" ? "type" : label === "Product Type" ? "productType" : label === "Sub Product Type" ? "subProductType" : label.toLowerCase().replace(/\s+(\d+)/, "$1").replace(/\s+/g, ""),
+          rules: required ? [{ required: true, message: "Please select " + label }] : undefined
+        }, h(Select, { placeholder: "Select", options: options.map(value => ({ value, label: value })), disabled: Boolean(disabled), allowClear: true, style: { width: "100%", maxWidth: "100%" } }));
+        const staticField = (label, value) => h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label }, h("div", { className: "readonly" }, value));
+        const corePropertyField = label => h("div", { className: "core-property-field" },
+          selectField(label, false, attrOptions),
+          coreFieldImpact ? h("div", { className: "core-field-warning" }, "The value is matched with Linked Hub Product ID, will result Unlink Hub Product actions") : null
+        );
+        const save = () => form.validateFields().then(() => notify(isAdd ? "Item added successfully" : "Saved successfully")).catch(() => {});
+        const selectProvider = value => {
+          const selected = providerOptions.find(option => option.value === value);
+          setProviderName(value);
+          setProviderId(selected ? selected.providerId : "");
+          setRules([]);
+          form.setFieldValue("providerName", value);
+        };
+        const clearProvider = () => {
+          setProviderName(undefined);
+          setProviderId("");
+          setRules([]);
+          form.setFieldValue("providerName", undefined);
+        };
+        const openRuleEditor = row => {
+          if (row && row.level.indexOf("Product Type") === 0) {
+            Modal.confirm({
+              title: "Edit category-level rule",
+              content: "If you edit a category-level rule, it will also apply to other items in this category. Continue?",
+              okText: "Continue",
+              cancelText: "Cancel",
+              onOk: () => { setEditingRule(row); setRuleOpen(true); }
+            });
+          } else {
+            setEditingRule(row || null);
+            setRuleOpen(true);
+          }
+        };
+        const saveRule = () => {
+          const fields = ruleForm.getFieldsValue();
+          const nextRule = editingRule
+            ? { ...editingRule, ...fields }
+            : { key: "r" + Date.now(), id: "212", ...fields, detail: "See More >", running: true, updated: "2026/06/22 12:00" };
+          setRules(old => editingRule ? old.map(rule => rule.key === editingRule.key ? nextRule : rule) : [...old, nextRule]);
+          setRuleOpen(false);
+          setEditingRule(null);
+          notify("Clearing Rule saved");
+        };
+        const columns = [
+          { title: "Partner", dataIndex: "partner", width: 180 },
+          { title: "Clearing Type", dataIndex: "clearingType", width: 180 },
+          { title: "Supply Price", dataIndex: "supplyPrice", width: 180 },
+          { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
+        ];
+        return h(React.Fragment, null,
+          h("section", { className: "page-head context-head" },
+            h("div", { className: "page-head-inner" },
+              h(Breadcrumb, { style: { marginBottom: 4 }, items: [
+                { title: h("a", { href: "#item-pool", onClick: event => { event.preventDefault(); onBack(); } }, "Manual Upload Item") },
+                { title: pageTitle }
+              ] }),
+              h("div", { className: "title-row" },
+                h(Button, { type: "text", icon: h(I.LeftOutlined), onClick: onBack, "aria-label": "Back to Item Pool" }),
+                h("h1", { className: "page-title" }, pageTitle),
+                h("span", { className: "header-spacer" }),
+                !isAdd ? h(Button, { onClick: () => setLogOpen(true) }, "Edit Log") : null
+              )
+            )
+          ),
+          h("main", { className: "content" },
+            h("section", { className: "edit-card" },
+              h("div", { className: "section-heading" },
+                h(Tag, { color: baseReady ? "success" : "error" }, baseReady ? "Completed" : "Incompleted"),
+                h("h2", null, "Item Basic Module")
+              ),
+              h(Form, {
+                form,
+                className: "edit-form",
+                layout: "horizontal",
+                colon: false,
+                labelCol: { flex: "160px" },
+                wrapperCol: { flex: "1 1 auto" },
+                initialValues: {
+                  itemName: isAdd ? "" : item.name,
+                  providerProductCode: editBaseLinkedComplete ? item.code : undefined,
+                  type: editBaseLinkedComplete ? "Evoucher" : undefined,
+                  productType: editBaseLinkedComplete ? "Gift Card" : undefined,
+                  subProductType: editBaseLinkedComplete ? "Digital" : undefined,
+                  property1: editBaseLinkedComplete ? "Category1" : undefined,
+                  property2: editBaseLinkedComplete ? "Category2" : undefined,
+                  property3: editBaseLinkedComplete ? "Category3" : undefined,
+                  property4: editBaseLinkedComplete ? "Category1" : undefined,
+                  property5: editBaseLinkedComplete ? "Category2" : undefined,
+                  property6: editBaseLinkedComplete ? "Category3" : undefined,
+                  partners: editHasPartner ? ["digital"] : [],
+                  providerName: isAdd ? undefined : item.provider
+                },
+                labelAlign: "right",
+                onValuesChange: (changed, all) => {
+                  setEditValues(previous => ({ ...previous, ...all }));
+                  setProductInfoReady(["providerProductCode", "type", "productType", "subProductType"].every(key => all[key] !== undefined && all[key] !== null && all[key] !== ""));
+                  if (coreFieldImpact && ["property1", "property2", "property3"].some(key => Object.prototype.hasOwnProperty.call(changed, key))) {
+                    setCoreFieldsModified(true);
+                  }
+                }
+              },
+                h("div", { className: "edit-form-grid" },
+                  h("div", { className: "form-column" },
+                    h("div", { className: "edit-subtitle" }, "Basic Info"),
+                    h("div", { className: "edit-field-row" },
+                      isAdd ? null : staticField("Item ID", item.item),
+                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Item Name", name: "itemName" }, h(Input, { style: { width: "100%", maxWidth: "100%" } }))
+                    ),
+                    h("div", { className: "edit-subtitle" }, "Product Info"),
+                    h("div", { className: "edit-field-row" },
+                      isAdd
+                        ? h(Form.Item, {
+                            className: "edit-form-item",
+                            style: { marginBottom: 16 },
+                            label: "Provider Name",
+                            name: "providerName",
+                            required: true,
+                            rules: [{ required: true, message: "Please select Provider Name" }]
+                          }, h(Select, {
+                            showSearch: true,
+                            allowClear: true,
+                            value: providerName,
+                            placeholder: "Search provider name",
+                            optionFilterProp: "label",
+                            filterOption: (input, option) => String(option.label || "").toLowerCase().includes(input.toLowerCase()),
+                            options: providerOptions,
+                            onChange: value => value ? selectProvider(value) : clearProvider(),
+                            style: { width: "100%", maxWidth: "100%" }
+                          }))
+                        : staticField("Provider Name", item.provider),
+                      isAdd
+                        ? staticField("Provider ID", providerId || "-")
+                        : staticField("Provider ID", h(Button, { type: "link", className: "link-button" }, item.providerId)),
+                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Provider Product Code", name: "providerProductCode", required: true, rules: [{ required: true, message: "Please input Provider Product Code" }] }, h(Input, { placeholder: "Input", style: { width: "100%", maxWidth: "100%" } })),
+                      selectField("Type", true, typeOptions),
+                      selectField("Product Type", true, productOptions),
+                      selectField("Sub Product Type", true, subProductOptions)
+                    )
+                  ),
+                  h("div", { className: "form-column" },
+                    h("div", { className: "edit-subtitle" }, "Static Property"),
+                    h("div", { className: "edit-field-row" },
+                      corePropertyField("Property 1"),
+                      corePropertyField("Property 2"),
+                      corePropertyField("Property 3"),
+                      selectField("Property 4", false, attrOptions),
+                      selectField("Property 5", false, attrOptions),
+                      selectField("Property 6", false, attrOptions)
+                    ),
+                    h("div", { className: "edit-subtitle" }, "Dynamic Property"),
+                    h("div", { className: "dynamic-property-action" },
+                      h(Button, { type: "link", className: "link-button", onClick: () => setDynamicOpen(true) }, "View Property >")
+                    )
+                  )
+                ),
+                h("section", { className: "module-section" },
+                  h("div", { className: "section-heading" },
+                    h(Tag, { color: linked ? "success" : "error" }, linked ? "Completed" : "Incompleted"),
+                    h("h2", null, "Linked Hub Product Module")
+                  ),
+                  h("div", { className: linked ? "module-panel linked-panel" : "module-panel" },
+                    linked
+                      ? h(Alert, { className: "module-callout", type: "success", showIcon: true, message: "This item is already linked to a Hub Product. Click \"Change Link\" to change the linked Hub Product." })
+                      : h(Alert, { className: "module-callout", type: "info", showIcon: true, message: "Please link this item to a Hub Product." }),
+                    h("div", { className: "linked-product-row" },
+                      h("span", { className: "linked-product-label" }, h("span", { className: "required-mark" }, "*"), " Linked Hub Product ID"),
+                      linked ? h(Button, { type: "link", className: "linked-product-value" }, linkedId) : h("span", { className: "linked-product-value" }, linkedId),
+                      linked ? h(Button, { type: "text", className: "unlink-product-button", icon: h(I.DisconnectOutlined), onClick: () => setUnlinkOpen(true), "aria-label": "Unlink Hub Product" }) : null,
+                      h(Button, { type: "primary", onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
+                      h(Button, { onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
+                    )
+                  )
+                ),
+                h("section", { className: "module-section" },
+                  h("div", { className: "section-heading" },
+                    h(Tag, { color: partnerValues.length ? "success" : "error" }, partnerValues.length ? "Completed" : "Incompleted"),
+                    h("h2", null, "Bind Partner")
+                  ),
+                  h(Form.Item, {
+                    className: "edit-form-item partner-form-item",
+                    style: { marginBottom: 16 },
+                    label: "Binding Partner",
+                    required: true,
+                    name: "partners",
+                    valuePropName: "value",
+                    rules: [{ type: "array", min: 1, required: true, message: "Please select at least one partner" }],
+                  },
+                    h(Checkbox.Group, {
+                      options: [
+                        { label: "Digital-Purchase", value: "digital" },
+                        { label: "Intra", value: "intra" },
+                        { label: "ShopeePay", value: "shopeepay" },
+                        { label: "SeaBank", value: "seabank" },
+                        { label: "Invest", value: "invest" },
+                        { label: "FoodDriver", value: "fooddriver" },
+                        { label: "Checkbox", value: "checkbox" }
+                      ],
+                      value: partnerValues,
+                      onChange: setPartnerValues
+                    })
+                  )
+                ),
+                h("section", { className: "module-section clearing-rule-section" },
+                  h("div", { className: "section-heading" },
+                    h(Tag, { color: rules.length ? "success" : "error" }, rules.length ? "Completed" : "Incompleted"),
+                    h("h2", null, "Clearing Rule")
+                  ),
+                  h("div", { className: "module-actions edit-rule-actions" },
+                    h(Button, {
+                      disabled: !clearingRuleReady,
+                      onClick: () => {}
+                    }, "Change/Add Clearing Rule")
+                  ),
+                  h("div", { className: "module-table" },
+                    h(Table, {
+                      size: "middle",
+                      columns,
+                      dataSource: rules,
+                      pagination: false,
+                      scroll: { x: 1300 },
+                      rowKey: "key"
+                    })
+                  )
+                )
+              )
+            )
+          ),
+          h("footer", { className: "module-footer" },
+            h("div", { className: "core-impact-control" },
+              h("span", null, "是否影响到核心字段"),
+              h(Switch, { checked: coreFieldImpact, onChange: checked => {
+                setCoreFieldImpact(checked);
+                setCoreFieldsModified(false);
+                if (checked) setCoreFieldSnapshot(form.getFieldsValue(["property1", "property2", "property3"]));
+              } })
+            ),
+            h("div", { className: "module-footer-actions" },
+              h(Button, { onClick: onBack }, "Cancel"),
+              h(Button, { className: "edit-save-button", onClick: save }, "Save"),
+              h(Button, {
+                type: "primary",
+                disabled: !publishReady,
+                onClick: () => {
+                  const currentCoreFields = form.getFieldsValue(["property1", "property2", "property3"]);
+                  const coreFieldChanged = ["property1", "property2", "property3"].some(key => currentCoreFields[key] !== coreFieldSnapshot[key]);
+                  if (coreFieldImpact && !coreFieldChanged) setPublishWarningOpen(true);
+                  else { notify("Submitted successfully"); onBack(); }
+                }
+              }, "Publish")
+            )
+          ),
+          h(Modal, {
+            open: publishWarningOpen,
+            title: "Notification",
+            onCancel: () => setPublishWarningOpen(false),
+            onOk: () => { setPublishWarningOpen(false); notify("Submitted successfully"); onBack(); },
+            okText: "Confirm",
+            cancelText: "Cancel"
+          }, h("p", { className: "unlink-copy" }, "Some files value are not matched with Linked Hub Product ID, will result Unlink Hub Product actions.")),
+          h(Modal, {
+            open: linkOpen,
+            title: h("div", { className: "modal-title-with-note" },
+              h("span", null, "Link with Existing Product"),
+              h("span", { className: "dev-note" }, "开发注意: 点击选择不同linked查看状态")
+            ),
+            width: 735,
+            onCancel: () => setLinkOpen(false),
+            footer: h("div", { className: "modal-actions link-modal-footer" },
+              h(Space, null,
+                h(Button, { onClick: () => setLinkOpen(false) }, "Cancel"),
+                h(Button, { type: "primary", disabled: !matching, icon: h(I.CheckCircleOutlined), onClick: () => { setLinked(true); setLinkedId(selectedHub); setLinkOpen(false); notify("Hub Product linked"); } }, "Confirm Link")
+              )
+            )
+          },
+            h("div", { className: "link-product-modal" },
+              h("div", { className: "link-product-select" },
+                h("span", { className: "link-product-select-label" }, h("span", { className: "required-mark" }, "*"), " Linked Hub Product"),
+                h(Select, {
+                  value: selectedHub,
+                  className: matching ? "link-product-select-control" : "link-product-select-control mismatch",
+                  options: [
+                    { value: "517895", label: "517895" },
+                    { value: "544689", label: "544689" }
+                  ],
+                  onChange: setSelectedHub
+                })
+              ),
+              h("div", { className: matching ? "link-product-status success" : "link-product-status error" }, matching ? "All properties match the item." : "Cannot link to the current item due to different properties."),
+              h("table", { className: "link-product-info-table" },
+                h("thead", null, h("tr", null, h("th", null), h("th", null, "Current Item Info"), h("th", null, "Select Hub Product Info"))),
+                h("tbody", null,
+                  h("tr", null, h("th", null, "Hub Product ID"), h("td", { className: "link-product-muted" }, linkedId), h("td", { className: "link-product-muted" }, selectedHub)),
+                  h("tr", null, h("th", null, "Hub Product Name"), h("td", null, "-"), h("td", null, selectedHub === "517895" ? "eSIM 4GB Thailand 5 days 1GB/day" : "eSIM 4GB Thailand 4 days 1GB/day")),
+                  !matching ? h("tr", null, h("th", null, "Diff Property 1"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null,
+                  !matching ? h("tr", null, h("th", null, "Diff Property 2"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null
+                )
+              ),
+              matching ? h("div", { className: "link-product-create-note" }, "No matching Hub Product found? Create a new Hub Product to proceed.", h(Button, { type: "link", onClick: () => setCreateOpen(true) }, "Create Hub Product")) : null
+            )
+          ),
+          h(Modal, {
+            open: createOpen,
+            title: "Create Hub Product",
+            width: 520,
+            onCancel: () => setCreateOpen(false),
+            onOk: () => { setLinked(true); setLinkedId("517896"); setCreateOpen(false); notify("New Hub Product created"); },
+            okText: "Confirm",
+            cancelText: "Cancel"
+          }, h("p", { className: "create-hub-product-copy" }, "A new Hub Product ID will be created as \"Inactive\" status, the default property value of Hub Product will come from current item info")),
+          h(Modal, {
+            open: unlinkOpen,
+            title: "Unlink Hub Product ID",
+            onCancel: () => setUnlinkOpen(false),
+            onOk: () => { setLinked(false); setLinkedId("-"); setUnlinkOpen(false); notify("Hub Product unlinked"); },
+            okText: "Confirm",
+            cancelText: "Cancel"
+          }, h("p", { className: "unlink-copy" }, "Are you sure to unlink with Hub Product ID?")),
+          h(Drawer, {
+            title: "Dynamic Property",
+            open: dynamicOpen,
+            width: 720,
+            onClose: () => setDynamicOpen(false)
+          },
+            h(Select, { placeholder: "Property Type", style: { width: 220, marginBottom: 16 }, options: [{ value: "property", label: "Property Type" }] }),
+            h(Table, {
+              size: "small",
+              columns: [
+                { title: "Property", dataIndex: "property", width: 140 },
+                { title: "Data Source", dataIndex: "source", width: 160 },
+                { title: "Description", dataIndex: "description" }
+              ],
+              dataSource: dynamicPropertyRows,
+              pagination: false,
+              rowKey: "key"
+            })
+          ),
+          h(Modal, {
+            open: ruleOpen,
+            title: editingRule ? "Edit Clearing Rule" : "Add Clearing Rule",
+            onCancel: () => { setRuleOpen(false); setEditingRule(null); },
+            onOk: () => ruleForm.validateFields().then(saveRule),
+            okText: "Save",
+            cancelText: "Cancel"
+          },
+            h(Form, {
+              key: "rule-form-" + (editingRule ? editingRule.key : "new"),
+              form: ruleForm,
+              layout: "vertical",
+              initialValues: {
+                name: editingRule ? editingRule.name : "",
+                level: editingRule ? editingRule.level : "ID: 1232324",
+                type: editingRule ? editingRule.type : "Settlement",
+                partner: editingRule ? editingRule.partner : "Digital-purchase"
+              }
+            },
+              h(Form.Item, { label: "Rule Name", name: "name", rules: [{ required: true, message: "Please enter a rule name" }] }, h(Input, { placeholder: "Rule Name" })),
+              h(Form.Item, { label: "Effective Level", name: "level", rules: [{ required: true, message: "Please select an effective level" }] }, h(Select, { options: [{ value: "ID: 1232324", label: "ID: 1232324" }, { value: "Product Type: L1", label: "Product Type: L1" }] })),
+              h(Form.Item, { label: "Rule Type", name: "type", rules: [{ required: true, message: "Please select a rule type" }] }, h(Select, { options: [{ value: "Settlement", label: "Settlement" }] })),
+              h(Form.Item, { label: "Partner", name: "partner", rules: [{ required: true, message: "Please select a partner" }] }, h(Select, { options: [{ value: "Digital-purchase", label: "Digital-purchase" }] }))
+            )
+          ),
+          h(Drawer, { title: "Edit Log", open: logOpen, onClose: () => setLogOpen(false), width: 480 },
+            h(Empty, { description: "No edit log" })
+          ),
+          h(Drawer, { title: "Rule Info Detail", open: Boolean(ruleDetail), onClose: () => setRuleDetail(null), width: 420 },
+            ruleDetail ? h(Typography.Text, null, ruleDetail) : null
+          )
+        );
+      }
+
+      function ProviderClearingPage({ provider, onBack }) {
+        const clearingTypes = [
+          { key: "cogs", partner: "Digital Purchase", type: "COGS", supplyPrice: "Rp 10,050", period: "2025/01/01 00:00 - 2026/12/31 23:59" },
+          { key: "commission", partner: "Digital Purchase", type: "Commission", supplyPrice: "Admin Fee: 10%", period: "2025/01/01 00:00 - 2026/12/31 23:59" }
+        ];
+        return h("div", { className: "workflow-main" },
+          h("section", { className: "page-head context-head" },
+            h("div", { className: "page-head-inner" },
+              h(Breadcrumb, { style: { marginBottom: 4 }, items: [
+                { title: h("a", { href: "#item-pool", onClick: event => { event.preventDefault(); onBack(); } }, "Manual Upload Item") },
+                { title: provider + " Clearing Type" }
+              ] }),
+              h("div", { className: "title-row" },
+                h(Button, { type: "text", icon: h(I.LeftOutlined), onClick: onBack, "aria-label": "Back to Item Pool" }),
+                h("h1", { className: "page-title" }, provider + " Clearing Type")
+              )
+            )
+          ),
+          h("main", { className: "content" },
+            h(Card, { className: "flow-card" },
+              h("div", { className: "section-heading" }, h("h2", null, "Clearing Type")),
+              h(Table, {
+                size: "middle",
+                pagination: false,
+                rowKey: "key",
+                columns: [
+                  { title: "Partner", dataIndex: "partner" },
+                  { title: "Clearing Type", dataIndex: "type" },
+                  { title: "Supply Price", dataIndex: "supplyPrice" },
+                  { title: "Valid Period", dataIndex: "period" },
+                  { title: "Action", key: "action", render: () => h(Button, { type: "link", className: "link-button", onClick: () => message.info("Clearing Type edit opened") }, "Edit") }
+                ],
+                dataSource: clearingTypes
+              })
+            )
+          )
+        );
+      }
+
+      function App() {
+        const [openKeys, setOpenKeys] = React.useState(["product-pool", "item-management"]);
+        const [collapsed, setCollapsed] = React.useState(false);
+        const [view, setView] = React.useState("pool");
+        const [activePoolTab, setActivePoolTab] = React.useState("processing");
+        const [filters, setFilters] = React.useState({});
+        const [appliedFilters, setAppliedFilters] = React.useState({});
+        const [filtersExpanded, setFiltersExpanded] = React.useState(true);
+        const [itemOperationOpen, setItemOperationOpen] = React.useState(false);
+        const [clearingRuleOperationOpen, setClearingRuleOperationOpen] = React.useState(false);
+        const [selectedRows, setSelectedRows] = React.useState([]);
+        const [selectionMenuOpen, setSelectionMenuOpen] = React.useState(false);
+        const [batchPublishOpen, setBatchPublishOpen] = React.useState(false);
+        const [actionLogOpen, setActionLogOpen] = React.useState(false);
+        const [providerModalOpen, setProviderModalOpen] = React.useState(false);
+        const [selectedProvider, setSelectedProvider] = React.useState();
+        const [expanded, setExpanded] = React.useState([]);
+        const [itemNameEditKey, setItemNameEditKey] = React.useState(null);
+        const [itemNameDraft, setItemNameDraft] = React.useState("");
+        const [partnerEditKey, setPartnerEditKey] = React.useState(null);
+        const [partnerDraft, setPartnerDraft] = React.useState([]);
+        const [currentItem, setCurrentItem] = React.useState(initialRows[0]);
+        const [messageApi, contextHolder] = message.useMessage();
+        const isPublishedTab = activePoolTab === "published";
+
+        const notify = text => messageApi.info(text);
+        const notifySuccess = text => messageApi.success(text);
+        const openEdit = row => { setCurrentItem(row); setView("edit"); };
+        const openItemNameEditor = row => { setItemNameEditKey(row.key); setItemNameDraft(row.name); };
+        const confirmItemNameEdit = row => { row.name = itemNameDraft.trim() || row.name; setItemNameEditKey(null); notify("Item Name updated"); };
+        const partnerSelectOptions = ["Partner 1", "Partner 2", "Partner 3", "Partner 4", "ShopeePay", "Shopee", "Mitra", "Seabank"].map(value => ({ value, label: value }));
+        const openPartnerEditor = (row, display) => { setPartnerEditKey(row.key); setPartnerDraft(display.split(/,\s*/).filter(Boolean)); };
+        const confirmPartnerEdit = row => {
+          const next = partnerDraft.join(", ");
+          if (isPublishedTab) row.publishedPartner = next;
+          else row.partner = next;
+          setPartnerEditKey(null);
+          notify("Bind Partner updated");
+        };
+        const backToPool = () => setView("pool");
+        const filteredRows = initialRows.filter(row => {
+          const match = (key, value) => !value || String(value).toLowerCase().indexOf(String(appliedFilters[key] || "").toLowerCase()) >= 0;
+          return match("itemId", row.item) &&
+            match("itemName", row.name) &&
+            match("hubId", row.hubId) &&
+            match("hubName", row.hubName) &&
+            match("hubType", row.category1) &&
+            match("productType", row.category2) &&
+            match("subProductType", row.category3) &&
+            match("provider", row.provider) &&
+            match("moduleStatus", row.complete ? "Active" : "Inactive");
+        });
+        const field = (name, label, options) => h(FilterField, {
+          key: name,
+          label,
+          value: filters[name],
+          select: Boolean(options),
+          options,
+          onChange: value => setFilters(old => ({ ...old, [name]: value }))
+        });
+        const filterFields = [
+          field("itemId", "Item ID"),
+          field("itemName", "Item Name"),
+          field("hubId", "Hub Product ID"),
+          field("hubName", "Hub Product Name"),
+          field("hubType", "Type", ["Evoucher", "Physical", "Service"]),
+          field("productType", "Product Type", ["Gift Card", "Mobile Top-up", "Game"]),
+          field("subProductType", "Sub Product Type", ["Digital", "Prepaid", "Postpaid"]),
+          field("provider", "Provider", ["Provider A", "Provider B", "Provider C"]),
+          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", ["Active", "Inactive"])] : [])
+        ];
+        const publishedRows = filteredRows.filter(row => row.complete);
+        const activeRows = activePoolTab === "published" ? publishedRows : filteredRows;
+        const ruleColumns = [
+          { title: "Partner", dataIndex: "partner", width: 180 },
+          { title: "Clearing Type", dataIndex: "clearingType", width: 180 },
+          { title: "Supply Price", dataIndex: "supplyPrice", width: 180 },
+          { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
+        ];
+        const columns = [
+          { title: "Item ID", dataIndex: "item", fixed: "left", width: isPublishedTab ? 80 : 63, render: (value, row) => h(Button, { type: "link", className: "link-button", onClick: () => notify(value) }, value) },
+          {
+            title: "Item Name", dataIndex: "name", width: 132,
+            render: (value, row) => isPublishedTab ? h("span", { className: "item-name-text" }, value) : h(Popover, {
+              trigger: "click",
+              placement: "bottomLeft",
+              open: itemNameEditKey === row.key,
+              onOpenChange: open => { if (open) openItemNameEditor(row); else setItemNameEditKey(null); },
+              content: h("div", { className: "item-name-editor" },
+                h("div", { className: "item-name-editor-title" }, "Item Name"),
+                h(Input, { value: itemNameDraft, onChange: event => setItemNameDraft(event.target.value), autoFocus: true }),
+                h("div", { className: "item-name-editor-actions" },
+                  h(Button, { onClick: () => setItemNameEditKey(null) }, "Cancel"),
+                  h(Button, { type: "primary", onClick: () => confirmItemNameEdit(row) }, "Confirm")
+                )
+              )
+            }, h("span", { className: "item-name-trigger", onClick: () => openItemNameEditor(row) }, value, h(I.EditOutlined)))
+          },
+          {
+            title: "Provider Basic Info", width: 280,
+            render: (_, row) => h("div", { className: "field-stack" },
+              h("div", null, h("span", { className: "inline-label" }, "Provider Name: "), row.provider),
+              h("div", null, h("span", { className: "inline-label" }, "Provider ID: "), h(Button, { type: "link", className: "link-button", onClick: () => notify(row.providerId) }, row.providerId)),
+              h("div", null, h("span", { className: "inline-label" }, "Provider Product Code: "), row.code)
+            )
+          },
+          { title: "Category", width: 220, render: (_, row) => h("div", { className: "field-stack" },
+              h("div", null, h("span", { className: "inline-label" }, "Type: "), row.category1),
+              h("div", null, h("span", { className: "inline-label" }, "Product Type: "), row.category2),
+              h("div", null, h("span", { className: "inline-label" }, "Sub Product Type: "), row.category3)
+            )
+          },
+          {
+            title: "Linked Hub Product Info", width: 220,
+            render: (_, row) => h("div", { className: "field-stack" },
+              h("div", null, h("span", { className: "inline-label" }, "Product ID: "), h(Button, { type: "link", className: "link-button", onClick: () => notify(row.hubId) }, row.hubId))
+            )
+          },
+          {
+            title: "Bind Partner", width: 220,
+            render: (_, row) => {
+              const display = isPublishedTab ? (row.publishedPartner || "Partner 1, Partner 2, Partner 3, Partner 4") : (row.partner || "");
+              return h("div", { className: "partner-cell" },
+                h("div", { className: "partner-cell-text" }, display),
+                h(Popover, {
+                  trigger: "click",
+                  placement: "bottomLeft",
+                  open: partnerEditKey === row.key,
+                  onOpenChange: open => { if (open) openPartnerEditor(row, display); else setPartnerEditKey(null); },
+                  content: h("div", { className: "partner-editor" },
+                    h("div", { className: "partner-editor-title" }, "Bind Partner"),
+                    h(Select, {
+                      mode: "multiple",
+                      value: partnerDraft,
+                      options: partnerSelectOptions,
+                      onChange: setPartnerDraft,
+                      style: { width: "100%" },
+                      placeholder: "Please select"
+                    }),
+                    h("div", { className: "partner-editor-actions" },
+                      h(Button, { onClick: () => setPartnerEditKey(null) }, "Cancel"),
+                      h(Button, { type: "primary", onClick: () => confirmPartnerEdit(row) }, "Confirm")
+                    )
+                  )
+                }, h(Button, { type: "text", className: "partner-cell-edit", icon: h(I.EditOutlined), "aria-label": "Edit Bind Partner" }))
+              );
+            }
+          },
+          {
+            title: "Clearing Rule", dataIndex: "rule", width: isPublishedTab ? 132 : 170,
+            render: (value, row) => {
+              const isExpanded = expanded.includes(row.key);
+              const toggleRule = () => setExpanded(old => isExpanded ? old.filter(key => key !== row.key) : [...old, row.key]);
+              return h("div", { className: "rule-trigger" },
+                h(Button, {
+                  type: "text",
+                  icon: h(isExpanded ? I.MinusOutlined : I.PlusOutlined),
+                  onClick: toggleRule,
+                  "aria-label": isExpanded ? "Collapse clearing rule" : "Expand clearing rule"
+                }),
+                h(Button, { type: "link", className: "link-button", onClick: toggleRule }, value || "-")
+              );
+            }
+          },
+          ...(!isPublishedTab ? [{
+            title: "Module Status", width: 240,
+            render: (_, row) => {
+              const statuses = getModuleStatuses(row);
+              const statusTag = complete => h(Tag, { className: "status-tag", color: complete ? "success" : "error" }, complete ? "Completed" : "Incompleted");
+              return h("div", { className: "field-stack" },
+                h("div", null, h("span", { className: "inline-label" }, "Item Basic: "), statusTag(statuses.itemBasic)),
+                h("div", null, h("span", { className: "inline-label" }, "Linked Hub Product: "), statusTag(statuses.linkedHubProduct)),
+                h("div", null, h("span", { className: "inline-label" }, "Bind Partner: "), statusTag(statuses.bindPartner)),
+                h("div", null, h("span", { className: "inline-label" }, "Clearing Rule: "), statusTag(statuses.clearingRule))
+              );
+            }
+          }] : []),
+          { title: "Item Source", dataIndex: "source", width: 120 },
+          { title: "Last Update Time", dataIndex: "updated", width: 130 },
+          { title: "Last Operator", width: 120, render: () => "kaibin.liu@..." },
+          {
+            title: "Action", key: "action", fixed: "right", width: isPublishedTab ? 87 : 110,
+            render: (_, row) => h("div", { className: "field-stack action-cell" },
+              h(Button, { type: "link", className: "link-button", onClick: () => openEdit(row) }, "Edit"),
+              !isPublishedTab && (Object.values(getModuleStatuses(row)).every(Boolean)
+                ? h(Button, { type: "link", className: "link-button", onClick: () => messageApi.success("Publish request submitted") }, "Publish")
+                : h(Tooltip, { title: "Please complete all modules before publishing." },
+                    h("span", null, h(Button, { type: "link", disabled: true, className: "link-button" }, "Publish"))
+                  ))
+            )
+          }
+        ];
+        const poolContent = h(React.Fragment, null,
+          h("section", { className: "page-head list-head" },
+            h("div", { className: "page-head-inner" },
+              h("div", { className: "title-row" },
+                h("h1", { className: "page-title" }, "Manual Upload Item"),
+                h("span", { className: "header-spacer" }),
+              )
+            )
+          ),
+          h(Tabs, {
+            className: "page-tabs",
+            tabBarStyle: { height: 52, margin: 0 },
+            activeKey: activePoolTab,
+            onChange: setActivePoolTab,
+            items: [
+              { key: "processing", label: h("span", null, "Processing ", h("b", { style: { color: "#1677ff" } }, "20")) },
+              { key: "published", label: "Published" }
+            ]
+          }),
+          h("main", { className: "main" },
+            h("section", { className: "panel" },
+              h("div", { className: "filter-panel" },
+                h("div", { className: "filter-grid" },
+                  ...filterFields,
+                  h("div", { className: "filter-actions" },
+                    h(Button, { icon: h(I.ReloadOutlined), onClick: () => { setFilters({}); setAppliedFilters({}); } }, "Reset"),
+                    h(Button, { type: "primary", icon: h(I.SearchOutlined), onClick: () => setAppliedFilters(filters) }, "Search")
+                  )
+                )
+              ),
+              h("div", { className: "actionbar" },
+                h(Dropdown, {
+                  open: itemOperationOpen,
+                  onOpenChange: setItemOperationOpen,
+                  menu: { items: [
+                    { key: "add-item", label: "Add Item", onClick: () => { setItemOperationOpen(false); setView("add"); } },
+                    { key: "mass-edit", label: "Mass Edit Item", onClick: () => { setItemOperationOpen(false); setView("mass-edit"); } },
+                    { key: "mass-add", label: "Mass Add Item", onClick: () => { setItemOperationOpen(false); setView("mass-add"); } }
+                  ] }
+                }, h(Button, { type: "primary" }, "Item Operation", h("span", { className: "operation-arrow" }, h(itemOperationOpen ? I.UpOutlined : I.DownOutlined)))),
+                h(Tooltip, {
+                  title: h("div", null,
+                    h("div", null, "Item Operation only includes actions for:"),
+                    h("ul", { style: { margin: "4px 0", paddingLeft: 18 } },
+                      h("li", null, "Item Basic"),
+                      h("li", null, "Linked Hub Product"),
+                      h("li", null, "Binded Partner")
+                    ),
+                    h("div", null, "Clearing Rule relevant actions are in its own button")
+                  )
+                }, h(Button, { type: "text", shape: "circle", icon: h(I.QuestionCircleOutlined), "aria-label": "Item operation help" })),
+                h(Button, { style: { borderColor: "#1677ff", color: "#1677ff" }, onClick: () => setProviderModalOpen(true) }, "Add/Change Clearing Rule"),
+                h(Button, { onClick: () => { downloadTextFile("download-example.txt", "DP Hub Admin download verification\n", "text/plain;charset=utf-8"); notify("Download started"); } }, "Download"),
+                !isPublishedTab && h(Button, { onClick: () => setActionLogOpen(true) }, "Log")
+              ),
+              !isPublishedTab && h("div", { className: "selection-summary" },
+                h("div", { className: "selection-summary-inner" },
+                  h("div", { className: "selection-summary-text" }, h("strong", null, selectedRows.length), " Order(s) Selected to Mass Publish"),
+                  h(Button, { disabled: selectedRows.length === 0, onClick: () => setBatchPublishOpen(true) }, "Mass Publish")
+                )
+              ),
+              h("div", { className: "table-wrap" },
+                activeRows.length === 0
+                  ? h(Empty, { description: "No records found" })
+                  : h(Table, {
+                      className: "product-list-table",
+                      size: "middle",
+                      columns,
+                      dataSource: activeRows,
+                      rowKey: "key",
+                      rowSelection: !isPublishedTab ? {
+                        fixed: true,
+                        selectedRowKeys: selectedRows,
+                        onChange: setSelectedRows,
+                        columnTitle: h("div", { className: "selection-header" },
+                          h(Checkbox, {
+                            checked: activeRows.length > 0 && activeRows.every(row => selectedRows.includes(row.key)),
+                            indeterminate: activeRows.some(row => selectedRows.includes(row.key)) && !activeRows.every(row => selectedRows.includes(row.key)),
+                            onChange: event => setSelectedRows(old => {
+                              const pageKeys = activeRows.map(row => row.key);
+                              const next = new Set(old);
+                              pageKeys.forEach(key => event.target.checked ? next.add(key) : next.delete(key));
+                              return Array.from(next);
+                            })
+                          }),
+                          h(Dropdown, {
+                            open: selectionMenuOpen,
+                            onOpenChange: setSelectionMenuOpen,
+                            menu: { items: [
+                              { key: "select-all-data", label: "Select all data", onClick: () => { setSelectedRows(filteredRows.map(row => row.key)); setSelectionMenuOpen(false); } },
+                              { key: "invert-current-page", label: "Invert current page", onClick: () => { setSelectedRows(old => { const next = new Set(old); activeRows.forEach(row => next.has(row.key) ? next.delete(row.key) : next.add(row.key)); return Array.from(next); }); setSelectionMenuOpen(false); } },
+                              { key: "clear-all-data", label: "Clear all data", onClick: () => { setSelectedRows([]); setSelectionMenuOpen(false); } }
+                            ]}
+                          }, h(Button, { type: "text", className: "selection-dropdown-trigger", icon: h(selectionMenuOpen ? I.UpOutlined : I.DownOutlined), "aria-label": "Selection options" }))
+                        ),
+                        preserveSelectedRowKeys: true,
+                        columnWidth: 64
+                      } : undefined,
+                      expandable: {
+                        showExpandColumn: false,
+                        expandedRowKeys: expanded,
+                        expandedRowRender: () => h("div", { className: "rule-table-wrap" },
+                          h(Table, { className: "rule-table", size: "small", columns: ruleColumns, dataSource: ruleRows, pagination: false, rowKey: "key", scroll: { x: 1300 } })
+                        ),
+                        expandIcon: () => null
+                      },
+                      scroll: { x: isPublishedTab ? 1660 : 1840 },
+                      pagination: {
+                        current: 1,
+                        pageSize: 100,
+                        total: activePoolTab === "published" ? publishedRows.length : 6532,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: total => "total " + total + " items",
+                        position: ["bottomLeft"]
+                      }
+                    })
+              )
+            )
+          ),
+          h(Modal, {
+            title: "Batch Publish Items",
+            open: batchPublishOpen,
+            onCancel: () => setBatchPublishOpen(false),
+            onOk: () => { setBatchPublishOpen(false); setSelectedRows([]); notify("Publish request submitted"); },
+            okText: "Confirm",
+            cancelText: "Cancel"
+          }, "Are you sure to publish all selected items?"),
+          h(Modal, {
+            title: "Action Logs",
+            open: actionLogOpen,
+            onCancel: () => setActionLogOpen(false),
+            footer: null,
+            width: 900,
+            styles: { body: { minHeight: 240 } }
+          },
+            h(Table, {
+              size: "middle",
+              pagination: { current: 1, pageSize: 10, total: 24, showSizeChanger: false, showQuickJumper: false, position: ["bottomLeft"] },
+              rowKey: "id",
+              columns: [
+                { title: "ID", dataIndex: "id", width: 120 },
+                { title: "Operat Name", dataIndex: "operator", width: 240 },
+                { title: "Operate Time", dataIndex: "time", width: 260 },
+                { title: "Total Row", dataIndex: "total", width: 120 },
+                { title: "Action", key: "action", width: 140, render: (_, row) => h(Button, { type: "link", className: "link-button", onClick: () => downloadTextFile("action-log-" + row.id + ".csv", "ID,Item ID,Result\n" + row.id + ",112358,Completed\n", "text/csv;charset=utf-8") }, "Download") }
+              ],
+              dataSource: [{ id: "99640", operator: "kaibin.liu@shopee,com", time: "2026-06-22 12:00:00 + 07:00", total: 8 }]
+            })
+          ),
+          h(Modal, {
+            title: "Select Provider",
+            open: providerModalOpen,
+            onCancel: () => setProviderModalOpen(false),
+            onOk: () => {
+              if (!selectedProvider) { notify("Please select a provider"); return; }
+              setProviderModalOpen(false);
+            },
+            okText: "Confirm",
+            cancelText: "Cancel"
+          },
+            h(Select, {
+              style: { width: "100%" },
+              placeholder: "Please select provider",
+              value: selectedProvider,
+              options: ["Provider A", "Provider B", "Provider C"].map(value => ({ value, label: value })),
+              onChange: setSelectedProvider
+            })
+          )
+        );
+        const pageTitle = view === "pool" ? "Manual Upload Item" : view === "edit" ? "Edit Item" : view === "add" ? "Add Item" : view === "provider-clearing" ? "Clearing Type" : view === "mass-edit" ? "Mass Edit Item" : "Mass Add Item";
+        return h(ConfigProvider, {
+          theme: {
+            token: {
+              colorPrimary: "#1677ff",
+              colorBgLayout: "#f5f5f5",
+              colorBgContainer: "#ffffff",
+              colorText: "#262626",
+              colorTextSecondary: "#8c8c8c",
+              colorBorder: "#d9d9d9",
+              colorBorderSecondary: "#f0f0f0",
+              colorSuccess: "#52c41a",
+              colorWarning: "#faad14",
+              colorError: "#ff4d4f",
+              borderRadius: 6,
+              fontSize: 14,
+              controlHeight: 32
+            },
+            components: {
+              Layout: { bodyBg: "#f5f5f5", siderBg: "#f5f5f5", headerBg: "#ffffff" },
+              Menu: { itemHeight: 48, itemBg: "#f5f5f5" },
+              Table: { headerBg: "#fafafa" }
+            }
+          }
+        },
+          h(React.Fragment, null,
+            contextHolder,
+            h(Layout, { className: "app" },
+              h(Layout.Sider, {
+                className: "sider",
+                width: 240,
+                collapsed: collapsed,
+                collapsible: true,
+                trigger: null,
+                theme: "light"
+              },
+                h("div", { className: "brand" },
+                  h("span", { className: "brand-logo" }, h(I.AppstoreOutlined)),
+                  collapsed ? null : h("span", null, "DP Hub Admin")
+                ),
+                h(Menu, {
+                  mode: "inline",
+                  inlineIndent: 16,
+                  items: menu,
+                  selectedKeys: ["manual-upload-item"],
+                  openKeys,
+                  onOpenChange: setOpenKeys,
+                  style: { borderInlineEnd: 0 }
+                })
+              ),
+              h(Layout, { className: "shell" },
+                h("header", { className: "topbar" },
+                  h("div", { className: "top-left" },
+                    h(Button, { type: "text", icon: h(I.MenuUnfoldOutlined), onClick: () => setCollapsed(value => !value), "aria-label": "Toggle navigation" }),
+                    h(Tag, { color: "error", icon: h(I.WarningFilled) }, "Live Environment")
+                  ),
+                  h("div", { className: "top-right" },
+                    h("span", { className: "identity" }, h(I.EnvironmentOutlined), "Indonesia", h(I.DownOutlined, { style: { fontSize: 10 } })),
+                    h("span", { className: "identity" }, "Johnny", h(I.DownOutlined, { style: { fontSize: 10 } }))
+                  )
+                ),
+                h(Layout.Content, { style: { display: "flex", flexDirection: "column", minHeight: 0, flex: 1 } },
+                  view === "pool"
+                    ? poolContent
+                    : view === "edit"
+                      ? h(EditItem, { key: "edit-" + currentItem.key, item: currentItem, onBack: backToPool, notify })
+                      : view === "add"
+                        ? h(EditItem, { key: "add-item", mode: "add", item: { key: "new", item: "", name: "", provider: "", providerId: "" }, onBack: backToPool, notify })
+                      : view === "provider-clearing"
+                        ? h(ProviderClearingPage, { key: "provider-clearing", provider: selectedProvider || "Provider A", onBack: backToPool })
+                        : h(MassWorkflow, { key: view, mode: view, onBack: backToPool, notify, notifySuccess })
+                )
+              ),
+            )
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+    })();
+  </script>
+</body>
+</html>
+
