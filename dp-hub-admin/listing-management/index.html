@@ -223,6 +223,7 @@
     .uploaded-file-actions { display: inline-flex; align-items: center; gap: 16px; }
     .uploaded-file-actions .ant-btn { width: 16px; height: 16px; min-width: 16px; padding: 0; color: #595959; }
     .validation-switch { position: absolute; left: 472px; top: 58px; width: 220px; min-height: 94px; padding: 12px 16px; display: inline-flex; flex-direction: column; align-items: stretch; gap: 8px; border: 1px solid #f0f0f0; border-radius: 4px; background: #fff; }
+    .validation-dev-note { color: #262626; font-size: 12px; line-height: 20px; }
     .validation-options-label { color: #595959; font-size: 14px; }
     .validation-switch-buttons { display: flex; gap: 8px; }
     .validation-switch-buttons .ant-btn { flex: 1; }
@@ -618,6 +619,7 @@
                   )
                 ) : null,
                 fileList.length ? h("div", { className: "validation-switch" },
+                  h("div", { className: "validation-dev-note" }, "开发注意: 只是查看校验结果样式,不需要开发"),
                   h("div", { className: "validation-options-label" }, "Validation result"),
                   h("div", { className: "validation-switch-buttons" },
                     h(Button, { type: validationMode === "correct" ? "primary" : "default", onClick: () => setValidationMode("correct") }, "Correct"),
