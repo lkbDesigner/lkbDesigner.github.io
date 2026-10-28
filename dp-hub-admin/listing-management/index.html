@@ -1229,6 +1229,20 @@
           notify("Bind Partner updated");
         };
         const backToPool = () => setView("pool");
+        const moduleStatusOptions = [
+          "Item Basic: Completed",
+          "Item Basic: Incompleted",
+          "Linked Hub Product: Completed",
+          "Linked Hub Product: Incompleted",
+          "Clearing Rule: Completed",
+          "Clearing Rule: Incompleted"
+        ];
+        const moduleStatusMatches = (row, value) => {
+          if (!value) return true;
+          const [module, status] = String(value).split(": ");
+          const moduleKey = { "Item Basic": "itemBasic", "Linked Hub Product": "linkedHubProduct", "Clearing Rule": "clearingRule" }[module];
+          return moduleKey ? Boolean(getModuleStatuses(row)[moduleKey]) === (status === "Completed") : true;
+        };
         const filteredRows = initialRows.filter(row => {
           const match = (key, value) => !value || String(value).toLowerCase().indexOf(String(appliedFilters[key] || "").toLowerCase()) >= 0;
           return match("itemId", row.item) &&
@@ -1239,7 +1253,7 @@
             match("productType", row.category2) &&
             match("subProductType", row.category3) &&
             match("provider", row.provider) &&
-            match("moduleStatus", row.complete ? "Active" : "Inactive");
+            moduleStatusMatches(row, appliedFilters.moduleStatus);
         });
         const field = (name, label, options) => h(FilterField, {
           key: name,
@@ -1258,7 +1272,7 @@
           field("productType", "Product Type", ["Gift Card", "Mobile Top-up", "Game"]),
           field("subProductType", "Sub Product Type", ["Digital", "Prepaid", "Postpaid"]),
           field("provider", "Provider", ["Provider A", "Provider B", "Provider C"]),
-          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", ["Active", "Inactive"])] : [])
+          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions)] : [])
         ];
         const publishedRows = filteredRows.filter(row => row.complete);
         const activeRows = activePoolTab === "published" ? publishedRows : filteredRows;
