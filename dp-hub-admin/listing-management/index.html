@@ -328,6 +328,7 @@
     .json-diff-grid pre { min-height: 180px; margin: 0; padding: 12px; overflow: auto; background: #fafafa; border: 1px solid #f0f0f0; font-size: 12px; line-height: 20px; }
     .log-value-diff-cell { display: inline-flex; align-items: center; gap: 4px; }
     .log-value-diff-cell .ant-btn { padding-inline: 4px; }
+    .disabled-button-wrap { display: inline-block; }
     .core-property-field { min-width: 0; }
     .core-field-warning { width: 240px; max-width: 240px; margin: -8px 0 8px 160px; color: #faad14; font-size: 12px; font-weight: 400; line-height: 20px; letter-spacing: -0.01px; white-space: normal; overflow-wrap: break-word; }
     .modal-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
@@ -959,8 +960,14 @@
                       h("span", { className: "linked-product-label" }, h("span", { className: "required-mark" }, "*"), " Linked Hub Product ID"),
                       linked ? h(Button, { type: "link", className: "linked-product-value" }, linkedId) : h("span", { className: "linked-product-value" }, linkedId),
                       linked ? h(Button, { type: "text", className: "unlink-product-button", icon: h(I.DisconnectOutlined), onClick: () => setUnlinkOpen(true), "aria-label": "Unlink Hub Product" }) : null,
-                      h(Button, { type: "primary", disabled: isDetail || !staticPropertyReady, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
-                      h(Button, { disabled: isDetail || !staticPropertyReady, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
+                      (!isDetail && !staticPropertyReady
+                        ? h(Tooltip, { title: "Complete the static properties before clicking." },
+                            h("span", { className: "disabled-button-wrap" }, h(Button, { type: "primary", disabled: true }, linked ? "Change Link" : "Link with Existing Product")))
+                        : h(Button, { type: "primary", disabled: isDetail, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product")),
+                      (!isDetail && !staticPropertyReady
+                        ? h(Tooltip, { title: "Complete the static properties before clicking." },
+                            h("span", { className: "disabled-button-wrap" }, h(Button, { disabled: true }, linked ? "Create New" : "Create New Product")))
+                        : h(Button, { disabled: isDetail, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product"))
                     )
                   )
                 ),
