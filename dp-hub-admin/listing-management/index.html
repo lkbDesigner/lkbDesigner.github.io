@@ -753,7 +753,7 @@
         const [coreFieldsModified, setCoreFieldsModified] = React.useState(false);
         const [coreFieldSnapshot, setCoreFieldSnapshot] = React.useState({});
         const [publishWarningOpen, setPublishWarningOpen] = React.useState(false);
-        const [expandedLogRows, setExpandedLogRows] = React.useState([]);
+        const [expandedLogRow, setExpandedLogRow] = React.useState(null);
         const matching = selectedHub === "517895";
         const baseReady = Boolean((!isAdd || providerId) && productInfoReady);
         const clearingRuleReady = baseReady && linked;
@@ -1127,8 +1127,8 @@
               rowKey: "key",
               expandable: {
                 showExpandColumn: false,
-                expandedRowKeys: expandedLogRows,
-                onExpand: (open, row) => setExpandedLogRows(open ? [row.key] : []),
+                expandedRowKeys: expandedLogRow ? [expandedLogRow] : [],
+                onExpand: (open, row) => setExpandedLogRow(open ? row.key : null),
                 expandedRowRender: row => h("div", { className: "json-diff-grid log-json-diff" },
                   h("div", null, h("h4", null, "Old"), h("pre", null, JSON.stringify(row.oldValue, null, 2))),
                   h("div", null, h("h4", null, "New"), h("pre", null, JSON.stringify(row.newValue, null, 2)))
@@ -1138,11 +1138,11 @@
                 { title: "Operator", dataIndex: "operator" },
                 { title: "Operate Time", dataIndex: "time" },
                 { title: "Value Diff", render: (_, row) => {
-                  const isExpanded = expandedLogRows.includes(row.key);
-                  const toggle = () => setExpandedLogRows(isExpanded ? [] : [row.key]);
+                  const isExpanded = expandedLogRow === row.key;
+                  const toggle = () => setExpandedLogRow(isExpanded ? null : row.key);
                   return h("div", { className: "log-value-diff-cell" },
-                    h(Button, { type: "text", size: "small", icon: h(isExpanded ? I.DownOutlined : I.RightOutlined), onClick: toggle, "aria-label": isExpanded ? "Collapse value diff" : "Expand value diff" }),
-                    h(Button, { type: "link", className: "link-button", onClick: toggle }, "See More")
+                    h(Button, { type: "text", size: "small", icon: h(isExpanded ? I.DownOutlined : I.RightOutlined), onClick: event => { event.stopPropagation(); toggle(); }, "aria-label": isExpanded ? "Collapse value diff" : "Expand value diff" }),
+                    h(Button, { type: "link", className: "link-button", onClick: event => { event.stopPropagation(); toggle(); } }, "See More")
                   );
                 } }
               ],
