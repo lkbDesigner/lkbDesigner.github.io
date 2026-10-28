@@ -1122,6 +1122,7 @@
           ),
           h(Modal, { title: "Edit Log", open: logOpen, width: 860, footer: null, onCancel: () => setLogOpen(false) },
             h(Table, {
+              key: "edit-log-" + (expandedLogRow || "none"),
               size: "small",
               pagination: false,
               rowKey: "key",
