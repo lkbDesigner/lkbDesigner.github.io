@@ -651,23 +651,27 @@
           }
         ];
         const submit = () => {
-          // The first step is only used to generate a template. Upload validation
-          // must work even when all first-step filters are empty.
-          if (!fileList.length) {
-            notify("Please upload an .xlsx or .csv file");
-            return;
-          }
-          const uploaded = fileList[0];
-          if (validationMode === "error") {
-            const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
-            setValidationFileName(baseName + "_validation.csv");
-            setFileList([]);
-            setRecordAction(null);
-            setResultState("partial");
-            return;
-          }
-          notifySuccess("Submitted successfully");
-          onBack();
+          form.validateFields()
+            .then(() => {
+              if (!fileList.length) {
+                notify("Please upload an .xlsx or .csv file");
+                return;
+              }
+              const uploaded = fileList[0];
+              if (validationMode === "error") {
+                const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
+                setValidationFileName(baseName + "_validation.csv");
+                setFileList([]);
+                setRecordAction(null);
+                setResultState("partial");
+                return;
+              }
+              notifySuccess("Submitted successfully");
+              onBack();
+            })
+            .catch(() => {
+              notify("Please complete the required filters");
+            });
         };
         const reset = () => {
           form.resetFields();
