@@ -429,7 +429,7 @@
       const [draftFilters, setDraftFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [filters, setFilters] = React.useState({ l1: '', l2: '', l3: '' });
       const [detailRecord, setDetailRecord] = React.useState(null);
-      const [propertyTypeFilters, setPropertyTypeFilters] = React.useState({ static: '', dynamic: '' });
+      const [propertyTypeFilters, setPropertyTypeFilters] = React.useState({ dynamic: '' });
       const [hoverPath, setHoverPath] = React.useState(null);
       const viewMode = 'tree';
       const isWorkspace = false;
@@ -438,10 +438,9 @@
       const treeRows = React.useMemo(() => flattenHierarchyAsTree(groups), [groups]);
       const staticPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'static') : [], [detailRecord]);
       const dynamicPropertyRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord, 'dynamic') : [], [detailRecord]);
-      const propertyTypeOptions = React.useMemo(() => staticPropertyRows.map(row => ({ value: row.property, label: row.property })), [staticPropertyRows]);
-      const filteredStaticPropertyRows = React.useMemo(() => propertyTypeFilters.static ? staticPropertyRows.filter(row => row.property === propertyTypeFilters.static) : staticPropertyRows, [staticPropertyRows, propertyTypeFilters.static]);
+      const propertyTypeOptions = React.useMemo(() => dynamicPropertyRows.map(row => ({ value: row.property, label: row.property })), [dynamicPropertyRows]);
       const filteredDynamicPropertyRows = React.useMemo(() => propertyTypeFilters.dynamic ? dynamicPropertyRows.filter(row => row.property === propertyTypeFilters.dynamic) : dynamicPropertyRows, [dynamicPropertyRows, propertyTypeFilters.dynamic]);
-      React.useEffect(() => setPropertyTypeFilters({ static: '', dynamic: '' }), [detailRecord]);
+      React.useEffect(() => setPropertyTypeFilters({ dynamic: '' }), [detailRecord]);
       const detailColumns = [
         { title: 'Property', dataIndex: 'property', width: 180 },
         { title: 'Data Source', dataIndex: 'dataSource', width: 360, render: (value, record) => h('div', null, [
@@ -450,8 +449,8 @@
         ]) },
         { title: 'Description', dataIndex: 'description' }
       ];
-      const propertyTabContent = (propertyType, rows) => h('div', { className: 'property-tab-panel' }, [
-        h('div', { className: 'property-tab-filter', key: 'filter' }, h(Select, {
+      const propertyTabContent = (propertyType, rows, showFilter = true) => h('div', { className: 'property-tab-panel' }, [
+        showFilter && h('div', { className: 'property-tab-filter', key: 'filter' }, h(Select, {
           value: propertyTypeFilters[propertyType] || undefined,
           options: propertyTypeOptions,
           placeholder: 'Property Type',
@@ -594,7 +593,7 @@
             key: 'property-tabs',
             defaultActiveKey: 'static',
             items: [
-              { key: 'static', label: 'Static Property', children: propertyTabContent('static', filteredStaticPropertyRows) },
+              { key: 'static', label: 'Static Property', children: propertyTabContent('static', staticPropertyRows, false) },
               { key: 'dynamic', label: 'Dynamic Property', children: propertyTabContent('dynamic', filteredDynamicPropertyRows) }
             ]
           })
