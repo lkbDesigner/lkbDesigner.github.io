@@ -791,7 +791,7 @@
         }, h(Select, { placeholder: "Select", options: options.map(value => ({ value, label: value })), disabled: Boolean(disabled || isDetail), allowClear: true, style: { width: "100%", maxWidth: "100%" } }));
         const staticField = (label, value) => h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label }, h("div", { className: "readonly" }, value));
         const corePropertyField = label => h("div", { className: "core-property-field" },
-          selectField(label, false, attrOptions),
+          selectField(label, true, attrOptions),
           coreFieldImpact ? h("div", { className: "core-field-warning" }, "The value is matched with Linked Hub Product ID, will result Unlink Hub Product actions") : null
         );
         const save = () => form.validateFields().then(() => notify(isAdd ? "Item added successfully" : "Saved successfully")).catch(() => {});
@@ -933,9 +933,9 @@
                       corePropertyField("Property 1"),
                       corePropertyField("Property 2"),
                       corePropertyField("Property 3"),
-                      selectField("Property 4", false, attrOptions),
-                      selectField("Property 5", false, attrOptions),
-                      selectField("Property 6", false, attrOptions)
+                      selectField("Property 4", true, attrOptions),
+                      selectField("Property 5", true, attrOptions),
+                      selectField("Property 6", true, attrOptions)
                     ),
                     h("div", { className: "edit-subtitle" }, "Dynamic Property"),
                     h("div", { className: "dynamic-property-action" },
