@@ -464,10 +464,10 @@
         { key: "r3", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: false, updated: "2026/06/22 12:00" }
       ];
       const getModuleStatuses = row => row.key === "1"
-        ? { itemBasic: true, linkedHubProduct: true, bindPartner: true, clearingRule: true }
+        ? { itemBasic: true, linkedHubProduct: true, clearingRule: true }
         : row.key === "2"
-          ? { itemBasic: true, linkedHubProduct: true, bindPartner: false, clearingRule: false }
-          : { itemBasic: false, linkedHubProduct: false, bindPartner: true, clearingRule: false };
+          ? { itemBasic: true, linkedHubProduct: true, clearingRule: false }
+          : { itemBasic: false, linkedHubProduct: false, clearingRule: false };
 
       function FilterField(props) {
         const control = props.select
@@ -624,7 +624,7 @@
                   )
                 ) : null,
                 fileList.length ? h("div", { className: "validation-switch" },
-                  h("div", { className: "validation-dev-note" }, "开发注意: 只是查看校验结果样式,不需要开发"),
+                  h("div", { className: "validation-dev-note" }, "开发注意: 只是查看校验结果样式,不需要开发。选择后,点击 Submit, 可以查看校验正确和错误的视觉样式"),
                   h("div", { className: "validation-options-label" }, "Validation result"),
                   h("div", { className: "validation-switch-buttons" },
                     h(Button, { type: validationMode === "correct" ? "primary" : "default", onClick: () => setValidationMode("correct") }, "Correct"),
@@ -714,7 +714,6 @@
         const isAdd = mode === "add";
         const isDetail = mode === "detail";
         const editBaseLinkedComplete = !isAdd && (item.key === "1" || item.key === "2");
-        const editHasPartner = !isAdd && item.key !== "2";
         const pageTitle = isDetail ? "Item Detail" : isAdd ? "Add Item" : "Edit Item";
         const [form] = Form.useForm();
         const [ruleForm] = Form.useForm();
@@ -730,7 +729,7 @@
           property4: editBaseLinkedComplete ? "Category1" : undefined,
           property5: editBaseLinkedComplete ? "Category2" : undefined,
           property6: editBaseLinkedComplete ? "Category3" : undefined,
-          partners: editHasPartner ? ["digital"] : []
+          
         });
         const [productInfoReady, setProductInfoReady] = React.useState(editBaseLinkedComplete);
         const [providerName, setProviderName] = React.useState(isAdd ? undefined : item.provider);
@@ -738,7 +737,6 @@
         const [linked, setLinked] = React.useState(editBaseLinkedComplete);
         const [linkedId, setLinkedId] = React.useState(editBaseLinkedComplete ? item.hubId : "-");
         const [selectedHub, setSelectedHub] = React.useState(item.hubId || "517895");
-        const [partnerValues, setPartnerValues] = React.useState(editHasPartner ? ["digital"] : []);
         const [rules, setRules] = React.useState([]);
         const [linkOpen, setLinkOpen] = React.useState(false);
         const [createOpen, setCreateOpen] = React.useState(false);
@@ -752,10 +750,10 @@
         const [coreFieldsModified, setCoreFieldsModified] = React.useState(false);
         const [coreFieldSnapshot, setCoreFieldSnapshot] = React.useState({});
         const [publishWarningOpen, setPublishWarningOpen] = React.useState(false);
-        const [jsonDiffOpen, setJsonDiffOpen] = React.useState(false);
+        const [expandedLogRows, setExpandedLogRows] = React.useState([]);
         const matching = selectedHub === "517895";
         const baseReady = Boolean((!isAdd || providerId) && productInfoReady);
-        const clearingRuleReady = baseReady && linked && partnerValues.length > 0;
+        const clearingRuleReady = baseReady && linked;
         const publishReady = clearingRuleReady && rules.length > 0;
         React.useEffect(() => {
           if (clearingRuleReady) {
@@ -877,7 +875,6 @@
                   property4: editBaseLinkedComplete ? "Category1" : undefined,
                   property5: editBaseLinkedComplete ? "Category2" : undefined,
                   property6: editBaseLinkedComplete ? "Category3" : undefined,
-                  partners: editHasPartner ? ["digital"] : [],
                   providerName: isAdd ? undefined : item.provider
                 },
                 labelAlign: "right",
@@ -959,35 +956,6 @@
                       h(Button, { type: "primary", disabled: isDetail, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
                       h(Button, { disabled: isDetail, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
                     )
-                  )
-                ),
-                !isDetail && h("section", { className: "module-section" },
-                  h("div", { className: "section-heading" },
-                    h(Tag, { color: partnerValues.length ? "success" : "error" }, partnerValues.length ? "Completed" : "Incompleted"),
-                    h("h2", null, "Bind Partner")
-                  ),
-                  h(Form.Item, {
-                    className: "edit-form-item partner-form-item",
-                    style: { marginBottom: 16 },
-                    label: "Binding Partner",
-                    required: true,
-                    name: "partners",
-                    valuePropName: "value",
-                    rules: [{ type: "array", min: 1, required: true, message: "Please select at least one partner" }],
-                  },
-                    h(Checkbox.Group, {
-                      options: [
-                        { label: "Digital-Purchase", value: "digital" },
-                        { label: "Intra", value: "intra" },
-                        { label: "ShopeePay", value: "shopeepay" },
-                        { label: "SeaBank", value: "seabank" },
-                        { label: "Invest", value: "invest" },
-                        { label: "FoodDriver", value: "fooddriver" },
-                        { label: "Checkbox", value: "checkbox" }
-                      ],
-                      value: partnerValues,
-                      onChange: setPartnerValues
-                    })
                   )
                 ),
                 h("section", { className: "module-section clearing-rule-section" },
@@ -1149,27 +1117,29 @@
               h(Form.Item, { label: "Partner", name: "partner", rules: [{ required: true, message: "Please select a partner" }] }, h(Select, { options: [{ value: "Digital-purchase", label: "Digital-purchase" }] }))
             )
           ),
-          h(Drawer, { title: "Edit Log", open: logOpen, onClose: () => setLogOpen(false), width: 720 },
+          h(Modal, { title: "Edit Log", open: logOpen, width: 860, footer: null, onCancel: () => setLogOpen(false) },
             h(Table, {
               size: "small",
               pagination: false,
               rowKey: "key",
+              expandable: {
+                expandedRowKeys: expandedLogRows,
+                onExpand: (open, row) => setExpandedLogRows(old => open ? [...old, row.key] : old.filter(key => key !== row.key)),
+                expandedRowRender: row => h("div", { className: "json-diff-grid log-json-diff" },
+                  h("div", null, h("h4", null, "Old"), h("pre", null, JSON.stringify(row.oldValue, null, 2))),
+                  h("div", null, h("h4", null, "New"), h("pre", null, JSON.stringify(row.newValue, null, 2)))
+                )
+              },
               columns: [
                 { title: "Operator", dataIndex: "operator" },
                 { title: "Operate Time", dataIndex: "time" },
-                { title: "Value Diff", render: () => h(Button, { type: "link", className: "link-button", onClick: () => setJsonDiffOpen(true) }, "See More >") }
+                { title: "Value Diff", render: (_, row) => h(Button, { type: "link", className: "link-button", onClick: () => setExpandedLogRows(old => old.includes(row.key) ? old.filter(key => key !== row.key) : [...old, row.key]) }, expandedLogRows.includes(row.key) ? "Collapse <" : "See More >") }
               ],
               dataSource: [
-                { key: "log-1", operator: "ops@shopee.com", time: "2025/01/01 00:00" },
-                { key: "log-2", operator: "ops@shopee.com", time: "2025/01/01 00:00" }
+                { key: "log-1", operator: "ops@shopee.com", time: "2025/01/01 00:00", oldValue: { mapping_status: 1, partner_id: 101 }, newValue: { mapping_status: 2, partner_id: 101 } },
+                { key: "log-2", operator: "ops@shopee.com", time: "2025/01/01 00:00", oldValue: { mapping_status: 2, partner_id: 101 }, newValue: { mapping_status: 1, partner_id: 101 } }
               ]
             })
-          ),
-          h(Modal, { title: "Value Diff", open: jsonDiffOpen, width: 760, footer: null, onCancel: () => setJsonDiffOpen(false) },
-            h("div", { className: "json-diff-grid" },
-              h("div", null, h("h4", null, "Old"), h("pre", null, JSON.stringify({ id: 54092, mapping_id: 1, product_id: 100001, provider_id: 10001, partner_id: 101, mapping_status: 1 }, null, 2))),
-              h("div", null, h("h4", null, "New"), h("pre", null, JSON.stringify({ id: 54092, mapping_id: 1, product_id: 100001, provider_id: 10001, partner_id: 101, mapping_status: 2 }, null, 2)))
-            )
           ),
           h(Drawer, { title: "Rule Info Detail", open: Boolean(ruleDetail), onClose: () => setRuleDetail(null), width: 420 },
             ruleDetail ? h(Typography.Text, null, ruleDetail) : null
@@ -1360,7 +1330,6 @@
               return h("div", { className: "field-stack" },
                 h("div", null, h("span", { className: "inline-label" }, "Item Basic: "), statusTag(statuses.itemBasic)),
                 h("div", null, h("span", { className: "inline-label" }, "Linked Hub Product: "), statusTag(statuses.linkedHubProduct)),
-                h("div", null, h("span", { className: "inline-label" }, "Bind Partner: "), statusTag(statuses.bindPartner)),
                 h("div", null, h("span", { className: "inline-label" }, "Clearing Rule: "), statusTag(statuses.clearingRule))
               );
             }
