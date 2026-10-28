@@ -326,6 +326,8 @@
     .json-diff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     .json-diff-grid h4 { margin: 0 0 8px; font-size: 14px; }
     .json-diff-grid pre { min-height: 180px; margin: 0; padding: 12px; overflow: auto; background: #fafafa; border: 1px solid #f0f0f0; font-size: 12px; line-height: 20px; }
+    .log-value-diff-cell { display: inline-flex; align-items: center; gap: 4px; }
+    .log-value-diff-cell .ant-btn { padding-inline: 4px; }
     .core-property-field { min-width: 0; }
     .core-field-warning { width: 240px; max-width: 240px; margin: -8px 0 8px 160px; color: #faad14; font-size: 12px; font-weight: 400; line-height: 20px; letter-spacing: -0.01px; white-space: normal; overflow-wrap: break-word; }
     .modal-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
@@ -1124,6 +1126,7 @@
               pagination: false,
               rowKey: "key",
               expandable: {
+                showExpandColumn: false,
                 expandedRowKeys: expandedLogRows,
                 onExpand: (open, row) => setExpandedLogRows(old => open ? [...old, row.key] : old.filter(key => key !== row.key)),
                 expandedRowRender: row => h("div", { className: "json-diff-grid log-json-diff" },
@@ -1134,7 +1137,14 @@
               columns: [
                 { title: "Operator", dataIndex: "operator" },
                 { title: "Operate Time", dataIndex: "time" },
-                { title: "Value Diff", render: (_, row) => h(Button, { type: "link", className: "link-button", onClick: () => setExpandedLogRows(old => old.includes(row.key) ? old.filter(key => key !== row.key) : [...old, row.key]) }, expandedLogRows.includes(row.key) ? "Collapse <" : "See More >") }
+                { title: "Value Diff", render: (_, row) => {
+                  const isExpanded = expandedLogRows.includes(row.key);
+                  const toggle = () => setExpandedLogRows(old => isExpanded ? old.filter(key => key !== row.key) : [...old, row.key]);
+                  return h("div", { className: "log-value-diff-cell" },
+                    h(Button, { type: "text", size: "small", icon: h(isExpanded ? I.DownOutlined : I.RightOutlined), onClick: toggle, "aria-label": isExpanded ? "Collapse value diff" : "Expand value diff" }),
+                    h(Button, { type: "link", className: "link-button", onClick: toggle }, "See More")
+                  );
+                } }
               ],
               dataSource: [
                 { key: "log-1", operator: "ops@shopee.com", time: "2025/01/01 00:00", oldValue: { mapping_status: 1, partner_id: 101 }, newValue: { mapping_status: 2, partner_id: 101 } },
