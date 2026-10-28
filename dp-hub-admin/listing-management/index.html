@@ -322,6 +322,10 @@
     .core-impact-control { display: flex; align-items: center; gap: 8px; color: #262626; font-size: 14px; line-height: 22px; }
     .module-footer-actions { display: flex; align-items: center; gap: 8px; }
     .mass-workflow-footer { justify-content: flex-end; }
+    .validation-branch-copy { margin-top: 8px; color: #8c8c8c; font-size: 12px; line-height: 20px; }
+    .json-diff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .json-diff-grid h4 { margin: 0 0 8px; font-size: 14px; }
+    .json-diff-grid pre { min-height: 180px; margin: 0; padding: 12px; overflow: auto; background: #fafafa; border: 1px solid #f0f0f0; font-size: 12px; line-height: 20px; }
     .core-property-field { min-width: 0; }
     .core-field-warning { width: 240px; max-width: 240px; margin: -8px 0 8px 160px; color: #faad14; font-size: 12px; font-weight: 400; line-height: 20px; letter-spacing: -0.01px; white-space: normal; overflow-wrap: break-word; }
     .modal-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
@@ -625,7 +629,8 @@
                   h("div", { className: "validation-switch-buttons" },
                     h(Button, { type: validationMode === "correct" ? "primary" : "default", onClick: () => setValidationMode("correct") }, "Correct"),
                     h(Button, { danger: validationMode === "error", type: validationMode === "error" ? "primary" : "default", onClick: () => setValidationMode("error") }, "Error")
-                  )
+                  ),
+                  h("div", { className: "validation-branch-copy" }, validationMode === "correct" ? "All uploaded records pass validation." : "Some uploaded records need correction; download the validation file for details.")
                 ) : null,
                 resultState === "partial" ? h("div", { className: "validation-error-info" },
                   h(Alert, {
@@ -646,23 +651,23 @@
           }
         ];
         const submit = () => {
-          form.validateFields().then(async () => {
-            if (!fileList.length) {
-              notify("Please upload an .xlsx or .csv file");
-              return;
-            }
-            const uploaded = fileList[0];
-            if (validationMode === "error") {
-              const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
-              setValidationFileName(baseName + "_validation.csv");
-              setFileList([]);
-              setRecordAction(null);
-              setResultState("partial");
-              return;
-            }
-            notifySuccess("Submitted successfully");
-            onBack();
-          }).catch(() => {});
+          // The first step is only used to generate a template. Upload validation
+          // must work even when all first-step filters are empty.
+          if (!fileList.length) {
+            notify("Please upload an .xlsx or .csv file");
+            return;
+          }
+          const uploaded = fileList[0];
+          if (validationMode === "error") {
+            const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
+            setValidationFileName(baseName + "_validation.csv");
+            setFileList([]);
+            setRecordAction(null);
+            setResultState("partial");
+            return;
+          }
+          notifySuccess("Submitted successfully");
+          onBack();
         };
         const reset = () => {
           form.resetFields();
@@ -707,9 +712,10 @@
       function EditItem(props) {
         const { item, onBack, notify, mode = "edit" } = props;
         const isAdd = mode === "add";
+        const isDetail = mode === "detail";
         const editBaseLinkedComplete = !isAdd && (item.key === "1" || item.key === "2");
         const editHasPartner = !isAdd && item.key !== "2";
-        const pageTitle = isAdd ? "Add Item" : "Edit Item";
+        const pageTitle = isDetail ? "Item Detail" : isAdd ? "Add Item" : "Edit Item";
         const [form] = Form.useForm();
         const [ruleForm] = Form.useForm();
         const [editValues, setEditValues] = React.useState({
@@ -746,6 +752,7 @@
         const [coreFieldsModified, setCoreFieldsModified] = React.useState(false);
         const [coreFieldSnapshot, setCoreFieldSnapshot] = React.useState({});
         const [publishWarningOpen, setPublishWarningOpen] = React.useState(false);
+        const [jsonDiffOpen, setJsonDiffOpen] = React.useState(false);
         const matching = selectedHub === "517895";
         const baseReady = Boolean((!isAdd || providerId) && productInfoReady);
         const clearingRuleReady = baseReady && linked && partnerValues.length > 0;
@@ -779,8 +786,8 @@
           label,
           required: Boolean(required),
           name: label === "Type" ? "type" : label === "Product Type" ? "productType" : label === "Sub Product Type" ? "subProductType" : label.toLowerCase().replace(/\s+(\d+)/, "$1").replace(/\s+/g, ""),
-          rules: required ? [{ required: true, message: "Please select " + label }] : undefined
-        }, h(Select, { placeholder: "Select", options: options.map(value => ({ value, label: value })), disabled: Boolean(disabled), allowClear: true, style: { width: "100%", maxWidth: "100%" } }));
+          rules: required && !isDetail ? [{ required: true, message: "Please select " + label }] : undefined
+        }, h(Select, { placeholder: "Select", options: options.map(value => ({ value, label: value })), disabled: Boolean(disabled || isDetail), allowClear: true, style: { width: "100%", maxWidth: "100%" } }));
         const staticField = (label, value) => h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label }, h("div", { className: "readonly" }, value));
         const corePropertyField = label => h("div", { className: "core-property-field" },
           selectField(label, false, attrOptions),
@@ -887,7 +894,7 @@
                     h("div", { className: "edit-subtitle" }, "Basic Info"),
                     h("div", { className: "edit-field-row" },
                       isAdd ? null : staticField("Item ID", item.item),
-                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Item Name", name: "itemName" }, h(Input, { style: { width: "100%", maxWidth: "100%" } }))
+                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Item Name", name: "itemName" }, h(Input, { disabled: isDetail, style: { width: "100%", maxWidth: "100%" } }))
                     ),
                     h("div", { className: "edit-subtitle" }, "Product Info"),
                     h("div", { className: "edit-field-row" },
@@ -914,7 +921,7 @@
                       isAdd
                         ? staticField("Provider ID", providerId || "-")
                         : staticField("Provider ID", h(Button, { type: "link", className: "link-button" }, item.providerId)),
-                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Provider Product Code", name: "providerProductCode", required: true, rules: [{ required: true, message: "Please input Provider Product Code" }] }, h(Input, { placeholder: "Input", style: { width: "100%", maxWidth: "100%" } })),
+                      h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Provider Product Code", name: "providerProductCode", required: true, rules: !isDetail ? [{ required: true, message: "Please input Provider Product Code" }] : undefined }, h(Input, { disabled: isDetail, placeholder: "Input", style: { width: "100%", maxWidth: "100%" } })),
                       selectField("Type", true, typeOptions),
                       selectField("Product Type", true, productOptions),
                       selectField("Sub Product Type", true, subProductOptions)
@@ -949,12 +956,12 @@
                       h("span", { className: "linked-product-label" }, h("span", { className: "required-mark" }, "*"), " Linked Hub Product ID"),
                       linked ? h(Button, { type: "link", className: "linked-product-value" }, linkedId) : h("span", { className: "linked-product-value" }, linkedId),
                       linked ? h(Button, { type: "text", className: "unlink-product-button", icon: h(I.DisconnectOutlined), onClick: () => setUnlinkOpen(true), "aria-label": "Unlink Hub Product" }) : null,
-                      h(Button, { type: "primary", onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
-                      h(Button, { onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
+                      h(Button, { type: "primary", disabled: isDetail, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
+                      h(Button, { disabled: isDetail, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
                     )
                   )
                 ),
-                h("section", { className: "module-section" },
+                !isDetail && h("section", { className: "module-section" },
                   h("div", { className: "section-heading" },
                     h(Tag, { color: partnerValues.length ? "success" : "error" }, partnerValues.length ? "Completed" : "Incompleted"),
                     h("h2", null, "Bind Partner")
@@ -1008,7 +1015,7 @@
               )
             )
           ),
-          h("footer", { className: "module-footer" },
+          !isDetail && h("footer", { className: "module-footer" },
             h("div", { className: "core-impact-control" },
               h("span", null, "开发注意, 只是查看校验结果样式,不需要开发, 只看是否影响到核心字段方案"),
               h(Switch, { checked: coreFieldImpact, onChange: checked => {
@@ -1142,8 +1149,27 @@
               h(Form.Item, { label: "Partner", name: "partner", rules: [{ required: true, message: "Please select a partner" }] }, h(Select, { options: [{ value: "Digital-purchase", label: "Digital-purchase" }] }))
             )
           ),
-          h(Drawer, { title: "Edit Log", open: logOpen, onClose: () => setLogOpen(false), width: 480 },
-            h(Empty, { description: "No edit log" })
+          h(Drawer, { title: "Edit Log", open: logOpen, onClose: () => setLogOpen(false), width: 720 },
+            h(Table, {
+              size: "small",
+              pagination: false,
+              rowKey: "key",
+              columns: [
+                { title: "Operator", dataIndex: "operator" },
+                { title: "Operate Time", dataIndex: "time" },
+                { title: "Value Diff", render: () => h(Button, { type: "link", className: "link-button", onClick: () => setJsonDiffOpen(true) }, "See More >") }
+              ],
+              dataSource: [
+                { key: "log-1", operator: "ops@shopee.com", time: "2025/01/01 00:00" },
+                { key: "log-2", operator: "ops@shopee.com", time: "2025/01/01 00:00" }
+              ]
+            })
+          ),
+          h(Modal, { title: "Value Diff", open: jsonDiffOpen, width: 760, footer: null, onCancel: () => setJsonDiffOpen(false) },
+            h("div", { className: "json-diff-grid" },
+              h("div", null, h("h4", null, "Old"), h("pre", null, JSON.stringify({ id: 54092, mapping_id: 1, product_id: 100001, provider_id: 10001, partner_id: 101, mapping_status: 1 }, null, 2))),
+              h("div", null, h("h4", null, "New"), h("pre", null, JSON.stringify({ id: 54092, mapping_id: 1, product_id: 100001, provider_id: 10001, partner_id: 101, mapping_status: 2 }, null, 2)))
+            )
           ),
           h(Drawer, { title: "Rule Info Detail", open: Boolean(ruleDetail), onClose: () => setRuleDetail(null), width: 420 },
             ruleDetail ? h(Typography.Text, null, ruleDetail) : null
@@ -1214,10 +1240,12 @@
         const [currentItem, setCurrentItem] = React.useState(initialRows[0]);
         const [messageApi, contextHolder] = message.useMessage();
         const isPublishedTab = activePoolTab === "published";
+        const isPublishedPage = view === "published";
 
         const notify = text => messageApi.info(text);
         const notifySuccess = text => messageApi.success(text);
         const openEdit = row => { setCurrentItem(row); setView("edit"); };
+        const openItemDetail = row => { setCurrentItem(row); setView("detail"); };
         const openItemNameEditor = row => { setItemNameEditKey(row.key); setItemNameDraft(row.name); };
         const confirmItemNameEdit = row => { row.name = itemNameDraft.trim() || row.name; setItemNameEditKey(null); notify("Item Name updated"); };
         const partnerSelectOptions = ["Partner 1", "Partner 2", "Partner 3", "Partner 4", "ShopeePay", "Shopee", "Mitra", "Seabank"].map(value => ({ value, label: value }));
@@ -1270,7 +1298,7 @@
           { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
         ];
         const columns = [
-          { title: "Item ID", dataIndex: "item", fixed: "left", width: isPublishedTab ? 80 : 63, render: (value, row) => h(Button, { type: "link", className: "link-button", onClick: () => notify(value) }, value) },
+          { title: "Item ID", dataIndex: "item", fixed: "left", width: isPublishedTab ? 80 : 63, render: (value, row) => h(Button, { type: "link", className: "link-button", onClick: () => openItemDetail(row) }, value) },
           {
             title: "Item Name", dataIndex: "name", width: 132,
             render: (value, row) => isPublishedTab ? h("span", { className: "item-name-text" }, value) : h(Popover, {
@@ -1307,36 +1335,6 @@
             render: (_, row) => h("div", { className: "field-stack" },
               h("div", null, h("span", { className: "inline-label" }, "Product ID: "), h(Button, { type: "link", className: "link-button", onClick: () => notify(row.hubId) }, row.hubId))
             )
-          },
-          {
-            title: "Bind Partner", width: 220,
-            render: (_, row) => {
-              const display = isPublishedTab ? (row.publishedPartner || "Partner 1, Partner 2, Partner 3, Partner 4") : (row.partner || "");
-              return h("div", { className: "partner-cell" },
-                h("div", { className: "partner-cell-text" }, display),
-                h(Popover, {
-                  trigger: "click",
-                  placement: "bottomLeft",
-                  open: partnerEditKey === row.key,
-                  onOpenChange: open => { if (open) openPartnerEditor(row, display); else setPartnerEditKey(null); },
-                  content: h("div", { className: "partner-editor" },
-                    h("div", { className: "partner-editor-title" }, "Bind Partner"),
-                    h(Select, {
-                      mode: "multiple",
-                      value: partnerDraft,
-                      options: partnerSelectOptions,
-                      onChange: setPartnerDraft,
-                      style: { width: "100%" },
-                      placeholder: "Please select"
-                    }),
-                    h("div", { className: "partner-editor-actions" },
-                      h(Button, { onClick: () => setPartnerEditKey(null) }, "Cancel"),
-                      h(Button, { type: "primary", onClick: () => confirmPartnerEdit(row) }, "Confirm")
-                    )
-                  )
-                }, h(Button, { type: "text", className: "partner-cell-edit", icon: h(I.EditOutlined), "aria-label": "Edit Bind Partner" }))
-              );
-            }
           },
           {
             title: "Clearing Rule", dataIndex: "rule", width: isPublishedTab ? 132 : 170,
@@ -1386,12 +1384,12 @@
           h("section", { className: "page-head list-head" },
             h("div", { className: "page-head-inner" },
               h("div", { className: "title-row" },
-                h("h1", { className: "page-title" }, "Manual Upload Item"),
+                h("h1", { className: "page-title" }, isPublishedPage ? "Published Item" : "Manual Upload Item"),
                 h("span", { className: "header-spacer" }),
               )
             )
           ),
-          h(Tabs, {
+          !isPublishedPage && h(Tabs, {
             className: "page-tabs",
             tabBarStyle: { height: 52, margin: 0 },
             activeKey: activePoolTab,
@@ -1435,7 +1433,7 @@
                 }, h(Button, { type: "text", shape: "circle", icon: h(I.QuestionCircleOutlined), "aria-label": "Item operation help" })),
                 h(Button, { style: { borderColor: "#1677ff", color: "#1677ff" }, onClick: () => setProviderModalOpen(true) }, "Add/Change Clearing Rule"),
                 h(Button, { onClick: () => { downloadTextFile("download-example.txt", "DP Hub Admin download verification\n", "text/plain;charset=utf-8"); notify("Download started"); } }, "Download"),
-                !isPublishedTab && h(Button, { onClick: () => setActionLogOpen(true) }, "Log")
+                h(Button, { onClick: () => setActionLogOpen(true) }, "Log")
               ),
               !isPublishedTab && h("div", { className: "selection-summary" },
                 h("div", { className: "selection-summary-inner" },
@@ -1596,9 +1594,13 @@
                   mode: "inline",
                   inlineIndent: 16,
                   items: menu,
-                  selectedKeys: ["manual-upload-item"],
+                  selectedKeys: [view === "published" ? "published-item" : "manual-upload-item"],
                   openKeys,
                   onOpenChange: setOpenKeys,
+                  onClick: ({ key }) => {
+                    if (key === "published-item") { setActivePoolTab("published"); setView("published"); }
+                    if (key === "manual-upload-item") { setActivePoolTab("processing"); setView("pool"); }
+                  },
                   style: { borderInlineEnd: 0 }
                 })
               ),
@@ -1616,8 +1618,12 @@
                 h(Layout.Content, { style: { display: "flex", flexDirection: "column", minHeight: 0, flex: 1 } },
                   view === "pool"
                     ? poolContent
+                    : view === "published"
+                      ? poolContent
                     : view === "edit"
                       ? h(EditItem, { key: "edit-" + currentItem.key, item: currentItem, onBack: backToPool, notify })
+                      : view === "detail"
+                        ? h(EditItem, { key: "detail-" + currentItem.key, mode: "detail", item: currentItem, onBack: backToPool, notify })
                       : view === "add"
                         ? h(EditItem, { key: "add-item", mode: "add", item: { key: "new", item: "", name: "", provider: "", providerId: "" }, onBack: backToPool, notify })
                       : view === "provider-clearing"
