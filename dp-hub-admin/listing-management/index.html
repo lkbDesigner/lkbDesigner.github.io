@@ -756,7 +756,10 @@
         const [expandedLogRow, setExpandedLogRow] = React.useState(null);
         const matching = selectedHub === "517895";
         const baseReady = Boolean((!isAdd || providerId) && productInfoReady);
-        const clearingRuleReady = baseReady && linked;
+        const staticPropertyReady = ["property1", "property2", "property3", "property4", "property5", "property6"]
+          .every(key => editValues[key] !== undefined && editValues[key] !== null && editValues[key] !== "");
+        const providerReady = Boolean(!isAdd || providerId);
+        const clearingRuleReady = providerReady && staticPropertyReady;
         const publishReady = clearingRuleReady && rules.length > 0;
         React.useEffect(() => {
           if (clearingRuleReady) {
@@ -956,8 +959,8 @@
                       h("span", { className: "linked-product-label" }, h("span", { className: "required-mark" }, "*"), " Linked Hub Product ID"),
                       linked ? h(Button, { type: "link", className: "linked-product-value" }, linkedId) : h("span", { className: "linked-product-value" }, linkedId),
                       linked ? h(Button, { type: "text", className: "unlink-product-button", icon: h(I.DisconnectOutlined), onClick: () => setUnlinkOpen(true), "aria-label": "Unlink Hub Product" }) : null,
-                      h(Button, { type: "primary", disabled: isDetail, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
-                      h(Button, { disabled: isDetail, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
+                      h(Button, { type: "primary", disabled: isDetail || !staticPropertyReady, onClick: () => setLinkOpen(true) }, linked ? "Change Link" : "Link with Existing Product"),
+                      h(Button, { disabled: isDetail || !staticPropertyReady, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product")
                     )
                   )
                 ),
