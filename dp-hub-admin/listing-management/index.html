@@ -1128,7 +1128,7 @@
               expandable: {
                 showExpandColumn: false,
                 expandedRowKeys: expandedLogRows,
-                onExpand: (open, row) => setExpandedLogRows(old => open ? [...old, row.key] : old.filter(key => key !== row.key)),
+                onExpand: (open, row) => setExpandedLogRows(open ? [row.key] : []),
                 expandedRowRender: row => h("div", { className: "json-diff-grid log-json-diff" },
                   h("div", null, h("h4", null, "Old"), h("pre", null, JSON.stringify(row.oldValue, null, 2))),
                   h("div", null, h("h4", null, "New"), h("pre", null, JSON.stringify(row.newValue, null, 2)))
@@ -1139,7 +1139,7 @@
                 { title: "Operate Time", dataIndex: "time" },
                 { title: "Value Diff", render: (_, row) => {
                   const isExpanded = expandedLogRows.includes(row.key);
-                  const toggle = () => setExpandedLogRows(old => isExpanded ? old.filter(key => key !== row.key) : [...old, row.key]);
+                  const toggle = () => setExpandedLogRows(isExpanded ? [] : [row.key]);
                   return h("div", { className: "log-value-diff-cell" },
                     h(Button, { type: "text", size: "small", icon: h(isExpanded ? I.DownOutlined : I.RightOutlined), onClick: toggle, "aria-label": isExpanded ? "Collapse value diff" : "Expand value diff" }),
                     h(Button, { type: "link", className: "link-button", onClick: toggle }, "See More")
