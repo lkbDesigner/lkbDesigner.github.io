@@ -651,27 +651,24 @@
           }
         ];
         const submit = () => {
-          form.validateFields()
-            .then(() => {
-              if (!fileList.length) {
-                notify("Please upload an .xlsx or .csv file");
-                return;
-              }
-              const uploaded = fileList[0];
-              if (validationMode === "error") {
-                const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
-                setValidationFileName(baseName + "_validation.csv");
-                setFileList([]);
-                setRecordAction(null);
-                setResultState("partial");
-                return;
-              }
-              notifySuccess("Submitted successfully");
-              onBack();
-            })
-            .catch(() => {
-              notify("Please complete the required filters");
-            });
+          // Show first-step required-field errors, but keep the upload result
+          // validation independent so missing filters do not block Correct/Error.
+          form.validateFields().catch(() => {});
+          if (!fileList.length) {
+            notify("Please upload an .xlsx or .csv file");
+            return;
+          }
+          const uploaded = fileList[0];
+          if (validationMode === "error") {
+            const baseName = (uploaded.name || "uploaded_file").replace(/\.[^.]+$/, "");
+            setValidationFileName(baseName + "_validation.csv");
+            setFileList([]);
+            setRecordAction(null);
+            setResultState("partial");
+            return;
+          }
+          notifySuccess("Submitted successfully");
+          onBack();
         };
         const reset = () => {
           form.resetFields();
