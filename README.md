@@ -31,3 +31,9 @@ Static website: [https://lkbdesigner.github.io/dp-hub-admin/listing-management/]
 Date: 2026-10-26
 
 包含 Item Pool、Edit Item、Linked Hub Product、Bind Partner、Clearing Rule、核心字段影响提醒等静态交互。
+
+## [DP Hub Admin] Product Staging Pool Optimized
+
+Static website: [https://lkbdesigner.github.io/dp-hub-admin/product-staging-pool-optimized.html](https://lkbdesigner.github.io/dp-hub-admin/product-staging-pool-optimized.html)
+
+Date: 2026-11-10
