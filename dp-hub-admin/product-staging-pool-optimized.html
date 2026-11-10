@@ -1286,7 +1286,7 @@ const menu = [
                   setCategoryProducts(categoryContext?.pinnedKey?[...new Set([categoryContext.pinnedKey,...next])]:next);
                 },options:rows.filter(r=>r.state===categoryContext?.state&&hubCategoryKey(r)===categoryContext?.hubPath).map(r=>({value:r.key,label:r.id+" · "+r.name,disabled:r.key===categoryContext?.pinnedKey})),showSearch:true,optionFilterProp:"label",allowClear:!categoryContext?.pinnedKey,placeholder:"Select or Search Products","aria-label":"Selected Products"})),
               h(Form.Item,{label:"Type / Product Type / Sub Product Type",required:true},
-                h(Cascader,{style:{width:"100%"},options:categoryOptions,value:categoryPath,onChange:value=>setCategoryPath(value||[]),allowClear:true,changeOnSelect:false,showSearch:{filter:filterCategoryPath,matchInputWidth:true},displayRender:labels=>labels.join(" / "),placeholder:"Select or search category","aria-label":"Type / Product Type / Sub Product Type"})
+                h(Cascader,{style:{width:"100%"},expandTrigger:"hover",options:categoryOptions,value:categoryPath,onChange:value=>setCategoryPath(value||[]),allowClear:true,changeOnSelect:false,showSearch:{filter:filterCategoryPath,matchInputWidth:true},displayRender:labels=>labels.join(" / "),placeholder:"Select or search category","aria-label":"Type / Product Type / Sub Product Type"})
               )
             )
           )
