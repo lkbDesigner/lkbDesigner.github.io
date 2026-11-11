@@ -1118,8 +1118,8 @@ const menu = [
         if(tab==='invalid'&&(key==='a1'||key==='a2')&&!String(r.values[key]||'').trim())return h(Tooltip,{title:`${title} Is Required`},h(Typography.Text,{type:'danger'},'Required'));
         return h(Typography.Text,{type:tab==='price'&&key==='a11'?'danger':undefined},r.values[key]||'—');
       }})),
-      ...(tab==='price'?[{title:'Action',key:'manual',width:160,fixed:'right',render:(_,r)=>h(Button,{disabled:batchPrice,type:'link',onClick:()=>{setManualRow(r);setManualValue(null);}},'Confirm')}]:[]),
-      ...(tab==='invalid'?[{title:'Action',key:'action',width:156,fixed:'right',render:(_,r)=>editing.includes(r.key)?h(Space,{size:0},h(Button,{type:'link',onClick:()=>endEdit(r,false)},'Cancel'),h(Button,{type:'link',onClick:()=>endEdit(r,true)},'Save')):h(Button,{type:'link',onClick:()=>startEdit(r)},'Edit')}]:[])
+      ...(tab==='price'?[{title:'Action',key:'manual',width:160,fixed:'right',render:(_,r)=>h(Button,{disabled:batchPrice,type:'link',style:{paddingInline:0},onClick:()=>{setManualRow(r);setManualValue(null);}},'Confirm')}]:[]),
+      ...(tab==='invalid'?[{title:'Action',key:'action',width:156,fixed:'right',render:(_,r)=>editing.includes(r.key)?h(Space,{size:0},h(Button,{type:'link',style:{paddingInline:0},onClick:()=>endEdit(r,false)},'Cancel'),h(Button,{type:'link',style:{paddingInline:0},onClick:()=>endEdit(r,true)},'Save')):h(Button,{type:'link',style:{paddingInline:0},onClick:()=>startEdit(r)},'Edit')}]:[])
     ];
     const tabs=[['invalid','Invalid Products'],['price','Invalid Price'],['existing','Existing Products'],['verified','Verified Products']];
     return h(React.Fragment,null,
@@ -1242,7 +1242,7 @@ const menu = [
       {title:"Last Update Time",dataIndex:"lastUpdateTime",width:180},
       {title:"Status",dataIndex:"hubStatus",width:140,filters:[{text:"Draft",value:"Draft"},{text:"Paused",value:"Paused"},{text:"Ready",value:"Ready"}],filterMultiple:true,onFilter:(status,r)=>r.hubStatus===status,render:status=>h(Tag,{color:status==="Ready"?"success":status==="Draft"?"warning":"default"},status)},
       ...(activeState==="ready"?[{title:"Creation Status",width:140,render:(_,r)=>h(Tag,{color:r.createStatus==="Created"?"success":"processing"},r.createStatus==="Created"?"Created":"Pending upload")}]:[]),
-      {title:"Action",fixed:"right",width:156,render:(_,r)=>h(Button,{type:"link",size:"small",onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Categorize":"Add Categorize")}
+      {title:"Action",fixed:"right",width:156,render:(_,r)=>h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Categorize":"Add Categorize")}
     ];
     const stateItems=[
       {key:"need",label:`Need to add DP Category (${rows.filter(r=>r.state==="need").length})`},
