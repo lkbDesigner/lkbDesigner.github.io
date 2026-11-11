@@ -1242,7 +1242,7 @@ const menu = [
       {title:"Last Update Time",dataIndex:"lastUpdateTime",width:180},
       {title:"Status",dataIndex:"hubStatus",width:140,filters:[{text:"Draft",value:"Draft"},{text:"Paused",value:"Paused"},{text:"Ready",value:"Ready"}],filterMultiple:true,onFilter:(status,r)=>r.hubStatus===status,render:status=>h(Tag,{color:status==="Ready"?"success":status==="Draft"?"warning":"default"},status)},
       ...(activeState==="ready"?[{title:"Creation Status",width:140,render:(_,r)=>h(Tag,{color:r.createStatus==="Created"?"success":"processing"},r.createStatus==="Created"?"Created":"Pending upload")}]:[]),
-      {title:"Action",fixed:"right",width:156,render:(_,r)=>h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Categorize":"Add Categorize")}
+      {title:"Action",fixed:"right",width:156,render:(_,r)=>h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Categorize":"Add DP Category")}
     ];
     const stateItems=[
       {key:"need",label:`Need to add DP Category (${rows.filter(r=>r.state==="need").length})`},
@@ -1274,7 +1274,7 @@ const menu = [
                 ),
                 h(Typography.Text,{type:"secondary"},activeState==="need"?"Select products with the same Hub Sub Product Type, then assign one DP category to the batch.":"Select products with the same DP Sub Product Type for Mass Download.")
               ),
-              activeState==="need"?h(Button,{type:"primary",disabled:!selected.length,onClick:()=>{openCategoryFor([...selected]);}},"Batch Categorize"):h(Button,{disabled:!selected.length||selectedRows.some(r=>r.createStatus==="Created"),icon:h(I.DownloadOutlined),onClick:()=>downloadBatch(selected.length,lockedCategory)},"Mass Download")
+              activeState==="need"?h(Button,{type:"primary",disabled:!selected.length,onClick:()=>{openCategoryFor([...selected]);}},"Batch Add DP Category"):h(Button,{disabled:!selected.length||selectedRows.some(r=>r.createStatus==="Created"),icon:h(I.DownloadOutlined),onClick:()=>downloadBatch(selected.length,lockedCategory)},"Mass Download")
             ),
             h("div",{className:"table-wrap"},h(Table,{className:"items-table",size:"middle",columns,dataSource:visibleRows,rowSelection:{selectedRowKeys:selected,onChange:(keys)=>{const batch=rows.filter(r=>keys.includes(r.key));const lock=lockedCategory||(batch[0]&&categoryKey(batch[0]));setSelected(batch.filter(r=>categoryKey(r)===lock&&r.createStatus!=="Created").map(r=>r.key));},hideSelectAll:false,columnTitle:originNode=>lockedCategory?originNode:h(Tooltip,{title:"Select one product first to enable selecting all products in the same category."},h("span",null,h(antd.Checkbox,{disabled:true,"aria-label":"Select all products in the same category"}))),columnWidth:52,getCheckboxProps:r=>({disabled:r.createStatus==="Created"||!sameCategory(r),title:r.createStatus==="Created"?"Created products cannot be selected":!sameCategory(r)?`Only ${lockedCategory} products can be selected together`:""})},scroll:{x:activeState==="ready"?1840:1700},pagination:{current:page,pageSize,onChange:(p,s)=>{setPage(p);setPageSize(s);},total:visibleRows.length,showSizeChanger:true,showQuickJumper:true,showTotal:t=>`total ${t} items`,position:["bottomRight"]}}))
           )),
