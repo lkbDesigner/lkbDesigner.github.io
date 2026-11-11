@@ -1016,7 +1016,7 @@ const menu = [
           { key: 'routing', icon: h(I.PartitionOutlined), label: 'Routing' }, { key: 'provider', icon: h(I.UserOutlined), label: 'Provider' }, { key: 'partner', icon: h(I.InboxOutlined), label: 'Partner' }, { key: 'setting', icon: h(I.SettingOutlined), label: 'Setting' }, { key: 'event', icon: h(I.CalendarOutlined), label: 'Event' }, { key: 'stock', icon: h(I.AppstoreOutlined), label: 'Stock' }, { key: 'tools', icon: h(I.ToolOutlined), label: 'Tools' }, { key: 'file-download', icon: h(I.DownloadOutlined), label: 'File Download' }, { key: 'approval', icon: h(I.AuditOutlined), label: 'Approval Flow Config' }, { key: 'clearing', icon: h(I.FundOutlined), label: 'Clearing & Settlement' }, { key: 'funding', icon: h(I.DatabaseOutlined), label: 'Funding Management' }
         ];
   function Field(p){
-    const control=p.range?h(DatePicker.RangePicker,{value:p.value||null,format:"YYYY-MM-DD",placeholder:["Start date","End date"],allowClear:true,onChange:p.set,"aria-label":p.label}):h(Input,{value:p.value||"",placeholder:"Input",allowClear:true,onChange:e=>p.set(e.target.value),onPressEnter:p.onSearch,"aria-label":p.label});
+    const control=p.range?h(DatePicker.RangePicker,{value:p.value||null,format:"YYYY-MM-DD",placeholder:["Start date","End date"],allowClear:true,onChange:p.set,"aria-label":p.label}):p.options?h(Select,{value:p.value||undefined,options:p.options,placeholder:"Please select",allowClear:true,showSearch:true,optionFilterProp:"label",filterOption:(input,option)=>input.trim().toLowerCase().split(/\s+/).every(term=>String(option.label).toLowerCase().includes(term)),onChange:p.set,"aria-label":p.label}):h(Input,{value:p.value||"",placeholder:"Input",allowClear:true,onChange:e=>p.set(e.target.value),onPressEnter:p.onSearch,"aria-label":p.label});
     return h("label",{className:"filter-control",style:p.range?{gridColumn:"span 2"}:undefined},h("span",{className:"filter-label"},p.label),h("span",{className:"filter-value"},control));
   }
   const attributeNames=Array.from({length:20},(_,i)=>`Attribute ${i+1}`);
@@ -1174,11 +1174,13 @@ const menu = [
 
     const value=k=>filters[k]||"";
     const set=k=>v=>setFilters(s=>({...s,[k]:v}));
-    const visibleFilterKeys=["id","name","creationRange","updateRange"];
+    const visibleFilterKeys=["id","name","provider","hubCategory","creationRange","updateRange"];
     const hasSearchCriteria=visibleFilterKeys.some(key=>Array.isArray(filters[key])?filters[key].some(Boolean):Boolean(String(filters[key]||"").trim()));
     const currentRows=rows.filter(r=>r.state===activeState);
+    const providerOptions=[...new Set(rows.map(r=>r.provider))].sort().map(label=>({value:label,label}));
+    const hubCategoryOptions=[...new Set(rows.map(r=>[r.hubL1,r.hubL2,r.hubL3].join(" / ")))].sort().map(label=>({value:label,label}));
     const inDateRange=(dateValue,range)=>{if(!range||!range.some(Boolean))return true;const timestamp=dayjs(dateValue).valueOf();const start=range[0]?range[0].startOf("day").valueOf():-Infinity;const end=range[1]?range[1].endOf("day").valueOf():Infinity;return timestamp>=start&&timestamp<=end;};
-    const visibleRows=currentRows.filter(r=>{const f=applied;return(!f.id||r.id.toLowerCase().includes(f.id.toLowerCase()))&&(!f.name||r.name.toLowerCase().includes(f.name.toLowerCase()))&&inDateRange(r.creationTime,f.creationRange)&&inDateRange(r.lastUpdateTime,f.updateRange);});
+    const visibleRows=currentRows.filter(r=>{const f=applied;return(!f.id||r.id.toLowerCase().includes(f.id.toLowerCase()))&&(!f.name||r.name.toLowerCase().includes(f.name.toLowerCase()))&&(!f.provider||r.provider===f.provider)&&(!f.hubCategory||[r.hubL1,r.hubL2,r.hubL3].join(" / ")===f.hubCategory)&&inDateRange(r.creationTime,f.creationRange)&&inDateRange(r.lastUpdateTime,f.updateRange);});
     const selectedRows=rows.filter(r=>selected.includes(r.key));
     const categoryKey=r=>activeState==="need"?[r.hubL1,r.hubL2,r.hubL3].join(" / "):(r.dpCategory||[]).join(" / ");
     const lockedCategory=activeState==="ready"&&selectedRows.length?categoryKey(selectedRows[0]):null;
@@ -1260,6 +1262,8 @@ const menu = [
               h("div",{className:"filter-grid"},
                 h(Field,{label:"Hub Product ID",value:value("id"),set:set("id"),onSearch:search}),
                 h(Field,{label:"Hub Product Name",value:value("name"),set:set("name"),onSearch:search}),
+                h(Field,{label:"Provider",options:providerOptions,value:value("provider"),set:set("provider")}),
+                h(Field,{label:"Hub Category",options:hubCategoryOptions,value:value("hubCategory"),set:set("hubCategory")}),
                 h(Field,{label:"Creation Time",range:true,value:filters.creationRange,set:set("creationRange")}),
                 h(Field,{label:"Last Update Time",range:true,value:filters.updateRange,set:set("updateRange")}),
                 h("div",{className:"filter-actions"},h(Button,{onClick:reset},"Reset"),h(Button,{type:"primary",onClick:search},"Search"))
