@@ -1017,7 +1017,7 @@ const menu = [
         ];
   function Field(p){
     const control=p.range?h(DatePicker.RangePicker,{value:p.value||null,format:"YYYY-MM-DD",placeholder:["Start date","End date"],allowClear:true,onChange:p.set,"aria-label":p.label}):p.options?h(Select,{value:p.value||undefined,options:p.options,placeholder:"Please select",allowClear:true,showSearch:true,optionFilterProp:"label",filterOption:(input,option)=>input.trim().toLowerCase().split(/\s+/).every(term=>String(option.label).toLowerCase().includes(term)),onChange:p.set,"aria-label":p.label}):h(Input,{value:p.value||"",placeholder:"Input",allowClear:true,onChange:e=>p.set(e.target.value),onPressEnter:p.onSearch,"aria-label":p.label});
-    return h("label",{className:"filter-control",style:p.range?{gridColumn:"span 2"}:undefined},h("span",{className:"filter-label"},p.label),h("span",{className:"filter-value"},control));
+    return h("label",{className:"filter-control"},h("span",{className:"filter-label"},p.label),h("span",{className:"filter-value"},control));
   }
   const attributeNames=Array.from({length:20},(_,i)=>`Attribute ${i+1}`);
   function makeVerifyRows(products){
