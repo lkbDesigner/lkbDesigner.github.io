@@ -1272,7 +1272,7 @@ const menu = [
                   h(Typography.Text,null,`${selected.length} Product(s) Selected`),
                   selected.length?h(Button,{type:"link",onClick:()=>setSelected([])},"Clear Selection"):null
                 ),
-                h(Typography.Text,{type:"secondary"},activeState==="need"?"Select products to assign a DP category to the batch.":"Select products with the same DP Sub Product Type for Mass Download.")
+                activeState==="ready"?h(Typography.Text,{type:"secondary"},"Select products with the same DP Sub Product Type for Mass Download."):null
               ),
               activeState==="need"?h(Button,{type:"primary",disabled:!selected.length,onClick:()=>{openCategoryFor([...selected]);}},"Batch Add DP Category"):h(Button,{disabled:!selected.length||selectedRows.some(r=>r.createStatus==="Created"),icon:h(I.DownloadOutlined),onClick:()=>downloadBatch(selected.length,lockedCategory)},"Mass Download")
             ),
