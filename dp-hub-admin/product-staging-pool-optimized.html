@@ -1181,7 +1181,7 @@ const menu = [
     const visibleRows=currentRows.filter(r=>{const f=applied;return(!f.id||r.id.toLowerCase().includes(f.id.toLowerCase()))&&(!f.name||r.name.toLowerCase().includes(f.name.toLowerCase()))&&inDateRange(r.creationTime,f.creationRange)&&inDateRange(r.lastUpdateTime,f.updateRange);});
     const selectedRows=rows.filter(r=>selected.includes(r.key));
     const categoryKey=r=>activeState==="need"?[r.hubL1,r.hubL2,r.hubL3].join(" / "):(r.dpCategory||[]).join(" / ");
-    const lockedCategory=selectedRows.length?categoryKey(selectedRows[0]):null;
+    const lockedCategory=activeState==="ready"&&selectedRows.length?categoryKey(selectedRows[0]):null;
     const resetCategoryForm=()=>setCategoryPath([]);
     const hubCategoryKey=r=>[r.hubL1,r.hubL2,r.hubL3].join(" / ");
     const openCategoryFor=(keys,pinCurrent=false)=>{
@@ -1196,7 +1196,7 @@ const menu = [
     const search=()=>{if([filters.creationRange,filters.updateRange].some(r=>r?.[0]&&r?.[1]&&r[0].isAfter(r[1],"day"))){message.error("Start date must be on or before end date");return;}setPage(1);setApplied(filters);setSelected([]);message.success("Filters applied");};
     const reset=()=>{setPage(1);setFilters({});setApplied({});setSelected([]);};
     const clearDates=()=>{setFilters(s=>({...s,creationRange:undefined,updateRange:undefined}));setApplied(s=>({...s,creationRange:undefined,updateRange:undefined}));setSelected([]);};
-    const sameCategory=r=>!lockedCategory||categoryKey(r)===lockedCategory;
+    const sameCategory=r=>activeState==="need"||!lockedCategory||categoryKey(r)===lockedCategory;
     const categoryComplete=categoryPath.length===3;
     const filterCategoryPath=(input,path)=>{
       const text=path.map(option=>option.label).join(" / ").toLowerCase();
@@ -1272,19 +1272,19 @@ const menu = [
                   h(Typography.Text,null,`${selected.length} Product(s) Selected`),
                   selected.length?h(Button,{type:"link",onClick:()=>setSelected([])},"Clear Selection"):null
                 ),
-                h(Typography.Text,{type:"secondary"},activeState==="need"?"Select products with the same Hub Sub Product Type, then assign one DP category to the batch.":"Select products with the same DP Sub Product Type for Mass Download.")
+                h(Typography.Text,{type:"secondary"},activeState==="need"?"Select products to assign a DP category to the batch.":"Select products with the same DP Sub Product Type for Mass Download.")
               ),
               activeState==="need"?h(Button,{type:"primary",disabled:!selected.length,onClick:()=>{openCategoryFor([...selected]);}},"Batch Add DP Category"):h(Button,{disabled:!selected.length||selectedRows.some(r=>r.createStatus==="Created"),icon:h(I.DownloadOutlined),onClick:()=>downloadBatch(selected.length,lockedCategory)},"Mass Download")
             ),
-            h("div",{className:"table-wrap"},h(Table,{className:"items-table",size:"middle",columns,dataSource:visibleRows,rowSelection:{selectedRowKeys:selected,onChange:(keys)=>{const batch=rows.filter(r=>keys.includes(r.key));const lock=lockedCategory||(batch[0]&&categoryKey(batch[0]));setSelected(batch.filter(r=>categoryKey(r)===lock&&r.createStatus!=="Created").map(r=>r.key));},hideSelectAll:false,columnTitle:originNode=>lockedCategory?originNode:h(Tooltip,{title:"Select one product first to enable selecting all products in the same category."},h("span",null,h(antd.Checkbox,{disabled:true,"aria-label":"Select all products in the same category"}))),columnWidth:52,getCheckboxProps:r=>({disabled:r.createStatus==="Created"||!sameCategory(r),title:r.createStatus==="Created"?"Created products cannot be selected":!sameCategory(r)?`Only ${lockedCategory} products can be selected together`:""})},scroll:{x:activeState==="ready"?1840:1700},pagination:{current:page,pageSize,onChange:(p,s)=>{setPage(p);setPageSize(s);},total:visibleRows.length,showSizeChanger:true,showQuickJumper:true,showTotal:t=>`total ${t} items`,position:["bottomRight"]}}))
+            h("div",{className:"table-wrap"},h(Table,{className:"items-table",size:"middle",columns,dataSource:visibleRows,rowSelection:{selectedRowKeys:selected,onChange:(keys)=>{if(activeState==="need"){setSelected(keys);return;}const batch=rows.filter(r=>keys.includes(r.key));const lock=lockedCategory||(batch[0]&&categoryKey(batch[0]));setSelected(batch.filter(r=>categoryKey(r)===lock&&r.createStatus!=="Created").map(r=>r.key));},hideSelectAll:false,columnTitle:originNode=>(activeState==="need"||lockedCategory)?originNode:h(Tooltip,{title:"Select one product first to enable selecting all products in the same category."},h("span",null,h(antd.Checkbox,{disabled:true,"aria-label":"Select all products in the same category"}))),columnWidth:52,getCheckboxProps:r=>({disabled:r.createStatus==="Created"||!sameCategory(r),title:r.createStatus==="Created"?"Created products cannot be selected":!sameCategory(r)?`Only ${lockedCategory} products can be selected together`:""})},scroll:{x:activeState==="ready"?1840:1700},pagination:{current:page,pageSize,onChange:(p,s)=>{setPage(p);setPageSize(s);},total:visibleRows.length,showSizeChanger:true,showQuickJumper:true,showTotal:t=>`total ${t} items`,position:["bottomRight"]}}))
           )),
           h(Modal,{title:"Batch Categorize Products",open:categoryModal,width:640,okText:"Confirm Category",cancelText:"Cancel",onOk:applyCategory,onCancel:()=>{setCategoryModal(false);resetCategoryForm();},okButtonProps:{disabled:!categoryComplete||!categoryProducts.length}},
             h(Form,{layout:"vertical"},
               h(Form.Item,{label:"Selected Products",required:true},h(Select,{mode:"multiple",style:{width:"100%"},value:categoryProducts,onChange:keys=>{
-                  const eligible=rows.filter(r=>r.state===categoryContext?.state&&hubCategoryKey(r)===categoryContext?.hubPath).map(r=>r.key);
+                  const eligible=rows.filter(r=>r.state===categoryContext?.state&&(categoryContext?.state==="need"||hubCategoryKey(r)===categoryContext?.hubPath)).map(r=>r.key);
                   const next=keys.filter(key=>eligible.includes(key));
                   setCategoryProducts(categoryContext?.pinnedKey?[...new Set([categoryContext.pinnedKey,...next])]:next);
-                },options:rows.filter(r=>r.state===categoryContext?.state&&hubCategoryKey(r)===categoryContext?.hubPath).map(r=>({value:r.key,label:r.id+" · "+r.name,disabled:r.key===categoryContext?.pinnedKey})),showSearch:true,optionFilterProp:"label",allowClear:!categoryContext?.pinnedKey,placeholder:"Select or Search Products","aria-label":"Selected Products"})),
+                },options:rows.filter(r=>r.state===categoryContext?.state&&(categoryContext?.state==="need"||hubCategoryKey(r)===categoryContext?.hubPath)).map(r=>({value:r.key,label:r.id+" · "+r.name,disabled:r.key===categoryContext?.pinnedKey})),showSearch:true,optionFilterProp:"label",allowClear:!categoryContext?.pinnedKey,placeholder:"Select or Search Products","aria-label":"Selected Products"})),
               h(Form.Item,{label:"Type / Product Type / Sub Product Type",required:true},
                 h(Cascader,{style:{width:"100%"},expandTrigger:"hover",options:categoryOptions,value:categoryPath,onChange:value=>setCategoryPath(value||[]),allowClear:true,changeOnSelect:false,showSearch:{filter:filterCategoryPath,matchInputWidth:true},displayRender:labels=>labels.join(" / "),placeholder:"Select or search category","aria-label":"Type / Product Type / Sub Product Type"})
               )
