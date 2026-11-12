@@ -1048,10 +1048,14 @@ const menu = [
         if(status==='invalid')values.a2='';
         if(status==='price')values.a11='150000';
       }
+      if(product.verifyValues){
+        Object.assign(values,product.verifyValues);
+        status=Number(values.a11)>Number(values.a10)?'price':'verified';
+      }
       return {key:product.key,sourceKey:product.key,row:index+1,status,values,priceConfirmed:false};
     });
     // Keep a valid sample available for repeatable prototype submission.
-    if(!result.some(record=>record.status==='verified')){
+    if(!result.some(record=>record.status==='verified')&&!source.some(product=>product.verifyValues)){
       const sample=result.find(record=>record.status!=='existing')||result[result.length-1];
       const original=source.find(product=>product.key===sample.sourceKey);
       sample.status='verified';
@@ -1171,6 +1175,8 @@ const menu = [
 
   function ProductPage(){
     const {message,notification}=antd.App.useApp();
+    const [singleUploadForm]=Form.useForm();
+    const [singleUploadProduct,setSingleUploadProduct]=React.useState(null);
     const [open,setOpen]=React.useState(["product-pool"]);
     const [rows,setRows]=React.useState(initialRows);
     const [activeState,setActiveState]=React.useState("need");
@@ -1229,6 +1235,18 @@ const menu = [
       message.success(`${batch.length} products downloaded. Fill in the remaining DP fields.`);
     };
     const applyCategory=()=>{if(!categoryProducts.length){message.error("Please select products first");return;}if(!categoryComplete){message.error("Please select DP Type, Product Type, and Sub Product Type");return;}const batchKeys=[...categoryProducts];const selectedDPCategory=[categoryLevel1,categoryLevel2,categoryLevel3];const batchCount=batchKeys.length;const batchL3=categoryLevel3;setRows(data=>data.map(r=>batchKeys.includes(r.key)?{...r,dpCategory:selectedDPCategory,state:"ready",createStatus:r.createStatus||"Ready"}:r));setCategoryModal(false);resetCategoryForm();setSelected([]);if(categoryContext?.state==="ready"){message.success(`${batchCount} product(s) updated`);return;}notification.success({key:"category-download",message:"DP category assigned",description:`${batchCount} product(s) moved to Ready for Creation. You can keep categorizing products here, download this batch now, or view it in Ready for Creation.`,duration:0,btn:h(Space,null,h(Button,{onClick:()=>{setActiveState("ready");setFilters({});setApplied({});setSelected(batchKeys);notification.destroy("category-download");}},"View In Ready"),h(Button,{type:"primary",icon:h(I.DownloadOutlined),onClick:()=>{setActiveState("ready");setSelected(batchKeys);setPage(1);notification.destroy("category-download");}},"Select Batch"))});};
+    const confirmSingleUpload=async()=>{
+      let values;
+      try{values=await singleUploadForm.validateFields();}catch{return;}
+      if(!singleUploadProduct)return;
+      const product={...singleUploadProduct,verifyValues:{
+        a2:values.attribute1.trim(),a3:values.attribute2.trim(),a4:String(values.attribute3),
+        a10:String(values.attribute4),a11:String(values.attribute5),a12:String(values.attribute6)
+      }};
+      notification.destroy();
+      setSingleUploadProduct(null);
+      setVerifyProducts([product]);
+    };
     const openBatchVerify=(productKeys=null)=>{
       notification.destroy();
       setVerifyProducts(rows.filter(r=>r.state==="ready"&&(!productKeys||productKeys.includes(r.key))));
@@ -1261,7 +1279,7 @@ const menu = [
       ...(activeState==="ready"?[{title:"Creation Status",width:140,render:(_,r)=>h(Tag,{color:r.createStatus==="Created"?"success":"processing"},r.createStatus==="Created"?"Created":"Pending upload")}]:[]),
       {title:"Action",fixed:"right",width:184,render:(_,r)=>h(Space,{direction:"vertical",align:"start",size:2},
         h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Category":"Add DP Category"),
-        r.state==="ready"?h(Upload,{accept:".csv,.xlsx,.xls",multiple:false,showUploadList:false,disabled:r.createStatus==="Created",beforeUpload:file=>{if(!/\.(csv|xlsx|xls)$/i.test(file.name)){message.error("Choose A CSV Or Excel File");return Upload.LIST_IGNORE;}openBatchVerify([r.key]);return false;}},h(Button,{type:"link",size:"small",style:{paddingInline:0},disabled:r.createStatus==="Created"},"Single Upload To DP")):null
+        r.state==="ready"?h(Button,{type:"link",size:"small",style:{paddingInline:0},disabled:r.createStatus==="Created",onClick:()=>{singleUploadForm.resetFields();setSingleUploadProduct(r);}},"Single Upload To DP"):null
       )}
     ];
     const stateItems=[
@@ -1300,6 +1318,17 @@ const menu = [
             ),
             h("div",{className:"table-wrap"},h(Table,{className:"items-table",size:"middle",columns,dataSource:visibleRows,rowSelection:{selectedRowKeys:selected,onChange:(keys)=>{if(activeState==="need"){setSelected(keys);return;}const batch=rows.filter(r=>keys.includes(r.key));const lock=lockedCategory||(batch[0]&&categoryKey(batch[0]));setSelected(batch.filter(r=>categoryKey(r)===lock&&r.createStatus!=="Created").map(r=>r.key));},hideSelectAll:false,columnTitle:originNode=>(activeState==="need"||lockedCategory)?originNode:h(Tooltip,{title:"Select one product first to enable selecting all products in the same category."},h("span",null,h(antd.Checkbox,{disabled:true,"aria-label":"Select all products in the same category"}))),columnWidth:52,getCheckboxProps:r=>({disabled:r.createStatus==="Created"||!sameCategory(r),title:r.createStatus==="Created"?"Created products cannot be selected":!sameCategory(r)?`Only ${lockedCategory} products can be selected together`:""})},scroll:{x:activeState==="ready"?1840:1700},pagination:{current:page,pageSize,onChange:(p,s)=>{setPage(p);setPageSize(s);},total:visibleRows.length,showSizeChanger:true,showQuickJumper:true,showTotal:t=>`total ${t} items`,position:["bottomRight"]}}))
           )),
+          h(Modal,{title:"Single Upload To DP",open:!!singleUploadProduct,width:640,okText:"Confirm",cancelText:"Cancel",onOk:confirmSingleUpload,onCancel:()=>{setSingleUploadProduct(null);singleUploadForm.resetFields();},styles:{body:{maxHeight:"60vh",overflowY:"auto"}}},
+            h(Form,{form:singleUploadForm,layout:"vertical",preserve:false},
+              Array.from({length:6},(_,index)=>{
+                const name=`attribute${index+1}`;
+                const label=`Attribute ${index+1}`;
+                return h(Form.Item,{key:name,name,label,rules:index<2?[{required:true,whitespace:true,message:`${label} Is Required`}]:[{required:true,type:"number",min:0.01,message:`Enter A Value Greater Than Zero For ${label}`}]},
+                  index<2?h(Input,{placeholder:"Input","aria-label":label}):h(antd.InputNumber,{min:0.01,style:{width:"100%"},placeholder:"Input","aria-label":label})
+                );
+              })
+            )
+          ),
           h(Modal,{title:"Batch Categorize Products",open:categoryModal,width:640,okText:"Confirm Category",cancelText:"Cancel",onOk:applyCategory,onCancel:()=>{setCategoryModal(false);resetCategoryForm();},okButtonProps:{disabled:!categoryComplete||!categoryProducts.length}},
             h(Form,{layout:"vertical"},
               h(Form.Item,{label:"Selected Products",required:true},h(Select,{mode:"multiple",style:{width:"100%"},value:categoryProducts,onChange:keys=>{
