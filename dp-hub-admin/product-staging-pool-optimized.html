@@ -1245,7 +1245,10 @@ const menu = [
       }};
       notification.destroy();
       setSingleUploadProduct(null);
-      setVerifyProducts([product]);
+      singleUploadForm.resetFields();
+      submitVerified([{sourceKey:product.key,values:{...product.verifyValues,
+        a5:product.dpCategory?.[0]||'',a6:product.dpCategory?.[1]||'',a7:product.dpCategory?.[2]||''
+      }}]);
     };
     const openBatchVerify=(productKeys=null)=>{
       notification.destroy();
