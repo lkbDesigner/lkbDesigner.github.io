@@ -372,8 +372,8 @@ c.useState=function(a){return g.current.useState(a)};c.useSyncExternalStore=func
 */
 'use strict';(function(Q,zb){"object"===typeof exports&&"undefined"!==typeof module?zb(exports,require("react")):"function"===typeof define&&define.amd?define(["exports","react"],zb):(Q=Q||self,zb(Q.ReactDOM={},Q.React))})(this,function(Q,zb){function m(a){for(var b="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=1;c<arguments.length;c++)b+="&args[]="+encodeURIComponent(arguments[c]);return"Minified React error #"+a+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}
 function mb(a,b){Ab(a,b);Ab(a+"Capture",b)}function Ab(a,b){$b[a]=b;for(a=0;a<b.length;a++)cg.add(b[a])}function bj(a){if(Zd.call(dg,a))return!0;if(Zd.call(eg,a))return!1;if(cj.test(a))return dg[a]=!0;eg[a]=!0;return!1}function dj(a,b,c,d){if(null!==c&&0===c.type)return!1;switch(typeof b){case "function":case "symbol":return!0;case "boolean":if(d)return!1;if(null!==c)return!c.acceptsBooleans;a=a.toLowerCase().slice(0,5);return"data-"!==a&&"aria-"!==a;default:return!1}}function ej(a,b,c,d){if(null===
-b||"undefined"===typeof b||dj(a,b,c,d))return!0;if(d)return!1;if(null!==c)switch(c.type){case 3:return!b;case 4:return!1===b;case 5:return isNaN(b);case 6:return isNaN(b)||1>b}return!1}function Y(a,b,c,d,e,f,g){this.acceptsBooleans=2===b||3===b||4===b;this.attributeName=d;this.attributeNamespace=e;this.mustUseProperty=c;this.propertyName=a;this.type=b;this.sanitizeURL=f;this.removeEmptyString=g}function $d(a,b,c,d){var e=R.hasOwnProperty(b)?R[b]:null;if(null!==e?0!==e.type:d||!(2<b.length)||"o"!==
-b[0]&&"O"!==b[0]||"n"!==b[1]&&"N"!==b[1])ej(b,c,e,d)&&(c=null),d||null===e?bj(b)&&(null===c?a.removeAttribute(b):a.setAttribute(b,""+c)):e.mustUseProperty?a[e.propertyName]=null===c?3===e.type?!1:"":c:(b=e.attributeName,d=e.attributeNamespace,null===c?a.removeAttribute(b):(e=e.type,c=3===e||4===e&&!0===c?"":""+c,d?a.setAttributeNS(d,b,c):a.setAttribute(b,c)))}function ac(a){if(null===a||"object"!==typeof a)return null;a=fg&&a[fg]||a["@@iterator"];return"function"===typeof a?a:null}function bc(a,b,
+b||"undefined"===typeof b||dj(a,b,c,d))return!0;if(d)return!1;if(null!==c)switch(c.type){case 3:return!b;case 4:return!1===b;case 5:return isNaN(b);case 6:return isNaN(b)||1>b}return!1}function Y(a,b,c,d,e,f,g){this.acceptsBooleans=2===b||3===b||4===b;this.attributeName=d;this.verifyFieldNamespace=e;this.mustUseProperty=c;this.propertyName=a;this.type=b;this.sanitizeURL=f;this.removeEmptyString=g}function $d(a,b,c,d){var e=R.hasOwnProperty(b)?R[b]:null;if(null!==e?0!==e.type:d||!(2<b.length)||"o"!==
+b[0]&&"O"!==b[0]||"n"!==b[1]&&"N"!==b[1])ej(b,c,e,d)&&(c=null),d||null===e?bj(b)&&(null===c?a.removeAttribute(b):a.setAttribute(b,""+c)):e.mustUseProperty?a[e.propertyName]=null===c?3===e.type?!1:"":c:(b=e.attributeName,d=e.verifyFieldNamespace,null===c?a.removeAttribute(b):(e=e.type,c=3===e||4===e&&!0===c?"":""+c,d?a.setAttributeNS(d,b,c):a.setAttribute(b,c)))}function ac(a){if(null===a||"object"!==typeof a)return null;a=fg&&a[fg]||a["@@iterator"];return"function"===typeof a?a:null}function bc(a,b,
 c){if(void 0===ae)try{throw Error();}catch(d){ae=(b=d.stack.trim().match(/\n( *(at )?)/))&&b[1]||""}return"\n"+ae+a}function be(a,b){if(!a||ce)return"";ce=!0;var c=Error.prepareStackTrace;Error.prepareStackTrace=void 0;try{if(b)if(b=function(){throw Error();},Object.defineProperty(b.prototype,"props",{set:function(){throw Error();}}),"object"===typeof Reflect&&Reflect.construct){try{Reflect.construct(b,[])}catch(n){var d=n}Reflect.construct(a,[],b)}else{try{b.call()}catch(n){d=n}a.call(b.prototype)}else{try{throw Error();
 }catch(n){d=n}a()}}catch(n){if(n&&d&&"string"===typeof n.stack){for(var e=n.stack.split("\n"),f=d.stack.split("\n"),g=e.length-1,h=f.length-1;1<=g&&0<=h&&e[g]!==f[h];)h--;for(;1<=g&&0<=h;g--,h--)if(e[g]!==f[h]){if(1!==g||1!==h){do if(g--,h--,0>h||e[g]!==f[h]){var k="\n"+e[g].replace(" at new "," at ");a.displayName&&k.includes("<anonymous>")&&(k=k.replace("<anonymous>",a.displayName));return k}while(1<=g&&0<=h)}break}}}finally{ce=!1,Error.prepareStackTrace=c}return(a=a?a.displayName||a.name:"")?bc(a):
 ""}function fj(a){switch(a.tag){case 5:return bc(a.type);case 16:return bc("Lazy");case 13:return bc("Suspense");case 19:return bc("SuspenseList");case 0:case 2:case 15:return a=be(a.type,!1),a;case 11:return a=be(a.type.render,!1),a;case 1:return a=be(a.type,!0),a;default:return""}}function de(a){if(null==a)return null;if("function"===typeof a)return a.displayName||a.name||null;if("string"===typeof a)return a;switch(a){case Bb:return"Fragment";case Cb:return"Portal";case ee:return"Profiler";case fe:return"StrictMode";
@@ -1019,19 +1019,34 @@ const menu = [
     const control=p.range?h(DatePicker.RangePicker,{value:p.value||null,format:"YYYY-MM-DD",placeholder:["Start date","End date"],allowClear:true,onChange:p.set,"aria-label":p.label}):p.options?h(Select,{value:p.value||undefined,options:p.options,placeholder:"Please select",allowClear:true,showSearch:true,optionFilterProp:"label",filterOption:(input,option)=>input.trim().toLowerCase().split(/\s+/).every(term=>String(option.label).toLowerCase().includes(term)),onChange:p.set,"aria-label":p.label}):h(Input,{value:p.value||"",placeholder:"Input",allowClear:true,onChange:e=>p.set(e.target.value),onPressEnter:p.onSearch,"aria-label":p.label});
     return h("label",{className:"filter-control"},h("span",{className:"filter-label"},p.label),h("span",{className:"filter-value"},control));
   }
-  const attributeNames=Array.from({length:20},(_,i)=>`Attribute ${i+1}`);
+  const verifyFieldNames=[
+    'Hub Product ID','Product Name','Product Description','Denomination',
+    'Type','Product Type','Sub Product Type','Carrier Name','Carrier ID',
+    'Market Price','Discount Price','Fulfillment Price','Donation Type (event/organization)',
+    'Recommend Item','Item Group','Item Sequence','Item Type',
+    'Sync Img to MP (Y/N)','Sync Product Name to MP (Y/N)',
+    'Shopee: Out of Stock (Y/N)','Shopee: Status (Online/Offline)','Shopee: Maintenance (Y/N)',
+    'ShopeePay: Maintenance (Y/N)','ShopeePay: Out of Stock (Y/N)','ShopeePay: Status (Online/Offline)',
+    'Max Qty per Order'
+  ];
   function makeVerifyRows(products){
     let pending=0;
     const source=products.length?products:[initialRows.find(product=>product.state==="ready")];
     const result=source.map((product,index)=>{
-      const values=Object.fromEntries(attributeNames.map((_,i)=>[`a${i+1}`,`Value ${index+1}.${i+1}`]));
-      Object.assign(values,{a1:product.id,a2:product.name,a3:'Product description',a4:'100',a5:product.dpCategory?.[0]||'',a6:product.dpCategory?.[1]||'',a7:product.dpCategory?.[2]||'',a10:'100',a11:'90',a12:'80'});
+      const values={
+        a1:product.id,a2:product.name,a3:`${product.name} — digital product`,a4:'100000',
+        a5:product.dpCategory?.[0]||'',a6:product.dpCategory?.[1]||'',a7:product.dpCategory?.[2]||'',
+        a8:product.provider.toUpperCase().replace(/\s+/g,'_'),a9:String(20+index),
+        a10:'100000',a11:'90000',a12:'85000',a13:'—',a14:'N',
+        a15:product.hubL2.toUpperCase().replace(/\s+/g,'_'),a16:String(index+1),a17:'Digital',
+        a18:'Y',a19:'Y',a20:'N',a21:'Online',a22:'N',a23:'N',a24:'N',a25:'Online',a26:'5'
+      };
       let status='existing';
       if(product.createStatus!=='Created'){
         const scenario=pending++%3;
         status=scenario===0?'invalid':scenario===1?'price':'verified';
         if(status==='invalid')values.a2='';
-        if(status==='price')values.a11='150';
+        if(status==='price')values.a11='150000';
       }
       return {key:product.key,sourceKey:product.key,row:index+1,status,values,priceConfirmed:false};
     });
@@ -1040,7 +1055,7 @@ const menu = [
       const sample=result.find(record=>record.status!=='existing')||result[result.length-1];
       const original=source.find(product=>product.key===sample.sourceKey);
       sample.status='verified';
-      sample.values={...sample.values,a2:original.name,a10:'100',a11:'90'};
+      sample.values={...sample.values,a2:original.name,a10:'100000',a11:'90000'};
     }
     return result;
   }
@@ -1065,7 +1080,7 @@ const menu = [
     const verified=records.filter(r=>r.status==='verified');
     const targets=selected.length?shown.filter(r=>selected.includes(r.key)):shown;
     const information={
-      invalid:'Edit the invalid attributes, then click Verify. Products that pass the attribute and price checks move to Verified Products. Products that fail the price check move to Invalid Price.',
+      invalid:'Edit the invalid product information, then click Verify. Products that pass the product and price checks move to Verified Products. Products that fail the price check move to Invalid Price.',
       price:'Edit incorrect values and verify again. If a value is correct but fails the price check, click Confirm and enter the same value to verify it manually. Confirmed products move to Verified Products.',
       existing:'These products already exist in the system and do not need to be submitted again.',
       verified:'Click Submit Verified Products to submit the verified records and return to the product list.'
@@ -1103,15 +1118,15 @@ const menu = [
       message.success('Values Saved And Verified');
     };
     const confirmManual=()=>{
-      if(manualValue===null||Number(manualValue)!==Number(manualRow.values.a11)){message.error('Enter The Same Attribute 11 Value To Confirm');return;}
-      if(Number(manualValue)<=0){message.error('Attribute 11 Must Be Greater Than Zero');return;}
+      if(manualValue===null||Number(manualValue)!==Number(manualRow.values.a11)){message.error('Enter The Same Discount Price To Confirm');return;}
+      if(Number(manualValue)<=0){message.error('Discount Price Must Be Greater Than Zero');return;}
       const confirmed={...manualRow,priceConfirmed:true};
       setRecords(rs=>rs.map(r=>r.key===confirmed.key?{...confirmed,status:validate(confirmed)}:r));
       setManualRow(null);setManualValue(null);message.success('Product Verified');
     };
     const columns=[
       ...(tab==='invalid'||tab==='price'?[{title:'Row',dataIndex:'row',key:'row',width:72,fixed:'left'}]:[]),
-      ...attributeNames.map((title,index)=>({title,key:`a${index+1}`,width:index===1||index===2?240:180,render:(_,r)=>{
+      ...verifyFieldNames.map((title,index)=>({title,key:`a${index+1}`,width:index===1||index===2?240:180,render:(_,r)=>{
         const key=`a${index+1}`;
         if(tab==='invalid'&&editing.includes(r.key))return h(Input,{'aria-label':`${title} Row ${r.row}`,value:drafts[r.key]?.[key]||'',status:(key==='a1'||key==='a2')&&!String(drafts[r.key]?.[key]||'').trim()?'error':undefined,onChange:e=>{const value=e.target.value;setDrafts(d=>({...d,[r.key]:{...d[r.key],[key]:value}}));}});
         if(tab==='price'&&batchPrice&&(key==='a10'||key==='a11'))return h(antd.InputNumber,{'aria-label':`${title} Row ${r.row}`,min:0,style:{width:'100%'},value:priceDrafts[r.key]?.[key]===''?null:Number(priceDrafts[r.key]?.[key]),onChange:value=>setPriceDrafts(d=>({...d,[r.key]:{...d[r.key],[key]:value===null?'':String(value)}}))});
@@ -1128,7 +1143,7 @@ const menu = [
         h('div',{className:'verify-content'},
           h(Alert,{type:tab==='invalid'||tab==='price'?'warning':'info',showIcon:true,message:information[tab]}),
           (tab==='invalid'||tab==='price')?h('div',{className:'verify-toolbar'},
-            tab==='invalid'?h(Space,{wrap:true},h(Select,{'aria-label':'Attribute',placeholder:'Attribute',value:field,onChange:setField,style:{width:240},options:attributeNames.map((label,i)=>({value:`a${i+1}`,label})),disabled:!shown.length||editing.length>0}),h(Input,{'aria-label':'Change To',placeholder:'Change To',style:{width:240},value:changeTo,onChange:e=>setChangeTo(e.target.value),disabled:!shown.length||editing.length>0}),h(Button,{disabled:!selected.length||!field||!changeTo.trim()||editing.length>0,onClick:apply},'Apply')):h('span'),
+            tab==='invalid'?h(Space,{wrap:true},h(Select,{'aria-label':'Field',placeholder:'Select Field',showSearch:true,optionFilterProp:'label',value:field,onChange:setField,style:{width:240},options:verifyFieldNames.map((label,i)=>({value:`a${i+1}`,label})),disabled:!shown.length||editing.length>0}),h(Input,{'aria-label':'Change To',placeholder:'Change To',style:{width:240},value:changeTo,onChange:e=>setChangeTo(e.target.value),disabled:!shown.length||editing.length>0}),h(Button,{disabled:!selected.length||!field||!changeTo.trim()||editing.length>0,onClick:apply},'Apply')):h('span'),
             h(Button,{type:'link',onClick:()=>setHelp(true)},'Help Guidance')
           ):null,
           h('div',{className:'verify-table'},h(Table,{key:tab,size:'middle',rowKey:'key',columns,dataSource:shown,
@@ -1145,11 +1160,11 @@ const menu = [
           tab==='verified'?h(Button,{type:'primary',disabled:!verified.length,onClick:()=>onSubmit(verified)},'Submit Verified Products'):null
         )
       ),
-      h(Modal,{title:'Confirm Attribute 11',open:!!manualRow,onCancel:()=>{setManualRow(null);setManualValue(null);},okText:'Confirm',cancelText:'Cancel',onOk:confirmManual,okButtonProps:{disabled:manualValue===null}},
-        h(Form,{layout:'vertical'},h(Form.Item,{label:'Attribute 1'},h(Typography.Text,null,manualRow?.values.a1)),h(Form.Item,{label:'Attribute 11'},h(Typography.Text,null,manualRow?.values.a11)),h(Form.Item,{label:'Attribute 21',required:true},h(antd.InputNumber,{style:{width:320},value:manualValue,onChange:setManualValue,'aria-label':'Attribute 21',placeholder:'Enter The Same Value'})))
+      h(Modal,{title:'Confirm Discount Price',open:!!manualRow,onCancel:()=>{setManualRow(null);setManualValue(null);},okText:'Confirm',cancelText:'Cancel',onOk:confirmManual,okButtonProps:{disabled:manualValue===null}},
+        h(Form,{layout:'vertical'},h(Form.Item,{label:'Hub Product ID'},h(Typography.Text,null,manualRow?.values.a1)),h(Form.Item,{label:'Discount Price'},h(Typography.Text,null,manualRow?.values.a11)),h(Form.Item,{label:'Manual Verify Price',required:true},h(antd.InputNumber,{style:{width:320},value:manualValue,onChange:setManualValue,'aria-label':'Manual Verify Price',placeholder:'Enter The Same Value'})))
       ),
       h(Modal,{title:'Help Guidance',open:help,onCancel:()=>setHelp(false),footer:h(Button,{type:'primary',onClick:()=>setHelp(false)},'OK')},
-        h(Typography.Paragraph,null,tab==='invalid'?'Select rows, choose an attribute, and use Apply to update the selected rows. Use Edit to change a single row, then Save. Click Verify to run the checks again.':'Use Batch Edit Price to edit Attribute 10 and Attribute 11, then Save All And Verify. Use Confirm to manually verify Attribute 11 by entering the same value.')
+        h(Typography.Paragraph,null,tab==='invalid'?'Select rows, choose a field, and use Apply to update the selected rows. Use Edit to change a single row, then Save. Click Verify to run the checks again.':'Use Batch Edit Price to edit Market Price and Discount Price, then Save All And Verify. Use Confirm to manually verify Discount Price by entering the same value.')
       )
     );
   }
