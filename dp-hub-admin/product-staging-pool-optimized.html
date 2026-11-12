@@ -1229,9 +1229,9 @@ const menu = [
       message.success(`${batch.length} products downloaded. Fill in the remaining DP fields.`);
     };
     const applyCategory=()=>{if(!categoryProducts.length){message.error("Please select products first");return;}if(!categoryComplete){message.error("Please select DP Type, Product Type, and Sub Product Type");return;}const batchKeys=[...categoryProducts];const selectedDPCategory=[categoryLevel1,categoryLevel2,categoryLevel3];const batchCount=batchKeys.length;const batchL3=categoryLevel3;setRows(data=>data.map(r=>batchKeys.includes(r.key)?{...r,dpCategory:selectedDPCategory,state:"ready",createStatus:r.createStatus||"Ready"}:r));setCategoryModal(false);resetCategoryForm();setSelected([]);if(categoryContext?.state==="ready"){message.success(`${batchCount} product(s) updated`);return;}notification.success({key:"category-download",message:"DP category assigned",description:`${batchCount} product(s) moved to Ready for Creation. You can keep categorizing products here, download this batch now, or view it in Ready for Creation.`,duration:0,btn:h(Space,null,h(Button,{onClick:()=>{setActiveState("ready");setFilters({});setApplied({});setSelected(batchKeys);notification.destroy("category-download");}},"View In Ready"),h(Button,{type:"primary",icon:h(I.DownloadOutlined),onClick:()=>{setActiveState("ready");setSelected(batchKeys);setPage(1);notification.destroy("category-download");}},"Select Batch"))});};
-    const openBatchVerify=()=>{
+    const openBatchVerify=(productKeys=null)=>{
       notification.destroy();
-      setVerifyProducts(rows.filter(r=>r.state==="ready"));
+      setVerifyProducts(rows.filter(r=>r.state==="ready"&&(!productKeys||productKeys.includes(r.key))));
     };
     const submitVerified=verified=>{
       const submitted=new Map(verified.map(record=>[record.sourceKey,record]));
@@ -1259,7 +1259,10 @@ const menu = [
       {title:"Last Update Time",dataIndex:"lastUpdateTime",width:180},
       {title:"Status",dataIndex:"hubStatus",width:140,filters:[{text:"Draft",value:"Draft"},{text:"Paused",value:"Paused"},{text:"Ready",value:"Ready"}],filterMultiple:true,onFilter:(status,r)=>r.hubStatus===status,render:status=>h(Tag,{color:status==="Ready"?"success":status==="Draft"?"warning":"default"},status)},
       ...(activeState==="ready"?[{title:"Creation Status",width:140,render:(_,r)=>h(Tag,{color:r.createStatus==="Created"?"success":"processing"},r.createStatus==="Created"?"Created":"Pending upload")}]:[]),
-      {title:"Action",fixed:"right",width:156,render:(_,r)=>h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Category":"Add DP Category")}
+      {title:"Action",fixed:"right",width:184,render:(_,r)=>h(Space,{direction:"vertical",align:"start",size:2},
+        h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Category":"Add DP Category"),
+        r.state==="ready"?h(Upload,{accept:".csv,.xlsx,.xls",multiple:false,showUploadList:false,disabled:r.createStatus==="Created",beforeUpload:file=>{if(!/\.(csv|xlsx|xls)$/i.test(file.name)){message.error("Choose A CSV Or Excel File");return Upload.LIST_IGNORE;}openBatchVerify([r.key]);return false;}},h(Button,{type:"link",size:"small",style:{paddingInline:0},disabled:r.createStatus==="Created"},"Single Upload To DP")):null
+      )}
     ];
     const stateItems=[
       {key:"need",label:`Need to add DP Category (${rows.filter(r=>r.state==="need").length})`},
@@ -1284,7 +1287,7 @@ const menu = [
                 h("div",{className:"filter-actions"},h(Button,{onClick:reset},"Reset"),h(Button,{type:"primary",onClick:search},"Search"))
               )
             ),
-            activeState==="ready"?h("div",{className:"actionbar"},h(Upload,{accept:".csv,.xlsx,.xls",multiple:false,showUploadList:false,beforeUpload:file=>{if(!/\.(csv|xlsx|xls)$/i.test(file.name)){message.error("Choose A CSV Or Excel File");return Upload.LIST_IGNORE;}openBatchVerify();return false;}},h(Button,{type:"primary",icon:h(I.UploadOutlined)},"Upload"))):null,
+            activeState==="ready"?h("div",{className:"actionbar"},h(Upload,{accept:".csv,.xlsx,.xls",multiple:false,showUploadList:false,beforeUpload:file=>{if(!/\.(csv|xlsx|xls)$/i.test(file.name)){message.error("Choose A CSV Or Excel File");return Upload.LIST_IGNORE;}openBatchVerify();return false;}},h(Button,{type:"primary",icon:h(I.UploadOutlined)},"Mass Upload To DP"))):null,
             h("div",{className:"selection-bar"},
               h(Space,{direction:"vertical",size:4,style:{minWidth:0}},
                 h(Space,{size:12,wrap:true},
