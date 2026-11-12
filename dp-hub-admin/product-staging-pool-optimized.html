@@ -1173,12 +1173,253 @@ const menu = [
     );
   }
 
+  const singleUploadFields={
+  "common": [
+    {
+      "name": "hubProductId",
+      "label": "Hub Product ID",
+      "control": "text",
+      "readOnly": true,
+      "required": true
+    },
+    {
+      "name": "productName",
+      "label": "Product Name",
+      "control": "text",
+      "readOnly": false,
+      "required": true
+    },
+    {
+      "name": "productDescription",
+      "label": "Product Description",
+      "control": "textarea",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "denomination",
+      "label": "Denomination",
+      "control": "number",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "type",
+      "label": "Type",
+      "control": "text",
+      "readOnly": true,
+      "required": true
+    },
+    {
+      "name": "productType",
+      "label": "Product Type",
+      "control": "text",
+      "readOnly": true,
+      "required": true
+    },
+    {
+      "name": "subProductType",
+      "label": "Sub Product Type",
+      "control": "text",
+      "readOnly": true,
+      "required": true
+    },
+    {
+      "name": "carrierName",
+      "label": "Carrier Name",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "carrierId",
+      "label": "Carrier ID",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "marketPrice",
+      "label": "Market Price",
+      "control": "number",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "discountPrice",
+      "label": "Discount Price",
+      "control": "number",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "itemCardImage",
+      "label": "Item Card Image",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "maxQtyPerOrder",
+      "label": "Max Qty per Order",
+      "control": "integer",
+      "readOnly": false,
+      "required": false
+    }
+  ],
+  "dataTopup": [
+    {
+      "name": "recommendedItem",
+      "label": "Is Recommended Item?",
+      "control": "boolean",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "itemGroup",
+      "label": "Item Group",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "quota",
+      "label": "Quota",
+      "control": "text",
+      "readOnly": true,
+      "required": false
+    },
+    {
+      "name": "packageName",
+      "label": "Package Name",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "validityPeriod",
+      "label": "Validity Period",
+      "control": "text",
+      "readOnly": true,
+      "required": false
+    }
+  ],
+  "shopee": [
+    {
+      "name": "needFillInDetails",
+      "label": "Need Fill In Details",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "itemType",
+      "label": "Item Type",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "syncProductNameToMP",
+      "label": "Sync Product Name to MP",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    }
+  ],
+  "euronet": [
+    {
+      "name": "itemSequence",
+      "label": "Item Sequence",
+      "control": "integer",
+      "readOnly": false,
+      "required": false
+    }
+  ],
+  "platform": [
+    {
+      "name": "shopeeStatus",
+      "label": "Shopee Status",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "shopeeOutOfStock",
+      "label": "Shopee Out of Stock",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "shopeeMaintenance",
+      "label": "Shopee Maintenance",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "shopeePayStatus",
+      "label": "ShopeePay Status",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "shopeePayOutOfStock",
+      "label": "ShopeePay Out of Stock",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "shopeePayMaintenance",
+      "label": "ShopeePay Maintenance",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "foodyDriverStatus",
+      "label": "FoodyDriver Status",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "foodyDriverMaintenance",
+      "label": "FoodyDriver Maintenance",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    },
+    {
+      "name": "foodyDriverOutOfStock",
+      "label": "FoodyDriver Out of Stock",
+      "control": "text",
+      "readOnly": false,
+      "required": false
+    }
+  ]
+};
+  function getSingleUploadFields(product){
+    const isData=product?.hubL3==='Data Package';
+    return [...singleUploadFields.common,...(isData?singleUploadFields.dataTopup:[]),...singleUploadFields.shopee,...(/euronet/i.test(product?.provider||'')?singleUploadFields.euronet:[])];
+  }
+
   function ProductPage(){
     const {message,notification}=antd.App.useApp();
     const [singleUploadForm]=Form.useForm();
     const [singleUploadProduct,setSingleUploadProduct]=React.useState(null);
+    const recommendedItem=Form.useWatch('recommendedItem',singleUploadForm);
+    const selectedCarrierName=Form.useWatch('carrierName',singleUploadForm);
+    React.useEffect(()=>{if(recommendedItem==='Y')singleUploadForm.setFieldValue('itemGroup',undefined);},[recommendedItem,singleUploadForm]);
     const [open,setOpen]=React.useState(["product-pool"]);
-    const [rows,setRows]=React.useState(initialRows);
+    const [rows,setRows]=React.useState(()=>initialRows.map(row=>({...row,
+      denomination:100000,marketPrice:100000,discountPrice:90000,
+      quota:row.hubL3==='Data Package'?(row.name.match(/\d+\s*GB/i)?.[0]||''):undefined,
+      validityPeriod:row.hubL3==='Data Package'?(/monthly/i.test(row.name)?'30 days':/weekly/i.test(row.name)?'7 days':undefined):undefined
+    })));
     const [activeState,setActiveState]=React.useState("need");
     const [filters,setFilters]=React.useState({});
     const [applied,setApplied]=React.useState({});
@@ -1235,19 +1476,43 @@ const menu = [
       message.success(`${batch.length} products downloaded. Fill in the remaining DP fields.`);
     };
     const applyCategory=()=>{if(!categoryProducts.length){message.error("Please select products first");return;}if(!categoryComplete){message.error("Please select DP Type, Product Type, and Sub Product Type");return;}const batchKeys=[...categoryProducts];const selectedDPCategory=[categoryLevel1,categoryLevel2,categoryLevel3];const batchCount=batchKeys.length;const batchL3=categoryLevel3;setRows(data=>data.map(r=>batchKeys.includes(r.key)?{...r,dpCategory:selectedDPCategory,state:"ready",createStatus:r.createStatus||"Ready"}:r));setCategoryModal(false);resetCategoryForm();setSelected([]);if(categoryContext?.state==="ready"){message.success(`${batchCount} product(s) updated`);return;}notification.success({key:"category-download",message:"DP category assigned",description:`${batchCount} product(s) moved to Ready for Creation. You can keep categorizing products here, download this batch now, or view it in Ready for Creation.`,duration:0,btn:h(Space,null,h(Button,{onClick:()=>{setActiveState("ready");setFilters({});setApplied({});setSelected(batchKeys);notification.destroy("category-download");}},"View In Ready"),h(Button,{type:"primary",icon:h(I.DownloadOutlined),onClick:()=>{setActiveState("ready");setSelected(batchKeys);setPage(1);notification.destroy("category-download");}},"Select Batch"))});};
+    const openSingleUpload=product=>{
+      singleUploadForm.resetFields();
+      singleUploadForm.setFieldsValue({
+        hubProductId:product.id,productName:product.name,denomination:product.denomination,
+        type:product.dpCategory?.[0],productType:product.dpCategory?.[1],subProductType:product.dpCategory?.[2],
+        marketPrice:product.marketPrice,discountPrice:product.discountPrice,
+        quota:product.quota,validityPeriod:product.validityPeriod
+      });
+      setSingleUploadProduct(product);
+    };
+    const renderSingleUploadField=field=>{
+      const groupRequired=field.name==='itemGroup'&&recommendedItem==='N'&&/^(xl|xl[ _-]?axiata)$/i.test(String(selectedCarrierName||'').trim());
+      const required=field.required||groupRequired;
+      const rules=[];
+      if(required)rules.push({required:true,whitespace:field.control==='text',message:`${field.label} Is Required`});
+      const isInteger=field.control==='integer';
+      if(isInteger)rules.push({validator:(_,value)=>value===undefined||value===null||Number.isInteger(value)?Promise.resolve():Promise.reject(new Error(`${field.label} Must Be An Integer`))});
+      let control;
+      const common={'aria-label':field.label,placeholder:'Input'};
+      if(field.control==='boolean')control=h(Select,{...common,placeholder:'Please select',allowClear:true,options:[{value:'Y',label:'Y'},{value:'N',label:'N'}]});
+      else if(field.control==='textarea')control=h(Input.TextArea,{...common,autoSize:{minRows:3,maxRows:6}});
+      else if(field.control==='number'||isInteger)control=h(antd.InputNumber,{...common,style:{width:'100%'}});
+      else control=h(Input,{...common,readOnly:field.readOnly,disabled:field.name==='itemGroup'&&recommendedItem==='Y'});
+      return h(Form.Item,{key:field.name,name:field.name,label:field.label,rules},control);
+    };
     const confirmSingleUpload=async()=>{
       let values;
-      try{values=await singleUploadForm.validateFields();}catch{return;}
+      try{values=await singleUploadForm.validateFields();}catch(error){if(error.errorFields?.length)singleUploadForm.scrollToField(error.errorFields[0].name,{block:'center'});return;}
       if(!singleUploadProduct)return;
-      const product={...singleUploadProduct,verifyValues:{
-        a2:values.attribute1.trim(),a3:values.attribute2.trim(),a4:String(values.attribute3),
-        a10:String(values.attribute4),a11:String(values.attribute5),a12:String(values.attribute6)
-      }};
-      notification.destroy();
-      setSingleUploadProduct(null);
-      singleUploadForm.resetFields();
-      submitVerified([{sourceKey:product.key,values:{...product.verifyValues,
-        a5:product.dpCategory?.[0]||'',a6:product.dpCategory?.[1]||'',a7:product.dpCategory?.[2]||''
+      const product=singleUploadProduct;
+      const formValues={...values};
+      if(formValues.recommendedItem==='Y')formValues.itemGroup=undefined;
+      notification.destroy();setSingleUploadProduct(null);singleUploadForm.resetFields();
+      submitVerified([{sourceKey:product.key,formValues,values:{
+        a2:values.productName.trim(),a3:values.productDescription||'',a4:values.denomination,
+        a5:values.type,a6:values.productType,a7:values.subProductType,
+        a10:values.marketPrice,a11:values.discountPrice
       }}]);
     };
     const openBatchVerify=(productKeys=null)=>{
@@ -1258,7 +1523,7 @@ const menu = [
       const submitted=new Map(verified.map(record=>[record.sourceKey,record]));
       setRows(data=>data.map(row=>{
         const record=submitted.get(row.key);
-        return record?{...row,name:record.values.a2,dpCategory:[record.values.a5,record.values.a6,record.values.a7],createStatus:"Created",lastUpdateTime:dayjs().format("YYYY-MM-DD HH:mm")}:row;
+        return record?{...row,name:record.values.a2,dpCategory:[record.values.a5,record.values.a6,record.values.a7],...(record.formValues?{singleUploadData:record.formValues,denomination:record.formValues.denomination,marketPrice:record.formValues.marketPrice,discountPrice:record.formValues.discountPrice}:{}),createStatus:"Created",lastUpdateTime:dayjs().format("YYYY-MM-DD HH:mm")}:row;
       }));
       setVerifyProducts(null);setActiveState("ready");setSelected([]);setFilters({});setApplied({});setPage(1);
       notification.success({
@@ -1282,7 +1547,7 @@ const menu = [
       ...(activeState==="ready"?[{title:"Creation Status",width:140,render:(_,r)=>h(Tag,{color:r.createStatus==="Created"?"success":"processing"},r.createStatus==="Created"?"Created":"Pending upload")}]:[]),
       {title:"Action",fixed:"right",width:184,render:(_,r)=>h(Space,{direction:"vertical",align:"start",size:2},
         h(Button,{type:"link",size:"small",style:{paddingInline:0},onClick:()=>openCategoryFor([r.key],true)},r.state==="ready"?"Change Category":"Add DP Category"),
-        r.state==="ready"?h(Button,{type:"link",size:"small",style:{paddingInline:0},disabled:r.createStatus==="Created",onClick:()=>{singleUploadForm.resetFields();setSingleUploadProduct(r);}},"Single Upload To DP"):null
+        r.state==="ready"?h(Button,{type:"link",size:"small",style:{paddingInline:0},disabled:r.createStatus==="Created",onClick:()=>openSingleUpload(r)},"Single Upload To DP"):null
       )}
     ];
     const stateItems=[
@@ -1321,15 +1586,12 @@ const menu = [
             ),
             h("div",{className:"table-wrap"},h(Table,{className:"items-table",size:"middle",columns,dataSource:visibleRows,rowSelection:{selectedRowKeys:selected,onChange:(keys)=>{if(activeState==="need"){setSelected(keys);return;}const batch=rows.filter(r=>keys.includes(r.key));const lock=lockedCategory||(batch[0]&&categoryKey(batch[0]));setSelected(batch.filter(r=>categoryKey(r)===lock&&r.createStatus!=="Created").map(r=>r.key));},hideSelectAll:false,columnTitle:originNode=>(activeState==="need"||lockedCategory)?originNode:h(Tooltip,{title:"Select one product first to enable selecting all products in the same category."},h("span",null,h(antd.Checkbox,{disabled:true,"aria-label":"Select all products in the same category"}))),columnWidth:52,getCheckboxProps:r=>({disabled:r.createStatus==="Created"||!sameCategory(r),title:r.createStatus==="Created"?"Created products cannot be selected":!sameCategory(r)?`Only ${lockedCategory} products can be selected together`:""})},scroll:{x:activeState==="ready"?1840:1700},pagination:{current:page,pageSize,onChange:(p,s)=>{setPage(p);setPageSize(s);},total:visibleRows.length,showSizeChanger:true,showQuickJumper:true,showTotal:t=>`total ${t} items`,position:["bottomRight"]}}))
           )),
-          h(Modal,{title:"Single Upload To DP",open:!!singleUploadProduct,width:640,okText:"Confirm",cancelText:"Cancel",onOk:confirmSingleUpload,onCancel:()=>{setSingleUploadProduct(null);singleUploadForm.resetFields();},styles:{body:{maxHeight:"60vh",overflowY:"auto"}}},
+          h(Modal,{title:"Single Upload To DP",open:!!singleUploadProduct,forceRender:true,width:760,style:{top:24},okText:"Confirm",cancelText:"Cancel",onOk:confirmSingleUpload,onCancel:()=>{setSingleUploadProduct(null);singleUploadForm.resetFields();},styles:{body:{maxHeight:"calc(100vh - 208px)",overflowY:"auto"}}},
             h(Form,{form:singleUploadForm,layout:"vertical",preserve:false},
-              Array.from({length:6},(_,index)=>{
-                const name=`attribute${index+1}`;
-                const label=`Attribute ${index+1}`;
-                return h(Form.Item,{key:name,name,label,rules:index<2?[{required:true,whitespace:true,message:`${label} Is Required`}]:[{required:true,type:"number",min:0.01,message:`Enter A Value Greater Than Zero For ${label}`}]},
-                  index<2?h(Input,{placeholder:"Input","aria-label":label}):h(antd.InputNumber,{min:0.01,style:{width:"100%"},placeholder:"Input","aria-label":label})
-                );
-              })
+              h(Typography.Title,{level:5},"Product Info"),
+              getSingleUploadFields(singleUploadProduct).map(renderSingleUploadField),
+              h('div',{style:{paddingTop:8}},h(Typography.Title,{level:5},"Platform Status")),
+              singleUploadFields.platform.map(renderSingleUploadField)
             )
           ),
           h(Modal,{title:"Batch Categorize Products",open:categoryModal,width:640,okText:"Confirm Category",cancelText:"Cancel",onOk:applyCategory,onCancel:()=>{setCategoryModal(false);resetCategoryForm();},okButtonProps:{disabled:!categoryComplete||!categoryProducts.length}},
