@@ -37,3 +37,9 @@ Date: 2026-10-26
 Static website: [https://lkbdesigner.github.io/dp-hub-admin/product-staging-pool-optimized.html](https://lkbdesigner.github.io/dp-hub-admin/product-staging-pool-optimized.html)
 
 Date: 2026-11-10
+
+## [All] Migrate to 2PC flow for DP PC/Web
+
+Static website: [https://lkbdesigner.github.io/Shopee-PC-2PC-Flow.html](https://lkbdesigner.github.io/Shopee-PC-2PC-Flow.html)
+
+Date: 2026-11-17
