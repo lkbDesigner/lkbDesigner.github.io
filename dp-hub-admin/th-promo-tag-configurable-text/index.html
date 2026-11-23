@@ -85,7 +85,7 @@
       };
       return h(React.Fragment,null,
         h('div',{className:'records-toolbar'},h(BrandFilter,{type}),h('div',{className:'records-download'},h(Button,{onClick:download},'Download'))),
-        h(Table,{columns,dataSource:[],pagination:false,locale:{emptyText:'No Data'},scroll:{x:type==='Store'?900:1150},size:'middle'}),
+        h(Table,{columns,dataSource:[],pagination:false,locale:{emptyText:h(antd.Empty,{image:antd.Empty.PRESENTED_IMAGE_SIMPLE,description:'No Data'})},scroll:{x:type==='Store'?900:1150},size:'middle'}),
         h('div',{style:{marginTop:8}},h(Typography.Text,{type:'secondary'},'Total '+(type==='Store'?'Stores':'Items')+': 0')));
     }
     function App(){
