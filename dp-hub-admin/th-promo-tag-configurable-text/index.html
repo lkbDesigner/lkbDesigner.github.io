@@ -65,7 +65,7 @@
       return h('section',{className:'filter-panel','aria-label':type+' filters'},context,
         h('form',{className:'filter-grid',onSubmit:e=>{e.preventDefault();api.info('No matching records.')}},
           h('label',{className:'filter-control'},h('span',{className:'filter-label'},type+' ID'),h(Input,{value,onChange:e=>setValue(e.target.value),placeholder:'Input','aria-label':type+' ID filter'})),
-          h('div',{className:'actions'},h(Button,{htmlType:'button',onClick:()=>setValue('')},'RESET'),h(Button,{type:'primary',htmlType:'submit'},'SEARCH'))));
+          h('div',{className:'actions'},h(Button,{htmlType:'button',onClick:()=>setValue('')},'Reset'),h(Button,{type:'primary',htmlType:'submit'},'Search'))));
     }
     function BrandRecords({type}){
       const titles=type==='Store'
