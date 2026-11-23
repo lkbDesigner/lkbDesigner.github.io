@@ -1097,14 +1097,14 @@ const h = React.createElement;
     function buildPropertyDetails(record) {
       return Array.from({ length: 10 }, (_, index) => ({
         key: 'property-' + (index + 1),
-        property: 'Property ' + (index + 1),
+        property: 'Attribute ' + (index + 1),
         type: index === 1 ? 'Single select by Ops' : 'Input by Ops',
         options: index === 1 ? ['Option 1', 'Option 2', 'Option 3', 'Option 4'] : null,
         description: index === 0
           ? 'Text value entered by Ops for ' + record.l3 + '.'
           : index === 1
             ? 'A single value selected by Ops from the configured options for ' + record.l3 + '.'
-            : 'Explains the meaning and expected value of Property ' + (index + 1) + ' for ' + record.l3 + '.'
+            : 'Explains the meaning and expected value of Attribute ' + (index + 1) + ' for ' + record.l3 + '.'
       }));
     }
 
@@ -1128,7 +1128,7 @@ const h = React.createElement;
       const detailRows = React.useMemo(() => detailRecord ? buildPropertyDetails(detailRecord) : [], [detailRecord]);
       const standardCategoryRows = React.useMemo(() => detailRecord ? buildStandardCategoryRows(detailRecord) : [], [detailRecord]);
       const detailColumns = [
-        { title: 'Property', dataIndex: 'property', width: '23%' },
+        { title: 'Attribute', dataIndex: 'property', width: '23%' },
         { title: 'Data Source', dataIndex: 'type', width: '32%', render: (value, record) => h('div', null, [
           h('div', { key: 'type' }, value),
           record.options && h('div', { className: 'property-options', key: 'options' }, h(Space, { size: [4, 6], wrap: true }, record.options.map(option => h(Tag, { key: option, style: { marginInlineEnd: 0 } }, option))))

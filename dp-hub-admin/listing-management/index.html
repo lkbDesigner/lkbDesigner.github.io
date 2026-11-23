@@ -548,6 +548,10 @@ mark {
     .partner-form-item .ant-checkbox-group { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; width: min(1120px, 100%); max-width: 1120px; }
     .partner-form-item .ant-checkbox-wrapper { margin-inline-start: 0 !important; white-space: nowrap; }
     .partner-options { display: flex; flex-wrap: wrap; gap: 16px; }
+    .available-partner-panel { margin: 0 16px; display: flex; align-items: center; gap: 16px; min-height: 40px; }
+    .available-partner-label { flex: 0 0 160px; color: #272d37; text-align: right; white-space: nowrap; }
+    .available-partner-panel .ant-checkbox-group { display: flex; flex-wrap: wrap; gap: 16px 24px; }
+    .available-partner-panel .ant-checkbox-wrapper { margin-inline-start: 0 !important; white-space: nowrap; }
     .module-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 0 16px 16px; }
     .edit-rule-actions .ant-btn { color: #1677ff; border-color: #1677ff; }
     .edit-rule-actions .ant-btn:disabled,
@@ -1383,10 +1387,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         { key: "r3", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: false, updated: "2026/06/22 12:00" }
       ];
       const getModuleStatuses = row => row.key === "1"
-        ? { itemBasic: true, linkedHubProduct: true, clearingRule: true }
+        ? { itemBasic: true, linkedHubProduct: true, availablePartner: true, clearingRule: true }
         : row.key === "2"
-          ? { itemBasic: true, linkedHubProduct: true, clearingRule: false }
-          : { itemBasic: false, linkedHubProduct: false, clearingRule: false };
+          ? { itemBasic: true, linkedHubProduct: true, availablePartner: false, clearingRule: false }
+          : { itemBasic: false, linkedHubProduct: false, availablePartner: false, clearingRule: false };
 
       function FilterField(props) {
         const control = props.select
@@ -1659,6 +1663,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const [providerId, setProviderId] = React.useState(isAdd ? "" : item.providerId);
         const [linked, setLinked] = React.useState(editBaseLinkedComplete);
         const [linkedId, setLinkedId] = React.useState(editBaseLinkedComplete ? item.hubId : "-");
+        const partnerOptions = ["Digital-Purchase", "Intra", "ShopeePay", "SeaBank", "Invest", "FoodDriver", "Checkbox"];
+        const [availablePartners, setAvailablePartners] = React.useState(() => isAdd ? [] : String(item.partner || "").split(/,\s*/).filter(Boolean));
         const [selectedHub, setSelectedHub] = React.useState(item.hubId || "517895");
         const [rules, setRules] = React.useState([]);
         const [linkOpen, setLinkOpen] = React.useState(false);
@@ -1679,7 +1685,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           .every(key => editValues[key] !== undefined && editValues[key] !== null && editValues[key] !== "");
         const providerReady = Boolean(!isAdd || providerId);
         const clearingRuleReady = providerReady && corePropertyReady;
-        const publishReady = clearingRuleReady && rules.length > 0;
+        const publishReady = clearingRuleReady && rules.length > 0 && availablePartners.length > 0;
         React.useEffect(() => {
           if (clearingRuleReady) {
             setRules(old => old.length ? old : ruleRows);
@@ -1702,7 +1708,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           style: { marginBottom: 16 },
           label,
           required: Boolean(required),
-          name: ({ "Type": "type", "Product Type": "productType", "Sub Product Type": "subProductType", "L1 Category": "l1Category", "L2 Category": "l2Category", "L3 Category": "l3Category" })[label] || label.toLowerCase().replace(/\s+(\d+)/, "$1").replace(/\s+/g, ""),
+          name: ({ "Type": "type", "Product Type": "productType", "Sub Product Type": "subProductType", "L1 Category": "l1Category", "L2 Category": "l2Category", "L3 Category": "l3Category", "Attribute 1": "property1", "Attribute 2": "property2", "Attribute 3": "property3", "Attribute 4": "property4", "Attribute 5": "property5", "Attribute 6": "property6" })[label] || label.toLowerCase().replace(/\s+(\d+)/, "$1").replace(/\s+/g, ""),
           rules: required && !isDetail ? [{ required: true, message: "Please select " + label }] : undefined
         }, h(Select, { placeholder: "Select", options: options.map(value => ({ value, label: value })), disabled: Boolean(disabled || isDetail), allowClear: true, style: { width: "100%", maxWidth: "100%" } }));
         const staticField = (label, value) => h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label }, h("div", { className: "readonly" }, value));
@@ -1850,14 +1856,14 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                     )
                   ),
                   h("div", { className: "form-column" },
-                    h("div", { className: "edit-subtitle" }, "Core Property"),
+                      h("div", { className: "edit-subtitle" }, "Core Attribute"),
                     h("div", { className: "edit-field-row" },
-                      corePropertyField("Property 1"),
-                      corePropertyField("Property 2"),
-                      corePropertyField("Property 3"),
-                      selectField("Property 4", true, attrOptions),
-                      selectField("Property 5", true, attrOptions),
-                      selectField("Property 6", true, attrOptions)
+                      corePropertyField("Attribute 1"),
+                      corePropertyField("Attribute 2"),
+                      corePropertyField("Attribute 3"),
+                      selectField("Attribute 4", true, attrOptions),
+                      selectField("Attribute 5", true, attrOptions),
+                      selectField("Attribute 6", true, attrOptions)
                     )
                   )
                 ),
@@ -1883,6 +1889,21 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                             h("span", { className: "disabled-button-wrap" }, h(Button, { disabled: true }, linked ? "Create New" : "Create New Product")))
                         : h(Button, { disabled: isDetail, onClick: () => setCreateOpen(true) }, linked ? "Create New" : "Create New Product"))
                     )
+                  )
+                ),
+                h("section", { className: "module-section available-partner-section" },
+                  h("div", { className: "section-heading" },
+                    h(Tag, { color: availablePartners.length ? "success" : "error" }, availablePartners.length ? "Completed" : "Incompleted"),
+                    h("h2", null, "Available Partner")
+                  ),
+                  h("div", { className: "available-partner-panel" },
+                    h("div", { className: "available-partner-label" }, h("span", { className: "required-mark" }, "*"), " Available Partner"),
+                    h(Checkbox.Group, {
+                      options: partnerOptions,
+                      value: availablePartners,
+                      disabled: isDetail,
+                      onChange: values => setAvailablePartners(values)
+                    })
                   )
                 ),
                 h("section", { className: "module-section clearing-rule-section" },
@@ -1976,8 +1997,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                 h("tbody", null,
                   h("tr", null, h("th", null, "Hub Product ID"), h("td", { className: "link-product-muted" }, linkedId), h("td", { className: "link-product-muted" }, selectedHub)),
                   h("tr", null, h("th", null, "Hub Product Name"), h("td", null, "-"), h("td", null, selectedHub === "517895" ? "eSIM 4GB Thailand 5 days 1GB/day" : "eSIM 4GB Thailand 4 days 1GB/day")),
-                  !matching ? h("tr", null, h("th", null, "Diff Property 1"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null,
-                  !matching ? h("tr", null, h("th", null, "Diff Property 2"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null
+                  !matching ? h("tr", null, h("th", null, "Diff Attribute 1"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null,
+                  !matching ? h("tr", null, h("th", null, "Diff Attribute 2"), h("td", null, "xxxxx"), h("td", null, "xxxxx")) : null
                 )
               ),
               matching ? h("div", { className: "link-product-create-note" }, "No matching Hub Product found? Create a new Hub Product to proceed.", h(Button, { type: "link", onClick: () => setCreateOpen(true) }, "Create Hub Product")) : null
@@ -2142,7 +2163,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           if (isPublishedTab) row.publishedPartner = next;
           else row.partner = next;
           setPartnerEditKey(null);
-          notify("Bind Partner updated");
+          notify("Available Partner updated");
         };
         const backToPool = () => setView("pool");
         const moduleStatusOptions = [
@@ -2150,13 +2171,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           "Item Basic: Incompleted",
           "Linked Hub Product: Completed",
           "Linked Hub Product: Incompleted",
+          "Available Partner: Completed",
+          "Available Partner: Incompleted",
           "Clearing Rule: Completed",
           "Clearing Rule: Incompleted"
         ];
         const moduleStatusMatches = (row, value) => {
           if (!value) return true;
           const [module, status] = String(value).split(": ");
-          const moduleKey = { "Item Basic": "itemBasic", "Linked Hub Product": "linkedHubProduct", "Clearing Rule": "clearingRule" }[module];
+          const moduleKey = { "Item Basic": "itemBasic", "Linked Hub Product": "linkedHubProduct", "Available Partner": "availablePartner", "Clearing Rule": "clearingRule" }[module];
           return moduleKey ? Boolean(getModuleStatuses(row)[moduleKey]) === (status === "Completed") : true;
         };
         const filteredRows = initialRows.filter(row => {
@@ -2246,6 +2269,13 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             )
           },
           {
+            title: "Available Partner", dataIndex: "partner", width: 230,
+            render: (value, row) => h("div", { className: "field-stack" },
+              h("div", null, value || "-"),
+              !isPublishedTab ? h(Button, { type: "link", className: "link-button partner-edit-link", onClick: () => openPartnerEditor(row, value || "") }, "Edit") : null
+            )
+          },
+          {
             title: "Clearing Rule", dataIndex: "rule", width: isPublishedTab ? 132 : 170,
             render: (value, row) => {
               const isExpanded = expanded.includes(row.key);
@@ -2269,6 +2299,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
               return h("div", { className: "field-stack" },
                 h("div", null, h("span", { className: "inline-label" }, "Item Basic: "), statusTag(statuses.itemBasic)),
                 h("div", null, h("span", { className: "inline-label" }, "Linked Hub Product: "), statusTag(statuses.linkedHubProduct)),
+                h("div", null, h("span", { className: "inline-label" }, "Available Partner: "), statusTag(statuses.availablePartner)),
                 h("div", null, h("span", { className: "inline-label" }, "Clearing Rule: "), statusTag(statuses.clearingRule))
               );
             }
@@ -2334,7 +2365,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                     h("ul", { style: { margin: "4px 0", paddingLeft: 18 } },
                       h("li", null, "Item Basic"),
                       h("li", null, "Linked Hub Product"),
-                      h("li", null, "Binded Partner")
+                      h("li", null, "Available Partner")
                     ),
                     h("div", null, "Clearing Rule relevant actions are in its own button")
                   )

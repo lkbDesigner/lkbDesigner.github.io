@@ -10,3 +10,4 @@
 - 增加核心字段影响开关、发布前提醒，以及发布成功后返回列表页的交互。
 - 列表页 Module Status 与编辑页当前模块状态保持对应；首条示例记录为完整状态，其他记录按模块完成情况控制 Publish。
 - 编辑页 Clearing Rule 表格使用 Partner、Clearing Type、Supply Price、Valid Period 字段。
+- 按最新需求恢复 Available Partner（列表页两种状态、Module Status 与编辑页模块），并将 Listing Management 与 Type Management 中的 Property 文案统一为 Attribute。
