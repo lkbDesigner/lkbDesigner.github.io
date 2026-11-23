@@ -43,3 +43,9 @@ Date: 2026-11-10
 Static website: [https://lkbdesigner.github.io/Shopee-PC-2PC-Flow.html](https://lkbdesigner.github.io/Shopee-PC-2PC-Flow.html)
 
 Date: 2026-11-17
+
+## [TH] Support configurable text on Promo Tag
+
+Static website: [https://lkbdesigner.github.io/dp-hub-admin/th-promo-tag-configurable-text/](https://lkbdesigner.github.io/dp-hub-admin/th-promo-tag-configurable-text/)
+
+Date: 2026-11-23
