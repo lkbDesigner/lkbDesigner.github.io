@@ -112,11 +112,11 @@
         const next={...draft,en:draft.label==='Custom'?clean(draft.en):'',th:draft.label==='Custom'?clean(draft.th):''};
         setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(next));setSaved(next);setDraft(next);setEditing(false);messageApi.success('Display setting saved.')}catch{messageApi.error('Unable to save. Your input has been retained.')}finally{setBusy(false)}},650);
       };
-      const field=(lang)=>h(Form.Item,{label:'Custom Label ('+lang.toUpperCase()+')',required:true,validateStatus:errors[lang]?'error':undefined,help:errors[lang],extra:'Required. Max 10 characters per language. Up to 1 line on app.'},
+      const field=(lang)=>h(Form.Item,{label:'Custom Label ('+lang.toUpperCase()+')',required:true,validateStatus:errors[lang]?'error':undefined,help:errors[lang],extra:h('div',{className:'label-helper-row',style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:8}},h(Typography.Text,{type:'secondary',style:{minWidth:0}},'Max 10 characters per language. Up to 1 line on app.'),h(Typography.Text,{type:count(draft[lang])>10?'danger':'secondary',style:{flexShrink:0,whiteSpace:'nowrap'}},composing[lang]?'…':count(draft[lang])+'/10'))},
         h(Input.TextArea,{value:draft[lang],autoSize:{minRows:1,maxRows:1},rows:1,'aria-label':'Custom Label ('+lang.toUpperCase()+')',placeholder:lang==='en'?'e.g. 100.-* off':'e.g. MEGA',disabled:busy,
           onChange:e=>patch(lang,e.target.value),onBlur:()=>{if(!composing[lang])setErrors(e=>({...e,[lang]:textError(draft[lang],lang.toUpperCase())}))},
           onCompositionStart:()=>setComposing(c=>({...c,[lang]:true})),onCompositionEnd:e=>{setComposing(c=>({...c,[lang]:false}));patch(lang,e.currentTarget.value)},
-          showCount:false}),h('div',{style:{textAlign:'right',marginBottom:4}},h(Typography.Text,{type:count(draft[lang])>10?'danger':'secondary'},composing[lang]?'…':count(draft[lang])+'/10')));
+          showCount:false}));
       const section=(id,title,action,content)=>h('section',{id,className:'detail-section'},h('div',{className:'section-toolbar'},h('h2',{className:'section-heading'},title),action),h('div',{className:'section-body'},content));
       const dateInput=(key,placeholder)=>h(DatePicker,{value:draft[key]?dayjs(draft[key]):null,format:'YYYY-MM-DD',placeholder,disabled:busy||draft.label==='None',onChange:(_,str)=>patch(key,str||''),status:errors.dates?'error':undefined,style:{width:'100%',minWidth:0},'aria-label':placeholder});
       const emptyTable=(type)=>h(BrandRecords,{type});
