@@ -2271,13 +2271,16 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           },
           {
             title: "Available Partner", dataIndex: "partner", width: 230,
-            render: (value, row) => h("div", { className: "partner-cell" },
-              h("div", { className: "partner-cell-text" }, value || "-"),
-              !isPublishedTab ? h(React.Fragment, null,
+            render: (value, row) => {
+              const partnerValue = isPublishedTab ? (row.publishedPartner || value) : value;
+              return h("div", { className: "partner-cell" },
+                h("div", { className: "partner-cell-text" }, partnerValue || "-"),
+                h(React.Fragment, null,
                 h(Button, {
                   type: "link",
                   className: "partner-cell-edit",
-                  onClick: event => { event.stopPropagation(); openPartnerEditor(row, value || ""); }
+                  "aria-label": "Edit Available Partner",
+                  onClick: event => { event.stopPropagation(); openPartnerEditor(row, partnerValue || ""); }
                 }, h(I.EditOutlined)),
                 partnerEditKey === row.key ? h("div", { className: "partner-editor-inline" },
                   h("div", { className: "partner-editor-title" }, "Available Partner"),
@@ -2295,8 +2298,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                     h(Button, { type: "primary", onClick: () => confirmPartnerEdit(row) }, "Confirm")
                   )
                 ) : null
-              ) : null
-            )
+                )
+              );
+            }
           },
           {
             title: "Clearing Rule", dataIndex: "rule", width: isPublishedTab ? 132 : 170,
