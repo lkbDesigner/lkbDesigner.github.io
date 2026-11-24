@@ -113,7 +113,7 @@
         setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(next));setSaved(next);setDraft(next);setEditing(false);messageApi.success('Display setting saved.')}catch{messageApi.error('Unable to save. Your input has been retained.')}finally{setBusy(false)}},650);
       };
       const field=(lang)=>h(Form.Item,{label:'Custom Label ('+lang.toUpperCase()+')',required:true,validateStatus:errors[lang]?'error':undefined,help:errors[lang],extra:h('div',{className:'label-helper-row',style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:8}},h(Typography.Text,{type:'secondary',style:{minWidth:0}},'Max 10 characters per language. Up to 1 line on app.'),h(Typography.Text,{type:count(draft[lang])>10?'danger':'secondary',style:{flexShrink:0,whiteSpace:'nowrap'}},composing[lang]?'…':count(draft[lang])+'/10'))},
-        h(Input.TextArea,{value:draft[lang],autoSize:{minRows:1,maxRows:1},rows:1,'aria-label':'Custom Label ('+lang.toUpperCase()+')',placeholder:lang==='en'?'e.g. 100.-* off':'e.g. MEGA',disabled:busy,
+        h(Input.TextArea,{value:draft[lang],autoSize:{minRows:1,maxRows:1},rows:1,'aria-label':'Custom Label ('+lang.toUpperCase()+')',placeholder:lang==='en'?'e.g. 100.-* off':'เช่น ลด 100.-*',disabled:busy,style:{padding:'4px 11px',lineHeight:'22px',textAlign:'left',resize:'none'},
           onChange:e=>patch(lang,e.target.value),onBlur:()=>{if(!composing[lang])setErrors(e=>({...e,[lang]:textError(draft[lang],lang.toUpperCase())}))},
           onCompositionStart:()=>setComposing(c=>({...c,[lang]:true})),onCompositionEnd:e=>{setComposing(c=>({...c,[lang]:false}));patch(lang,e.currentTarget.value)},
           showCount:false}));
