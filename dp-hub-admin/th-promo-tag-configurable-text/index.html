@@ -112,7 +112,7 @@
         const next={...draft,en:draft.label==='Custom'?clean(draft.en):'',th:draft.label==='Custom'?clean(draft.th):''};
         setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(next));setSaved(next);setDraft(next);setEditing(false);messageApi.success('Display setting saved.')}catch{messageApi.error('Unable to save. Your input has been retained.')}finally{setBusy(false)}},650);
       };
-      const field=(lang)=>h(Form.Item,{label:'Custom Label ('+lang.toUpperCase()+')',required:true,validateStatus:errors[lang]?'error':undefined,help:errors[lang],extra:'Required. Max 10 characters per language. Up to 2 lines on app.'},
+      const field=(lang)=>h(Form.Item,{label:'Custom Label ('+lang.toUpperCase()+')',required:true,validateStatus:errors[lang]?'error':undefined,help:errors[lang],extra:'Required. Max 10 characters per language. Up to 1 line on app.'},
         h(Input.TextArea,{value:draft[lang],autoSize:{minRows:1,maxRows:1},rows:1,'aria-label':'Custom Label ('+lang.toUpperCase()+')',placeholder:lang==='en'?'e.g. 100.-* off':'e.g. MEGA',disabled:busy,
           onChange:e=>patch(lang,e.target.value),onBlur:()=>{if(!composing[lang])setErrors(e=>({...e,[lang]:textError(draft[lang],lang.toUpperCase())}))},
           onCompositionStart:()=>setComposing(c=>({...c,[lang]:true})),onCompositionEnd:e=>{setComposing(c=>({...c,[lang]:false}));patch(lang,e.currentTarget.value)},
