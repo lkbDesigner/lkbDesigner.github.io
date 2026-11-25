@@ -388,6 +388,7 @@ mark {
       justify-content: flex-end;
       gap: 8px;
     }
+    .filter-more-button { padding-inline: 0; }
     .filter-actions .ant-btn { border-radius: 6px; }
     .actionbar {
       min-height: 64px;
@@ -2158,7 +2159,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const [activePoolTab, setActivePoolTab] = React.useState("processing");
         const [filters, setFilters] = React.useState({});
         const [appliedFilters, setAppliedFilters] = React.useState({});
-        const [filtersExpanded, setFiltersExpanded] = React.useState(true);
+        const [filtersExpanded, setFiltersExpanded] = React.useState(false);
         const [itemOperationOpen, setItemOperationOpen] = React.useState(false);
         const [clearingRuleOperationOpen, setClearingRuleOperationOpen] = React.useState(false);
         const [selectedRows, setSelectedRows] = React.useState([]);
@@ -2422,10 +2423,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             h("section", { className: "panel" },
               h("div", { className: "filter-panel" },
                 h("div", { className: "filter-grid" },
-                  ...filterFields,
+                  ...(filtersExpanded ? filterFields : filterFields.slice(0, 8)),
                   h("div", { className: "filter-actions" },
                     h(Button, { icon: h(I.ReloadOutlined), onClick: () => { setFilters({}); setAppliedFilters({}); } }, "Reset"),
-                    h(Button, { type: "primary", icon: h(I.SearchOutlined), onClick: () => setAppliedFilters(filters) }, "Search")
+                    h(Button, { type: "primary", icon: h(I.SearchOutlined), onClick: () => setAppliedFilters(filters) }, "Search"),
+                    h(Button, { type: "link", className: "filter-more-button", onClick: () => setFiltersExpanded(value => !value) }, filtersExpanded ? "Show Less" : "Show More")
                   )
                 )
               ),
