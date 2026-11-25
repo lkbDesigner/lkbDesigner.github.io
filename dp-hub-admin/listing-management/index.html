@@ -1396,10 +1396,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       function FilterField(props) {
         const control = props.select
           ? h(Select, {
+              mode: props.multiple ? "multiple" : undefined,
               value: props.value || undefined,
               placeholder: "Please select",
               options: (props.options || []).map(value => ({ value, label: value })),
               allowClear: true,
+              maxTagCount: props.multiple ? "responsive" : undefined,
               variant: "borderless",
               style: { width: "100%", minWidth: 0 },
               onChange: props.onChange,
@@ -2178,6 +2180,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           "Clearing Rule: Incompleted"
         ];
         const moduleStatusMatches = (row, value) => {
+          if (Array.isArray(value)) return value.length === 0 || value.some(option => moduleStatusMatches(row, option));
           if (!value) return true;
           const [module, status] = String(value).split(": ");
           const moduleKey = { "Item Basic": "itemBasic", "Linked Hub Product": "linkedHubProduct", "Available Partner": "availablePartner", "Clearing Rule": "clearingRule" }[module];
@@ -2195,11 +2198,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             match("provider", row.provider) &&
             moduleStatusMatches(row, appliedFilters.moduleStatus);
         });
-        const field = (name, label, options) => h(FilterField, {
+        const field = (name, label, options, multiple = false) => h(FilterField, {
           key: name,
           label,
           value: filters[name],
           select: Boolean(options),
+          multiple,
           options,
           onChange: value => setFilters(old => ({ ...old, [name]: value }))
         });
@@ -2212,7 +2216,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           field("productType", "Product Type", ["Gift Card", "Mobile Top-up", "Game"]),
           field("subProductType", "Sub Product Type", ["Digital", "Prepaid", "Postpaid"]),
           field("provider", "Provider", ["Provider A", "Provider B", "Provider C"]),
-          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions)] : [])
+          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions, true)] : [])
         ];
         const publishedRows = filteredRows.filter(row => row.complete);
         const activeRows = activePoolTab === "published" ? publishedRows : filteredRows;
