@@ -1661,6 +1661,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           property6: editBaseLinkedComplete ? "Category3" : undefined,
           
         });
+        const [generatedItemId, setGeneratedItemId] = React.useState("");
+        const generateItemId = () => {
+          const next = String(100000 + Math.floor(Math.random() * 900000));
+          setGeneratedItemId(next);
+          return next;
+        };
         const [productInfoReady, setProductInfoReady] = React.useState(editBaseLinkedComplete);
         const [providerName, setProviderName] = React.useState(isAdd ? undefined : item.provider);
         const [providerId, setProviderId] = React.useState(isAdd ? "" : item.providerId);
@@ -1719,7 +1725,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           selectField(label, true, attrOptions),
           coreFieldImpact ? h("div", { className: "core-field-warning" }, "The value is matched with Linked Hub Product ID, will result Unlink Hub Product actions") : null
         );
-        const save = () => form.validateFields().then(() => notify(isAdd ? "Item added successfully" : "Saved successfully")).catch(() => {});
+        const save = () => {
+          if (isAdd && !generatedItemId) generateItemId();
+          return form.validateFields().then(() => {
+            notify(isAdd ? "Item added successfully" : "Saved successfully");
+          }).catch(() => {});
+        };
         const selectProvider = value => {
           const selected = providerOptions.find(option => option.value === value);
           setProviderName(value);
@@ -1821,7 +1832,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                   h("div", { className: "form-column" },
                     h("div", { className: "edit-subtitle" }, "Basic Info"),
                     h("div", { className: "edit-field-row" },
-                      isAdd ? null : staticField("Item ID", item.item),
+                      isAdd
+                        ? staticField("Item ID", generatedItemId || h(Button, { type: "link", onClick: generateItemId }, "Add"))
+                        : staticField("Item ID", item.item),
                       h(Form.Item, { className: "edit-form-item", style: { marginBottom: 16 }, label: "Item Name", name: "itemName" }, h(Input, { disabled: isDetail, style: { width: "100%", maxWidth: "100%" } }))
                     ),
                     h("div", { className: "edit-subtitle" }, "Product Info"),
