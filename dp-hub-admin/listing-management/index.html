@@ -2223,7 +2223,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
         ];
         const columns = [
-          { title: "Item ID", dataIndex: "item", fixed: "left", width: isPublishedTab ? 80 : 63, render: (value, row) => h(Button, { type: "link", className: "link-button", onClick: () => openItemDetail(row) }, value) },
+          { title: "Item ID", dataIndex: "item", fixed: "left", width: isPublishedTab ? 80 : 63, render: (value, row) => h(Button, { type: "link", className: "link-button", onClick: () => openEdit(row) }, value) },
           {
             title: "Item Name", dataIndex: "name", width: 132,
             render: (value, row) => isPublishedTab ? h("span", { className: "item-name-text" }, value) : h(Popover, {
