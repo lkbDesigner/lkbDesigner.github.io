@@ -438,6 +438,9 @@ mark {
     .partner-cell-text { min-width: 0; color: #272d37; line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
     .partner-cell-text-clamped { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
     .partner-show-more { padding: 0; height: 20px; color: #1677ff !important; font-size: 14px; }
+    .module-status-content { min-width: 0; }
+    .module-status-clamped { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+    .module-status-show-more { padding: 0; height: 20px; color: #1677ff !important; font-size: 14px; }
     .partner-cell-edit { flex: none; padding: 0; height: 20px; color: #1677ff !important; }
     .partner-cell-edit .anticon { font-size: 16px; }
     .partner-editor { width: 424px; padding: 8px; }
@@ -2170,6 +2173,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const [partnerEditKey, setPartnerEditKey] = React.useState(null);
         const [partnerDraft, setPartnerDraft] = React.useState([]);
         const [expandedPartnerKeys, setExpandedPartnerKeys] = React.useState([]);
+        const [expandedStatusKeys, setExpandedStatusKeys] = React.useState([]);
         const [currentItem, setCurrentItem] = React.useState(initialRows[0]);
         const [messageApi, contextHolder] = message.useMessage();
         const isPublishedTab = activePoolTab === "published";
@@ -2364,11 +2368,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             render: (_, row) => {
               const statuses = getModuleStatuses(row);
               const statusTag = complete => h(Tag, { className: "status-tag", color: complete ? "success" : "error" }, complete ? "Completed" : "Incompleted");
-              return h("div", { className: "field-stack" },
-                h("div", null, h("span", { className: "inline-label" }, "Item Basic: "), statusTag(statuses.itemBasic)),
-                h("div", null, h("span", { className: "inline-label" }, "Linked Hub Product: "), statusTag(statuses.linkedHubProduct)),
-                h("div", null, h("span", { className: "inline-label" }, "Available Partner: "), statusTag(statuses.availablePartner)),
-                h("div", null, h("span", { className: "inline-label" }, "Clearing Rule: "), statusTag(statuses.clearingRule))
+              const statusExpanded = expandedStatusKeys.includes(row.key);
+              return h("div", { className: "module-status-content" },
+                h("div", { className: "field-stack" + (statusExpanded ? "" : " module-status-clamped") },
+                  h("div", null, h("span", { className: "inline-label" }, "Item Basic: "), statusTag(statuses.itemBasic)),
+                  h("div", null, h("span", { className: "inline-label" }, "Linked Hub Product: "), statusTag(statuses.linkedHubProduct)),
+                  h("div", null, h("span", { className: "inline-label" }, "Available Partner: "), statusTag(statuses.availablePartner)),
+                  h("div", null, h("span", { className: "inline-label" }, "Clearing Rule: "), statusTag(statuses.clearingRule))
+                ),
+                h(Button, {
+                  type: "link",
+                  className: "module-status-show-more",
+                  onClick: event => { event.stopPropagation(); setExpandedStatusKeys(old => statusExpanded ? old.filter(key => key !== row.key) : [...old, row.key]); }
+                }, statusExpanded ? "Show Less" : "Show More")
               );
             }
           }] : []),
