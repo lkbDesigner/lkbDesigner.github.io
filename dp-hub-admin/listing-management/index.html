@@ -400,6 +400,7 @@ mark {
     }
     .actionbar .action-spacer { flex: 1; }
     .actionbar .ant-btn { height: 32px; border-radius: 4px; }
+    .clearing-rule-help { margin-left: 4px; color: #8c8c8c; font-size: 16px; cursor: help; }
     .selection-summary {
       height: 66px;
       padding: 0 24px 16px;
@@ -1362,23 +1363,23 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         {
           key: "1", item: "112233", name: "Item1", provider: "Jarkarta DC", providerId: "221234",
           code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
-          category3: "Category 3", bind: "Completed",
+          category3: "Category 3", l1Category: "Category A", l2Category: "Category B", l3Category: "Category C", bind: "Completed",
           partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
         },
         {
           key: "2", item: "112358", name: "Item 1", provider: "Jarkarta DC", providerId: "221234",
           code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
-          category3: "Category 3", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
+          category3: "Category 3", l1Category: "Category A", l2Category: "Category B", l3Category: "Category C", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
         },
         {
           key: "3", item: "112359", name: "Item 2", provider: "Jarkarta DC", providerId: "221234",
           code: "223221", rule: "Show Rule", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "Category 1", category2: "Category 2",
-          category3: "Category 3", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
+          category3: "Category 3", l1Category: "Category A", l2Category: "Category B", l3Category: "Category C", bind: "Completed", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: true
         },
         {
           key: "4", item: "112360", name: "Item 3", provider: "Jarkarta DC", providerId: "221234",
           code: "-", rule: "Not Configuration", hubId: "517895", hubName: "eSIM 4GB Thailand 5 days 1GB/day", category1: "-", category2: "-",
-          category3: "-", bind: "Incompleted", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: false
+          category3: "-", l1Category: "-", l2Category: "-", l3Category: "-", bind: "Incompleted", partner: "ShopeePay, Shopee, Mitra, Seabank", source: "Manual Upload", updated: "2026/06/22 12:00", complete: false
         }
       ];
 
@@ -1640,6 +1641,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const { item, onBack, notify, mode = "edit" } = props;
         const isAdd = mode === "add";
         const isDetail = mode === "detail";
+        const isPublishedEdit = mode === "published-edit";
         const editBaseLinkedComplete = !isAdd && (item.key === "1" || item.key === "2");
         const pageTitle = isDetail ? "Item Detail" : isAdd ? "Add Item" : "Edit Item";
         const [form] = Form.useForm();
@@ -1931,7 +1933,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                     h(Button, {
                       disabled: !clearingRuleReady,
                       onClick: () => {}
-                    }, "Change/Add Clearing Rule")
+                    }, "Change/Add Clearing Rule"),
+                    !clearingRuleReady && h(Tooltip, { title: "Please complete Item Basic Module before editing." },
+                      h(I.QuestionCircleOutlined, { className: "clearing-rule-help", "aria-label": "Clearing Rule editing help" })
+                    )
                   ),
                   h("div", { className: "module-table" },
                     h(Table, {
@@ -1958,8 +1963,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             ),
             h("div", { className: "module-footer-actions" },
               h(Button, { onClick: onBack }, "Cancel"),
-              h(Button, { className: "edit-save-button", onClick: save }, "Save"),
-              h(Button, {
+              h(Button, { type: isPublishedEdit ? "primary" : undefined, className: "edit-save-button", onClick: save }, "Save"),
+              !isPublishedEdit && h(Button, {
                 type: "primary",
                 disabled: !publishReady,
                 onClick: () => {
@@ -2168,7 +2173,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
         const notify = text => messageApi.info(text);
         const notifySuccess = text => messageApi.success(text);
-        const openEdit = row => { setCurrentItem(row); setView("edit"); };
+        const openEdit = row => { setCurrentItem(row); setView(isPublishedTab ? "published-edit" : "edit"); };
         const openItemDetail = row => { setCurrentItem(row); setView("detail"); };
         const openItemNameEditor = row => { setItemNameEditKey(row.key); setItemNameDraft(row.name); };
         const confirmItemNameEdit = row => { row.name = itemNameDraft.trim() || row.name; setItemNameEditKey(null); notify("Item Name updated"); };
@@ -2209,6 +2214,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             match("productType", row.category2) &&
             match("subProductType", row.category3) &&
             match("provider", row.provider) &&
+            match("l1Category", row.l1Category || "Category A") &&
+            match("l2Category", row.l2Category || "Category B") &&
+            match("l3Category", row.l3Category || "Category C") &&
             moduleStatusMatches(row, appliedFilters.moduleStatus);
         });
         const field = (name, label, options, multiple = false) => h(FilterField, {
@@ -2229,6 +2237,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           field("productType", "Product Type", ["Gift Card", "Mobile Top-up", "Game"]),
           field("subProductType", "Sub Product Type", ["Digital", "Prepaid", "Postpaid"]),
           field("provider", "Provider", ["Provider A", "Provider B", "Provider C"]),
+          field("l1Category", "L1 Category", ["Category A", "Category B", "Category C"]),
+          field("l2Category", "L2 Category", ["Category A", "Category B", "Category C"]),
+          field("l3Category", "L3 Category", ["Category A", "Category B", "Category C"]),
           ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions, true)] : [])
         ];
         const publishedRows = filteredRows.filter(row => row.complete);
@@ -2356,7 +2367,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             render: (_, row) => h("div", { className: "field-stack action-cell" },
               h(Button, { type: "link", className: "link-button", onClick: () => openEdit(row) }, "Edit"),
               !isPublishedTab && (Object.values(getModuleStatuses(row)).every(Boolean)
-                ? h(Button, { type: "link", className: "link-button", onClick: () => messageApi.success("Publish request submitted") }, "Publish")
+                ? h(Button, { type: "link", className: "link-button", onClick: () => messageApi.success("publish successfully") }, "Publish")
                 : h(Tooltip, { title: "Please complete all modules before publishing." },
                     h("span", null, h(Button, { type: "link", disabled: true, className: "link-button" }, "Publish"))
                   ))
@@ -2487,7 +2498,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             title: "Batch Publish Items",
             open: batchPublishOpen,
             onCancel: () => setBatchPublishOpen(false),
-            onOk: () => { setBatchPublishOpen(false); setSelectedRows([]); notify("Publish request submitted"); },
+            onOk: () => { setBatchPublishOpen(false); setSelectedRows([]); notify("publish successfully"); },
             okText: "Confirm",
             cancelText: "Cancel"
           }, "Are you sure to publish all selected items?"),
@@ -2603,8 +2614,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                     ? poolContent
                     : view === "published"
                       ? poolContent
-                    : view === "edit"
-                      ? h(EditItem, { key: "edit-" + currentItem.key, item: currentItem, onBack: backToPool, notify })
+                    : view === "edit" || view === "published-edit"
+                      ? h(EditItem, { key: view + "-" + currentItem.key, mode: view === "published-edit" ? "published-edit" : "edit", item: currentItem, onBack: backToPool, notify })
                       : view === "detail"
                         ? h(EditItem, { key: "detail-" + currentItem.key, mode: "detail", item: currentItem, onBack: backToPool, notify })
                       : view === "add"
