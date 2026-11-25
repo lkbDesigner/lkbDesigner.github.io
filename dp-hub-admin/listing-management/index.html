@@ -434,7 +434,10 @@ mark {
     .partner-edit-button { color: #272d37 !important; font-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 20px; }
     .partner-edit-button .anticon { color: #272d37; font-size: 16px; }
     .partner-cell { position: relative; display: flex; align-items: center; gap: 4px; width: 100%; }
-    .partner-cell-text { flex: 1 1 auto; min-width: 0; color: #272d37; line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+    .partner-cell-content { flex: 1 1 auto; min-width: 0; }
+    .partner-cell-text { min-width: 0; color: #272d37; line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+    .partner-cell-text-clamped { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+    .partner-show-more { padding: 0; height: 20px; color: #1677ff !important; font-size: 14px; }
     .partner-cell-edit { flex: none; padding: 0; height: 20px; color: #1677ff !important; }
     .partner-cell-edit .anticon { font-size: 16px; }
     .partner-editor { width: 424px; padding: 8px; }
@@ -2166,6 +2169,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const [itemNameDraft, setItemNameDraft] = React.useState("");
         const [partnerEditKey, setPartnerEditKey] = React.useState(null);
         const [partnerDraft, setPartnerDraft] = React.useState([]);
+        const [expandedPartnerKeys, setExpandedPartnerKeys] = React.useState([]);
         const [currentItem, setCurrentItem] = React.useState(initialRows[0]);
         const [messageApi, contextHolder] = message.useMessage();
         const isPublishedTab = activePoolTab === "published";
@@ -2301,8 +2305,17 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             title: "Available Partner", dataIndex: "partner", width: 230,
             render: (value, row) => {
               const partnerValue = isPublishedTab ? (row.publishedPartner || value) : value;
+              const partnerNeedsMore = String(partnerValue || "").split(/,\s*/).filter(Boolean).length > 3;
+              const partnerExpanded = expandedPartnerKeys.includes(row.key);
               return h("div", { className: "partner-cell" },
-                h("div", { className: "partner-cell-text" }, partnerValue || "-"),
+                h("div", { className: "partner-cell-content" },
+                  h("div", { className: "partner-cell-text" + (partnerNeedsMore && !partnerExpanded ? " partner-cell-text-clamped" : "") }, partnerValue || "-"),
+                  partnerNeedsMore && h(Button, {
+                    type: "link",
+                    className: "partner-show-more",
+                    onClick: event => { event.stopPropagation(); setExpandedPartnerKeys(old => partnerExpanded ? old.filter(key => key !== row.key) : [...old, row.key]); }
+                  }, partnerExpanded ? "Show Less" : "Show More")
+                ),
                 h(React.Fragment, null,
                 h(Button, {
                   type: "link",
