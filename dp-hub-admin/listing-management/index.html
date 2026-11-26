@@ -2246,10 +2246,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           field("productType", "Product Type", ["Gift Card", "Mobile Top-up", "Game"]),
           field("subProductType", "Sub Product Type", ["Digital", "Prepaid", "Postpaid"]),
           field("provider", "Provider", ["Provider A", "Provider B", "Provider C"]),
-          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions, true)] : []),
           field("l1Category", "L1 Category", ["Category A", "Category B", "Category C"]),
           field("l2Category", "L2 Category", ["Category A", "Category B", "Category C"]),
-          field("l3Category", "L3 Category", ["Category A", "Category B", "Category C"])
+          field("l3Category", "L3 Category", ["Category A", "Category B", "Category C"]),
+          ...(!isPublishedTab ? [field("moduleStatus", "Module Status", moduleStatusOptions, true)] : [])
         ];
         const canFoldFilters = filterFields.length > 11;
         const publishedRows = filteredRows.filter(row => row.complete);
