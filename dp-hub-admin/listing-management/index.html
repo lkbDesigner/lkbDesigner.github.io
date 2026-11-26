@@ -1392,7 +1392,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
       const ruleRows = [
         { key: "r1", id: "212", name: "Rule 1", level: "ID: 1232324", type: "Settlement", partner: "Digital-purchase", clearingType: "COGS", supplyPrice: "Rp 10,050", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: true, updated: "2026/06/22 12:00" },
-        { key: "r2", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: true, updated: "2026/06/22 12:00" },
+        { key: "r2", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Tier 1: Admin Fee 10%\nTier 2: Admin Fee 20%\nTier 3: Admin Fee 30%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: true, updated: "2026/06/22 12:00" },
         { key: "r3", id: "212", name: "Rule 1", level: "Product Type: L1", type: "Settlement", partner: "Digital-purchase", clearingType: "Commission", supplyPrice: "Admin Fee: 10%", validPeriod: "2025/01/01 00:00 - 2026/12/31 23:59", detail: "See More >", running: false, updated: "2026/06/22 12:00" }
       ];
       const getModuleStatuses = row => row.key === "1"
@@ -1780,7 +1780,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const columns = [
           { title: "Partner", dataIndex: "partner", width: 180 },
           { title: "Clearing Type", dataIndex: "clearingType", width: 180 },
-          { title: "Supply Price", dataIndex: "supplyPrice", width: 180 },
+          { title: "Supply Price", dataIndex: "supplyPrice", width: 180, render: value => h("div", { style: { whiteSpace: "pre-line" } }, value) },
           { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
         ];
         return h(React.Fragment, null,
@@ -2141,7 +2141,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                 columns: [
                   { title: "Partner", dataIndex: "partner" },
                   { title: "Clearing Type", dataIndex: "type" },
-                  { title: "Supply Price", dataIndex: "supplyPrice" },
+                  { title: "Supply Price", dataIndex: "supplyPrice", render: value => h("div", { style: { whiteSpace: "pre-line" } }, value) },
                   { title: "Valid Period", dataIndex: "period" },
                   { title: "Action", key: "action", render: () => h(Button, { type: "link", className: "link-button", onClick: () => message.info("Clearing Type edit opened") }, "Edit") }
                 ],
@@ -2257,7 +2257,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         const ruleColumns = [
           { title: "Partner", dataIndex: "partner", width: 180 },
           { title: "Clearing Type", dataIndex: "clearingType", width: 180 },
-          { title: "Supply Price", dataIndex: "supplyPrice", width: 180 },
+          { title: "Supply Price", dataIndex: "supplyPrice", width: 180, render: value => h("div", { style: { whiteSpace: "pre-line" } }, value) },
           { title: "Valid Period", dataIndex: "validPeriod", width: 300 }
         ];
         const columns = [
